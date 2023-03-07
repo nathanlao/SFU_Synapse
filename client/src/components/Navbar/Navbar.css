@@ -1,0 +1,37 @@
+.nav-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    min-width: 300px;
+    margin: 0px;
+    background-color: #ffffff;
+}
+
+.nav-container > img {
+    width: 100px;
+    margin: 50px 0px;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    gap: 60px;
+}
+
+.logo-container > a {
+    color: #4a4e69;
+    font-size: 40px;
+}
+
+.setting {
+    color: #4a4e69;
+    font-size: 20px;
+    margin-top: 100px;
+}
