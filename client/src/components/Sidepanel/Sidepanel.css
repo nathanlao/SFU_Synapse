@@ -1,0 +1,44 @@
+.sidepanel-container {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0px;
+    background-color: #11515c;
+    overflow-y: scroll;
+}
+
+
+.accordion {
+    background-color: #11515c;
+    border: none;
+    /* 
+    --bs-accordion-btn-icon:  
+    --bs-accordion-btn-active-icon: 
+    */
+}
+
+.accordion-item {
+    background-color: #11515c;
+    border: none
+}
+
+.accordion-body {
+    color: #ffffff;
+}
+
+.accordion-button {
+    color: #ffffff;
+    background-color: #11515c;
+    box-shadow: none;
+    border: none;
+    background-image: none;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #ffffff;
+    background-color: #11515c;
+    box-shadow: none;
+    border: none;
+}
