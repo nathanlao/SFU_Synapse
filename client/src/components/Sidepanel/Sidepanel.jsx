@@ -73,7 +73,7 @@ function GroupsSidepanel() {
             </Accordion>
             <Accordion flush style={{backgroundColor: '#11515c'}}>
                 <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Groups</Accordion.Header>
+                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Communities</Accordion.Header>
                     <Accordion.Body style={{backgroundColor: '#11515c'}}>
                         <SidepanelItem title="Wildin'" subtitle="9 members" indicator={<FontAwesomeIcon icon={faLock}/>}/>
                         <SidepanelItem title="Dog Owners" subtitle="78 members" indicator=""/>
