@@ -1,8 +1,8 @@
 const getSettings = (req, res) => {
-    res.send('Received GET request to /setting')
+    res.send(`Received ${req.method} request to /setting`)
 }
 const updateSettings = (req, res) => {
-    res.send('Received PUT request to /setting')
+    res.send(`Received ${req.method} request to /setting`)
 }
 
 module.exports = { getSettings, updateSettings }

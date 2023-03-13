@@ -1,5 +1,5 @@
 const getHomeContent = (req, res) => {
-    res.send('Received GET request to /')
+    res.send(`Received ${req.method} request to /`)
 }
 
 module.exports = { getHomeContent }
