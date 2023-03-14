@@ -9,4 +9,3 @@ Pastel Colors
 * Light Green Pastel: C3D8D1
 * Light Pink Pastel: F6D0C3
 * Pink Pastel: FCB8A1
-
