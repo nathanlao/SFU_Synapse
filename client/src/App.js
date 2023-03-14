@@ -16,7 +16,7 @@ export default function App() {
         <div>
             <main className='main'>
                 <Routes>
-                    <Route path='login' element={<Login />}/>
+                    <Route path='/login' element={<Login />}/>
                     <Route element={<LoginRequired />}>    
                         <Route path='/' element={<MainLayout />}>
                             <Route index element={<Home />} />

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import appLogo from "../images/app_logo.png"
 
 export default function Login() {
+    const navigate = useNavigate()
+
     const [loginFormData, setLoginFormData] = useState({
         username: "",
         password: ""
@@ -20,6 +23,8 @@ export default function Login() {
 
         //TODO: GET real data from server and proceed to main content
         console.log(loginFormData)
+        localStorage.setItem("login", true)
+        navigate("/", {replace: true})
     }
 
     return (

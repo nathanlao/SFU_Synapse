@@ -5,11 +5,11 @@ import Login from "../pages/Login"
 
 export default function LoginRequired() {
 
-    //TODO: hard code token to test login page, will have to do the auth
-    //      from server side
-    const auth = {token: null}
+    //TODO: hard code key in localStorage to test login page, 
+    //      will have to do the auth from server side
+    const isLoggedIn = localStorage.getItem("login")
 
-    if (!auth.token) {
+    if (!isLoggedIn) {
         return <Navigate to='/login' replace={true}/>
     }
     return <Outlet />
