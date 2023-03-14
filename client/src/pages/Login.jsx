@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-        
+import appLogo from "../images/app_logo.png"
+
 export default function Login() {
     const [loginFormData, setLoginFormData] = useState({
         username: "",
@@ -23,24 +24,35 @@ export default function Login() {
 
     return (
         <div>
-            <h1>Log in to your account</h1>
+            <h1>Log in</h1>
             <form onSubmit={handleFormSubmit}>
-                <input 
-                    type="text" 
-                    name="username"
-                    placeholder="Username"
-                    value={loginFormData.username}
-                    onChange={handleInputChange}    
-                />
-                <input 
-                    type="password" 
-                    name="password"
-                    placeholder="Password"
-                    value={loginFormData.password}
-                    onChange={handleInputChange}
-                />
+                <label>
+                    Username:
+                    <input 
+                        type="text" 
+                        name="username"
+                        value={loginFormData.username}
+                        onChange={handleInputChange}    
+                    />
+                </label>
+                <label>
+                    Password:
+                    <input 
+                        type="password" 
+                        name="password"
+                        value={loginFormData.password}
+                        onChange={handleInputChange}
+                    />
+                </label>
                 <button>Log in</button>
             </form>
+            {/* TODO: hard coded link */}
+            <a href="/">Forgot password?</a>
+            <a href="/">Don't have an account</a>
+            <img 
+                alt="login in SFU Synapse logo"
+                src={appLogo}    
+            />
         </div>
     )
 }
