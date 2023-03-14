@@ -19,7 +19,8 @@ CREATE TABLE Users (
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
     userpass VARCHAR(128) NOT NULL,
-	intro TINYTEXT,
+    photo VARCHAR(128) DEFAULT '/path/to/default/user/profile/picture', -- path to where the user's profile photo is stored
+	bio TINYTEXT,
 	PRIMARY KEY (user_id)
 );
 
