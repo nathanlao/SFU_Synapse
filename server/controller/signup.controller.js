@@ -1,7 +1,9 @@
 import {db} from "../db/connection.db.js";
 
 export const signup = (req, res) => {
+
     const qSelect = "SELECT * FROM users WHERE username = ?";
+    
     db.query(qSelect, [req.body.username], (err,data) => {
         if (err) return res.status(500).json(err);
         
@@ -22,7 +24,7 @@ export const signup = (req, res) => {
             req.body.email,
         ];
 
-        db.query(q, [values], (err,data) => {
+        db.query(qInsert, [values], (err,data) => {
             if (err) return res.status(500).json(err);
             return res.status(200).json("User has been created.");
         });
