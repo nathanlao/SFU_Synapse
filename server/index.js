@@ -6,6 +6,8 @@ const { getHomeContent } = require('./controller/home.controller')
 const { getConnections, createConnection } = require('./controller/connections.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { getSettings, updateSettings } = require('./controller/setting.controller')
+const { verifyLogin } = require('./controller/login.controller')
+
 dotenv.config()
 
 Routes.route('/')
@@ -19,6 +21,8 @@ Routes.route('/groups')
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
+Routes.route('/login')
+    .post(verifyLogin)
 app.use('/', Routes)
 app.all('*', (req, res) => {
     res.send('404 Not Found. Please check url')

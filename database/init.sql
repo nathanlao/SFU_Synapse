@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS GroupMessages;
 
 CREATE TABLE Users (
 	user_id VARCHAR(64),
-	username VARCHAR(50) NOT NULL,
+	username VARCHAR(50) UNIQUE NOT NULL, -- has to be usnique in order to for login function
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
