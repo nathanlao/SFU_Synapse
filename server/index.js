@@ -23,5 +23,6 @@ app.use('/', Routes)
 app.all('*', (req, res) => {
     res.send('404 Not Found. Please check url')
 })
+app.use(express.json());
 
 app.listen(process.env.SERVER_PORT, () => console.log(`Server listening on port ${process.env.SERVER_PORT}`))
