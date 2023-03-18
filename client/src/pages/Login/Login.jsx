@@ -4,25 +4,24 @@ import './Login.css'
 
 export default function Login() {
     const navigate = useNavigate()
-    const [loginFormData, setLoginFormData] = useState({
-        username: "",
-        password: ""
-    })
+    const [username, setUsername] = useState('')
+    const [userpass, setPassword] = useState('')
 
-    function handleInputChange(event) {
-        const { name, value } = event.target
-        setLoginFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value)
     }
 
-    function handleFormSubmit(event) {
-        event.preventDefault()
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value)
+    }
+
+    
+    function validateLogin() {
+        console.log('validating login')
+        console.log(`username: ${username}, password: ${userpass}`)
 
         //TODO: GET real data from server and proceed to main content
-        console.log(loginFormData)
-        localStorage.setItem("login", true)
+        
 
         // make http POST request to http://localhost:3000
         // handle response from server
@@ -32,22 +31,21 @@ export default function Login() {
         navigate("/", {replace: true})
     }
 
-    // NOTE: ABOVE FUNCTIONS ARE STILL INCOMPLETE
 
     return (
         <>
-            <p>
+            <div>
                 <label htmlFor="username">Username</label>
-                <input type="text" id="username"/>
+                <input type="text" id="username" value={username} onChange={handleUsernameChange}/>
                 <p className="err-msg"></p>
-            </p>
-            <p>
+            </div>
+            <div>
                 <label htmlFor="password">Password</label>
-                <input type="password" id="password"/>
+                <input type="password" id="password" value={userpass} onChange={handlePasswordChange}/>
                 <p className="err-msg"></p>
-            </p>
+            </div>
 
-            <button type="button" id="loginBtn">Log in</button>
+            <button type="button" id="loginBtn" onClick={validateLogin}>Log in</button>
             <small>Don't have an account? <a href="/signup">Sign up</a></small>
         </>
     )
