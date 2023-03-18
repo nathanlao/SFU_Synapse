@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './Login.css'
+import axios from 'axios';
+import './Login.css';
 
 export default function Login() {
     const navigate = useNavigate()
@@ -21,6 +22,9 @@ export default function Login() {
         console.log(`username: ${username}, password: ${userpass}`)
 
         //TODO: GET real data from server and proceed to main content
+        // axios.post('http://localhost:3000/login').then(res => {
+        //     const resStatus = res.status
+        // })
         
 
         // make http POST request to http://localhost:3000
