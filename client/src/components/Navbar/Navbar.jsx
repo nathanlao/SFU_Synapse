@@ -1,28 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faMessage, faGroupArrowsRotate, faGear} from '@fortawesome/free-solid-svg-icons'
-import tempPic from "../../images/temp.png"
+import { faGroupArrowsRotate } from '@fortawesome/free-solid-svg-icons'
+
+import appLogo from "../../images/app_logo.png"
+import homeLogo from "../../images/home.svg"
+import chatLogo from "../../images/chat.svg"
+import connectionLogo from "../../images/connections.svg"
+import settingLogo from "../../images/settings.svg"
 
 import './Navbar.css'
 
 export default function Navbar() {
     return (
         <nav className="nav-container">
-            <img src={tempPic} alt="sfu synapse logo"/>
+            <img src={appLogo} alt="sfu synapse logo"/>
             <div className="logo-container">
                 <Link to="/">
-                    <FontAwesomeIcon icon={faHouse}/>
+                    <img src={homeLogo} alt="home logo"/>
                 </Link>
                 <Link to="connections">
-                    <FontAwesomeIcon icon={faMessage}/>
+                    <img src={chatLogo} alt="connection logo"/>
                 </Link>
                 <Link to="groups">
-                    <FontAwesomeIcon icon={faGroupArrowsRotate}/>
+                    <img src={connectionLogo} alt="connection logo"/>
                 </Link>
             </div>
             <Link to="setting" className="setting">
-                <FontAwesomeIcon icon={faGear} />
+                <img src={settingLogo} alt="connection logo"/>
             </Link>
         </nav>
     )
