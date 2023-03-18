@@ -1,7 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGroupArrowsRotate } from '@fortawesome/free-solid-svg-icons'
 
 import appLogo from "../../images/app_logo.png"
 import homeLogo from "../../images/home.svg"
@@ -20,14 +18,14 @@ export default function Navbar() {
                     <img src={homeLogo} alt="home logo"/>
                 </Link>
                 <Link to="connections">
-                    <img src={chatLogo} alt="connection logo"/>
+                    <img src={chatLogo} alt="chat logo"/>
                 </Link>
                 <Link to="groups">
                     <img src={connectionLogo} alt="connection logo"/>
                 </Link>
             </div>
             <Link to="setting" className="setting">
-                <img src={settingLogo} alt="connection logo"/>
+                <img src={settingLogo} alt="setting logo"/>
             </Link>
         </nav>
     )

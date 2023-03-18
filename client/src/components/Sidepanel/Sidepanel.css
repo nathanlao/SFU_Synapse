@@ -9,6 +9,9 @@
     overflow-y: scroll;
 }
 
+.sidepanel-header {
+    padding: 20px 20px 10px;
+}
 
 .accordion {
     background-color: #11515c;
