@@ -1,0 +1,37 @@
+.profile-card {
+    background-color: #C3D8D1 !important;
+    max-width: 345px;
+    padding: 8px;
+    flex-grow: 1;
+}
+
+.prodile-card-name {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.profile-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.classes-and-clubs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.classes-and-clubs-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.classes-and-clubs-content > span {
+    background-color: #5E9697;
+    color: white;
+    margin-right: 5px;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
