@@ -1,16 +1,17 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import Sidepanel from "../../components/Sidepanel/Sidepanel";
+import { Outlet, useLocation } from "react-router-dom";
+import Sidepanel from "../Sidepanel/Sidepanel";
 
-import './Connections.css'
+import './ConnectionsLayout.css'
         
 export default function Connections() {
+    const path = useLocation().pathname
 
     return (
         <>
             <Sidepanel connections />
             <div className="connection-container">
-                <Outlet />
+                <Outlet context={{from: path}}/>
             </div>
         </>
     )
