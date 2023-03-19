@@ -7,8 +7,8 @@ import ConnectionsLayout from './components/ConnectionsLayout/ConnectionsLayout'
 import GroupsLayout from './components/GroupsLayout/GroupsLayout'
 import Setting from './pages/Setting/Setting'
 import LoginSignupWindow from './components/LoginSignupWindow/LoginSignupWindow'
-import ChatSubtab from './pages/ChatSubtab/ChatSubtab'
-import DiscoverSubtab from './pages/DiscoverSubtab/DiscoverSubtab'
+import Chat from './pages/Chat/Chat'
+import Discover from './pages/Discover/Discover'
 
 import './App.css'
 
@@ -23,12 +23,12 @@ export default function App() {
                         <Route index element={<Home />} />
                         <Route path='connections' element={<ConnectionsLayout />} >
                             {/* Nested route relative to "/connection" */}
-                            <Route path=':id' element={<ChatSubtab />} />
+                            <Route path=':id' element={<Chat />} />
                         </Route>
                         <Route path='groups' element={<GroupsLayout />} >
                             {/* Nested route relative to "/groups" */}
-                            <Route path='chat' element={<ChatSubtab />} />
-                            <Route path='discover' element={<DiscoverSubtab />} />
+                            <Route path='chat' element={<Chat />} />
+                            <Route path='discover' element={<Discover />} />
                         </Route>
                         <Route path='setting' element={<Setting />} />
                     </Route>

@@ -6,16 +6,17 @@ import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 
 import tempPic from "../../images/temp.png"
 
-import './ChatSubtab.css'
+import './Chat.css'
 
-export default function ChatSubtab() {
+export default function Chat() {
 
     return (
         <>  
             <ChatTopBar />
+
             <div className="chat-content-container">
                 {/* TODO: display the conversation here, 
-                    now only a hard coded value with styling */}
+                    now only hard coded chats with styling now */}
                 <div className="chat-content">
                     <Avatar src={tempPic} alt="user icon" className="user-icon"/>
                     <div>
