@@ -17,7 +17,7 @@ export default function ProfileCard() {
                     />
                 }
                 title={
-                    <span className="prodile-card-name">Nima Sharon</span>
+                        <span className="prodile-card-name">Nima Sharon</span>
                 }
                 subheader={
                     <div className="profile-card-hashtags">
@@ -29,24 +29,24 @@ export default function ProfileCard() {
                 }
             />
             <CardContent className="profile-card-content">
-                <Typography variant="body2">
+                <Typography variant="body2" className="profile-card-bio">
                     Second year computer science student. I like going the gym and playing
                     volleyball at drop-in sports. I also like playing games at home.
                 </Typography>
-                <Typography variant="body2" className="classes-and-clubs-container">
+                <Typography variant="body2" className="profile-card-subtitle">
                     <strong>Classes</strong>
-                    <div className="classes-and-clubs-content">
-                        <span>CMPT120</span>
-                        <span>CMPT225</span>
-                        <span>CMPT135</span>
-                    </div>
                 </Typography>
-                <Typography variant="body2" className="classes-and-clubs-container">
+                <Typography variant="body2" className="classes-and-clubs-content">
+                    <span>CMPT120</span>
+                    <span>CMPT225</span>
+                    <span>CMPT135</span>
+                </Typography>
+                <Typography variant="body2" className="profile-card-subtitle">
                     <strong>Clubs</strong>
-                    <div className="classes-and-clubs-content">
-                        <span>SFU Volleyball Club</span>
-                        <span>CSSS</span>
-                    </div>
+                </Typography>
+                <Typography variant="body2" className="classes-and-clubs-content">
+                    <span>SFU Volleyball Club</span>
+                    <span>CSSS</span>
                 </Typography>
             </CardContent>
         </Card>

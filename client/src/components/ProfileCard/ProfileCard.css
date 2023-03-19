@@ -23,13 +23,15 @@
     padding-top: 0px !important;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    /* gap: 10px; */
 }
 
-.classes-and-clubs-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.profile-card-bio {
+    margin-bottom: 10px !important;
+}
+
+.profile-card-subtitle {
+    margin-bottom: 2px !important;
 }
 
 .classes-and-clubs-content {
@@ -41,7 +43,7 @@
 .classes-and-clubs-content > span {
     background-color: #5E9697;
     color: white;
-    margin-right: 5px;
+    margin: 0 5px 5px 0;
     padding: 3px 5px;
     border-radius: 3px;
 }
