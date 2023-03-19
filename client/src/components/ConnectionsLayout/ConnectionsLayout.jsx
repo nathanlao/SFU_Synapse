@@ -4,7 +4,7 @@ import Sidepanel from "../Sidepanel/Sidepanel";
 
 import './ConnectionsLayout.css'
         
-export default function Connections() {
+export default function ConnectionsLayout() {
     const path = useLocation().pathname
 
     return (

@@ -9,8 +9,6 @@ import './ChatTopBar.css'
 
 export default function ChatTopBar() {
 
-    const { id } = useParams()
-    
     // "from" property to indicate the current path
     const { from } = useOutletContext()
     const isConnectionPage = from.split("/")[1] === "connections"
@@ -50,7 +48,7 @@ export default function ChatTopBar() {
                                 DISCOVER
                             </NavLink>
                             <NavLink 
-                                to={`/groups/${id}`}
+                                to={`/groups/chat`}
                                 style={({isActive}) => isActive ? activeStyle : null}
                             >
                                 CHAT

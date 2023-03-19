@@ -4,7 +4,7 @@ import Sidepanel from "../Sidepanel/Sidepanel";
 
 import './GroupsLayout.css'
 
-export default function Groups() {
+export default function GroupsLayout() {
     const path = useLocation().pathname
 
     return (
