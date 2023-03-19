@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './Login.css'
+import './Login.css';
 
 export default function Login() {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [userpass, setPassword] = useState('')
 
-    const handleUsernameChange = (event) => {
+    function handleUsernameChange(event) {
         setUsername(event.target.value)
     }
 
-    const handlePasswordChange = (event) => {
+    function handlePasswordChange(event) {
         setPassword(event.target.value)
     }
 
@@ -20,15 +20,20 @@ export default function Login() {
         console.log('validating login')
         console.log(`username: ${username}, password: ${userpass}`)
 
-        //TODO: GET real data from server and proceed to main content
-        
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, userpass: userpass})
+        }
 
-        // make http POST request to http://localhost:3000
-        // handle response from server
-        // if response returns login status SUCCESS then navigate to the /
-        // if response returns login status INTERNALERR then display message 'Something went wrong with the server. Please try again later'
-        // else display error message 'Incorrect username or password'
-        navigate("/", {replace: true})
+        fetch('http://localhost:3000/login', options).then(res => {
+            if(res.status === 200) {
+                navigate("/", {replace: true})
+            }else {
+                // show error message in view
+            }
+        })
+
     }
 
 
