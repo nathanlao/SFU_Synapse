@@ -10,7 +10,17 @@
     font-weight: 500;
 }
 
+.profile-card-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.profile-card-hashtags > span {
+    margin-right: 5px;
+}
+
 .profile-card-content {
+    padding-top: 0px !important;
     display: flex;
     flex-direction: column;
     gap: 10px;

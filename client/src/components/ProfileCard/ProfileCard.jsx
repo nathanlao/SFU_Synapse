@@ -16,8 +16,17 @@ export default function ProfileCard() {
                         sx={{ width: 80, height: 80 }}
                     />
                 }
-                title={<span className="prodile-card-name">Nima Sharon</span>}
-                subheader="#volleyball #cs #secondyear #volrant"
+                title={
+                    <span className="prodile-card-name">Nima Sharon</span>
+                }
+                subheader={
+                    <div className="profile-card-hashtags">
+                        <span>#volleyball</span>
+                        <span>#cs</span>
+                        <span>#secondyear</span>
+                        <span>#volrant</span>
+                    </div>
+                }
             />
             <CardContent className="profile-card-content">
                 <Typography variant="body2">
