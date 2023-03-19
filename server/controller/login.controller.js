@@ -12,16 +12,8 @@ const verifyLogin = (req, res) => {
         if(err) {
             res.status(500).json(err)
         }else {
-            if(data.length > 0) {
-                // console.log(data)
-                // console.log(typeof data[0].userpass)
-                const expectedPass = data[0].userpass
-
-                if(userpass === expectedPass) {
-                    res.status(200).json("Login success")
-                }else {
-                    res.status(401).json("Incorrect username or password")
-                }
+            if(data.length > 0 && data[0].userpass === userpass) {
+                res.status(200).json("Login success")
             }else {
                 res.status(401).json("Incorrect username or password")
             }
