@@ -26,7 +26,7 @@ CREATE TABLE Users (
 
 CREATE TABLE Admins (
 	admin_id VARCHAR(64),
-	adminname VARCHAR(50) NOT NULL,
+	adminname VARCHAR(50) UNIQUE NOT NULL,
 	adminpass VARCHAR(128) NOT NULL,
 	PRIMARY KEY (admin_id)
 );
@@ -94,6 +94,11 @@ CREATE TABLE MemberOf (
 	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id),
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
 );
+
+INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
+
+-- connect to database using docker for dev
+-- mysql -h localhost -P 3306 -u root -p
 
 -- 1 test entries
 -- INSERT INTO Users (user_id, username, first_name, last_name, email, userpass, intro) 
