@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require('uuid');
+
 const db = require('../db/connection.db').pool
 
 const createUser = (req, res) => {
@@ -11,7 +13,7 @@ const createUser = (req, res) => {
         
         const qInsert = "INSERT INTO Users ('user_id', 'username', 'first_name', 'last_name', 'userpass', 'email') VALUE (?,?,?,?,?,?)";
 
-        const user_id = req.body.email.substring(0, req.body.email.indexOf('@'))
+        const user_id = uuidv4();
 
         const values = [
             user_id,
@@ -28,6 +30,5 @@ const createUser = (req, res) => {
         });
     });
 };
-
 
 module.exports = { createUser }
