@@ -13,6 +13,7 @@ const { getConnections, createConnection } = require('./controller/connections.c
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { getSettings, updateSettings } = require('./controller/setting.controller')
 const { verifyLogin } = require('./controller/login.controller')
+const { createUser } = require('./controller/signup.controller')
 
 dotenv.config()
 app.use(bodyParser.json())
@@ -44,6 +45,8 @@ Routes.route('/setting')
     .put(updateSettings)
 Routes.route('/login')
     .post(verifyLogin)
+Routes.route('/signup')
+    .post(createUser)
 app.use('/', Routes)
 app.all('*', (req, res) => {
     res.send('404 Not Found. Please check url')
