@@ -19,7 +19,25 @@ const verifyLogin = (req, res) => {
             }
         }
     })
-
 }
 
-module.exports = { verifyLogin }
+const verifyAdminLogin = (req, res) => {
+    let adminname = req.body.adminname
+    let adminpass = req.body.adminpass
+    
+    const query = 'SELECT * FROM Admins WHERE adminname=?'
+    
+    db.query(query, [adminname], (err, data) => {
+        if(err) {
+            res.status(500).json(err)
+        }else {
+            if(data.length > 0 && data[0].adminpass === adminpass) {
+                res.status(200).json("Login as administrator success")
+            }else {
+                res.status(401).json("Incorrect adminname or password")
+            }
+        }
+    })
+}
+
+module.exports = { verifyLogin, verifyAdminLogin }

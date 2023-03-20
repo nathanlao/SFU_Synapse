@@ -7,8 +7,10 @@ import Connections from './pages/Connections/Connections'
 import Groups from './pages/Groups/Groups'
 import Setting from './pages/Setting/Setting'
 import LoginSignupWindow from './components/LoginSignupWindow/LoginSignupWindow'
+import AdminLogin from './pages/Login/AdminLogin'
 
 import './App.css'
+import Admin from './pages/Admin/Admin'
 
 export default function App() {
     return (
@@ -23,6 +25,10 @@ export default function App() {
                         <Route path='groups' element={<Groups />} />
                         <Route path='setting' element={<Setting />} />
                     </Route>
+
+                    {/* Admin pages */}
+                    <Route path='/admin/login' element={<AdminLogin />} />
+                    <Route path='/admin' element={<Admin />} />
                 </Routes>
             </main>
         </div>

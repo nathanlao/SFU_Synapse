@@ -42,22 +42,36 @@ CREATE TABLE Connections (
 );
 
 CREATE TABLE `Groups` (
-	group_id VARCHAR(64),
+	group_id BIGINT AUTO_INCREMENT,
 	group_name VARCHAR(50) NOT NULL,
 	group_description TINYTEXT,
 	PRIMARY KEY (group_id)
 );
 -- using “Groups” as the table name gives an error. Apparently because groups is a reserved keyword in mysql. Use backticks (`) to refer to this table
 
+CREATE TABLE CourseCatalog ( -- full list of courses including those that are not a group in this app
+	coursecat_id BIGINT AUTO_INCREMENT,
+	offered_year CHAR(10) NOT NULL,
+	offered_term CHAR(10) NOT NULL,
+	dep CHAR(10) NOT NULL,
+	num CHAR(10) NOT NULL,
+	section CHAR(10) NOT NULL,
+	title VARCHAR(225) NOT NULL,
+	courseStat CHAR(10) NOT NULL DEFAULT 'inactive', -- active/inactive
+	PRIMARY KEY (coursecat_id)
+);
+
 CREATE TABLE Courses (
-	course_id VARCHAR(64),
-	duration CHAR(16) NOT NULL DEFAULT 'uncategorized',
+	course_id BIGINT,
+	ref_id BIGINT NOT NULL,
+	-- duration CHAR(16) NOT NULL DEFAULT 'uncategorized',
 	PRIMARY KEY (course_id),
-	FOREIGN KEY (course_id) REFERENCES `Groups` (group_id)
+	FOREIGN KEY (course_id) REFERENCES `Groups` (group_id),
+	FOREIGN KEY (ref_id) REFERENCES CourseCatalog (coursecat_id)
 );
 
 CREATE TABLE Communities (
-	community_id VARCHAR(64),
+	community_id BIGINT,
 	created_by VARCHAR(64) NOT NULL,
 	visibility CHAR(10) NOT NULL DEFAULT 'public',
 	PRIMARY KEY (community_id),
@@ -78,7 +92,7 @@ CREATE TABLE DirectMessages (
 
 CREATE TABLE GroupMessages (
 	id BIGINT(20) AUTO_INCREMENT,
-	group_id VARCHAR(64) NOT NULL,
+	group_id BIGINT NOT NULL,
 	user_id VARCHAR(64) NOT NULL,
 	message TEXT NOT NULL,
 	timestamp CHAR(20) NOT NULL,
@@ -88,12 +102,13 @@ CREATE TABLE GroupMessages (
 );
 
 CREATE TABLE MemberOf (
-	group_id VARCHAR(64),
+	group_id BIGINT,
 	user_id VARCHAR(64),
 	PRIMARY KEY (group_id, user_id),
 	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id),
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
 );
+
 
 INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
 
