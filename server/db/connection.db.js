@@ -1,8 +1,11 @@
-import mysql from "mysql"
+const mysql = require('mysql')
 
-export const db = mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password:"root@synapse",
-    database:'synapse_app'
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'root@synapse',
+    database: 'synapse_app',
+    connectionLimit: 100
 })
+
+module.exports = { pool }
