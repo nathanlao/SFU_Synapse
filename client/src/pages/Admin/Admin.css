@@ -3,9 +3,11 @@ div.admin-dashboard {
 }
 div.admin-dashboard h1 {
     color: #11515D;
+    margin-bottom: 32px;
 }
 div.admin-dashboard select {
     padding: 4px 8px;
+    margin-right: 4px;
 }
 
 div.admin-dashboard select:hover {
@@ -13,9 +15,9 @@ div.admin-dashboard select:hover {
 }
 
 div.admin-dashboard section.workarea {
-    margin-top: 32px;
+    margin-top: 16px;
     padding: 16px;
-    background-color: rgba(0, 0, 0, .2);
+    background-color: rgba(17, 81, 93, .1);
 }
 
 div.admin-dashboard section.workarea h2 {

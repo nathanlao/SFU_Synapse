@@ -13,7 +13,7 @@ const { getConnections, createConnection } = require('./controller/connections.c
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { getSettings, updateSettings } = require('./controller/setting.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
-const { getCourseCatalog } = require('./controller/admin.controller')
+const { getCourseCatalog, fetchCourseInfo } = require('./controller/admin.controller')
 
 dotenv.config()
 app.use(bodyParser.json())
@@ -48,7 +48,8 @@ Routes.route('/login')
 Routes.route('/admin/login')
     .post(verifyAdminLogin)
 Routes.route('/admin')
-    .post(getCourseCatalog)
+    .post(fetchCourseInfo)
+    // .post(getCourseCatalog)
 app.use('/', Routes)
 app.all('*', (req, res) => {
     res.send('404 Not Found. Please check url')

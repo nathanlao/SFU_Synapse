@@ -26,6 +26,7 @@ const getCourseCatalog = async (req, res) => {
     console.log('getting courses catalog')
     const year = req.body.year
     const term = req.body.term
+    
 
     const query = 'SELECT * FROM CourseCatalog WHERE offered_year=? AND offered_term=? ORDER BY dep, num, section LIMIT 100'// add order by
 
@@ -97,6 +98,34 @@ async function getCourses(year, term) {
     }
 }
 
+const fetchCourseInfo = async (req, res) => {
+    console.log('fetching course information')
+    const year = req.body.year
+    const term = req.body.term
+    const dep = req.body.dep
+    const section = req.body.section
+    const extraPath1 = dep ? `/${dep}` : ''
+    const extraPath2 = (extraPath1 !== '' && section) ? extraPath1 + `/${section}` : extraPath1
+    
+    console.log(`GET http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}${extraPath2}`)
+
+    // fetching information
+    const result = await fetch(`http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}${extraPath2}`);
+    const deps = await result.json()
+
+    if(typeof deps[Symbol.iterator] === 'function') {
+        // var list = []
+        // for(let dep of deps) {
+        //     list.push(dep.value)
+        // }
+        // res.status(200).json(list)
+        
+        res.status(200).json(deps)
+    }else {
+        res.status(404).json("No data found.")
+    }
+}
 
 
-module.exports = { getCourseCatalog }
+
+module.exports = { getCourseCatalog, fetchCourseInfo }
