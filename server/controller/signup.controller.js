@@ -1,6 +1,6 @@
-import {db} from "../db/connection.db.js";
+const db = require('../db/connection.db').pool
 
-export const signup = (req, res) => {
+const createUser = (req, res) => {
 
     const qSelect = "SELECT * FROM users WHERE username = ?";
     
@@ -9,9 +9,7 @@ export const signup = (req, res) => {
         
         if (data.length) return res.status(409).json("User already exists!");
         
-        if (req.body.userpass !== req.body.confirm_pass) return res.status(400).json("Password confirmation failed.");
-
-        const qInsert = "INSERT INTO Users ('user_id', 'username', 'first_name', 'last_name', 'userpass', 'email') VALUE (?)";
+        const qInsert = "INSERT INTO Users ('user_id', 'username', 'first_name', 'last_name', 'userpass', 'email') VALUE (?,?,?,?,?,?)";
 
         const user_id = req.body.email.substring(0, req.body.email.indexOf('@'))
 
@@ -30,3 +28,5 @@ export const signup = (req, res) => {
         });
     });
 };
+
+module.exports = { createUser }
