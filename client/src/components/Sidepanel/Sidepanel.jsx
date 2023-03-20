@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 
 import Accordion from "react-bootstrap/Accordion";
@@ -11,6 +12,37 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 import "./Sidepanel.css";
 
 function ConnectionsSidepanel() {
+
+    const testData = [
+        {
+            id: 1,
+            name: "Corey", 
+        },
+        {
+            id: 2,
+            name: "Luigi", 
+        },
+        {
+            id: 3,
+            name: "Toad"
+        }
+    ]
+
+    // Testing: Map over fetched data for items in active connections
+    const sidepanelItem = testData.map((item) => {
+        return (
+            <Link 
+                to={`${item.id}`}
+                key={item.id}
+                state={{ activeConnections: item.name }}
+            >
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                        <SidepanelItem title={item.name}/>
+                </Accordion.Body>
+            </Link>
+        )
+    })
+    
     return (
         <div className="sidepanel-container">
             <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
@@ -19,10 +51,7 @@ function ConnectionsSidepanel() {
             <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
                 <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                     <Accordion.Header style={{backgroundColor: '#11515c'}}>Active connections</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        <SidepanelItem title="Test 1"/>
-                        <SidepanelItem title="Test Connection2"/>
-                    </Accordion.Body>
+                        {sidepanelItem}
                 </Accordion.Item>
             </Accordion>
             <Accordion flush style={{backgroundColor: '#11515c'}}>

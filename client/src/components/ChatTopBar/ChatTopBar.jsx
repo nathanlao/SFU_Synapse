@@ -1,6 +1,7 @@
 import React from "react";
+import { useLocation } from 'react-router-dom'
 import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
-import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";
+import { Link, NavLink, useOutletContext } from "react-router-dom";
 
 import settingLogo from "../../images/settings.svg"
 import groupPic from "../../images/group_profile/course_random_default_3.png"
@@ -14,6 +15,9 @@ export default function ChatTopBar() {
     const isConnectionPage = from.split("/")[1] === "connections"
     const isGroupPage = from.split("/")[1] === "groups"
 
+    // testData from Sidepanel.jsx
+    const chatNames = useLocation().state?.activeConnections
+
     const activeStyle = {
         fontWeight: 'bold',
         borderBottom: '2px solid #11515D',
@@ -26,7 +30,7 @@ export default function ChatTopBar() {
                 {
                     isConnectionPage ? (
                         <Typography variant="h6">
-                            Corey
+                            {chatNames}
                         </Typography>
                     ) : (
                         <div className="group-header">
