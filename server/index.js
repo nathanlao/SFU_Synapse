@@ -11,7 +11,8 @@ const cors = require('cors')
 const { getHomeContent } = require('./controller/home.controller')
 const { getConnections, createConnection } = require('./controller/connections.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
-const { getSettings, updateSettings } = require('./controller/setting.controller')
+const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
+const { createUser } = require('./controller/signup.controller')
 const { verifyLogin } = require('./controller/login.controller')
 
 dotenv.config()
@@ -33,6 +34,8 @@ app.use(cors({
 
 Routes.route('/')
     .get(getHomeContent)
+Routes.route('/signup')
+    .post(createUser)
 Routes.route('/connections')
     .get(getConnections)
     .post(createConnection)
@@ -42,11 +45,13 @@ Routes.route('/groups')
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
+    .delete(deleteUser)
 Routes.route('/login')
     .post(verifyLogin)
 app.use('/', Routes)
 app.all('*', (req, res) => {
     res.send('404 Not Found. Please check url')
 })
+app.use(express.json());
 
 app.listen(process.env.SERVER_PORT, () => console.log(`Server listening on port ${process.env.SERVER_PORT}`))
