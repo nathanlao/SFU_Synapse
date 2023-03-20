@@ -2,17 +2,33 @@ const { v4: uuidv4 } = require('uuid');
 
 const db = require('../db/connection.db').pool
 
-
 const createUser = (req, res) => {
-    const query = "INSERT INTO Users (user_id, username, first_name, last_name, email, userpass) VALUES ( ?, ?, ?, ?, ?, ?)";
 
-    db.query(query, [uuidv4(), req.body.username, req.body.first_name, req.body.last_name, req.body.email, req.body.userpass], (err, data) => {
-        if(err) {
-            res.status(500).json(err);
-        } else {
-            res.status(200).json("Successfully created account");
-        }
-    })
-}
+    const qSelect = "SELECT * FROM users WHERE username = ?";
+    
+    db.query(qSelect, [req.body.username], (err,data) => {
+        if (err) return res.status(500).json(err);
+        
+        if (data.length) return res.status(409).json("User already exists!");
+        
+        const qInsert = "INSERT INTO Users ('user_id', 'username', 'first_name', 'last_name', 'userpass', 'email') VALUE (?,?,?,?,?,?)";
+
+        const user_id = uuidv4();
+
+        const values = [
+            user_id,
+            req.body.username,
+            req.body.first_name,
+            req.body.last_name,
+            req.body.userpass,
+            req.body.email,
+        ];
+
+        db.query(qInsert, [values], (err,data) => {
+            if (err) return res.status(500).json(err);
+            return res.status(200).json("User has been created.");
+        });
+    });
+};
 
 module.exports = { createUser }
