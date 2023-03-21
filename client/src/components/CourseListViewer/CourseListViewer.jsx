@@ -4,9 +4,10 @@ import './CourseListViewer.css'
 
 export default function CourseListViewer({year, term}) {
 
-    const [list, setList] = useState([])
     const [dep, setDep] = useState('') // department (cmpt)
     const [num, setNum] = useState('') // course number (372)
+    const [list, setList] = useState([])
+    const [heading, setHeading] = useState('Departments')
 
     const viewLevel = { deps: 0, courses: 1, sections: 2 }
 
@@ -14,11 +15,14 @@ export default function CourseListViewer({year, term}) {
     useEffect(() => {
         if(dep !== '') {
             if(num !== '') {
+                setHeading('Sections')
                 getData(viewLevel.sections)
             }else {
+                setHeading('Courses')
                 getData(viewLevel.courses)
             }
         }else {
+            setHeading('Departments')
             getData(viewLevel.deps)
         }
         // eslint-disable-next-line
@@ -75,7 +79,7 @@ export default function CourseListViewer({year, term}) {
             setNum(event.currentTarget.id)
         }
     }
-
+    
     function handleBackBtnClick() {
         if(num !== '') {
             setNum('')
@@ -203,10 +207,10 @@ export default function CourseListViewer({year, term}) {
 
     return (
         <div className="course-list-viewer">
-            <p>/{dep}{num !== '' && '/' + num}</p>
+            <h3>{heading}</h3>
+            <button onClick={handleBackBtnClick} id="backBtn" type="button" disabled={dep === ''}>Back</button>
+            <span>/{dep}{num !== '' && '/' + num}</span>
 
-            {dep !== '' && <button onClick={handleBackBtnClick} id="backBtn" type="button">Back</button>}
-            
             <ul>
                 {list.length === 0 && 
                     <div className="loader-wrapper">

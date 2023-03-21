@@ -1,11 +1,17 @@
 .course-list-viewer * {
     box-sizing: border-box;
 }
+
+.course-list-viewer h3 {
+    margin-top: 16px;
+    text-align: center;
+}
   
 .course-list-viewer ul {
     max-height: 50vh;
     overflow-y: auto;
     margin: 0;
+    margin-top: 12px;
     padding: 0;
     font-size: 16px;
     font-family: Arial, sans-serif;
@@ -68,7 +74,7 @@
     line-height: 20px;
     list-style: none;
     margin: 0;
-    margin-bottom: 12px;
+    margin-right: 16px;
     padding: 8px 12px;
     text-align: center;
     transition: all 200ms;
@@ -79,10 +85,19 @@
     touch-action: manipulation;
 }
 
+.course-list-viewer button#backBtn:disabled {
+    cursor: default;
+    color: #777777;
+}
+
 .course-list-viewer button#backBtn:hover {
     background-color: #11515D;
     color: #fff;
     transition: .3s;
+}
+.course-list-viewer button#backBtn:disabled:hover {
+    background-color: rgba(51, 51, 51, 0.05);
+    color: #777777;
 }
 
 /* loading icon */
