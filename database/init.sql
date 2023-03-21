@@ -89,7 +89,7 @@ CREATE TABLE GroupMessages (
 	message TEXT NOT NULL,
 	timestamp CHAR(20) NOT NULL,
 	PRIMARY KEY(id),
-	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id),
+	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
 );
 

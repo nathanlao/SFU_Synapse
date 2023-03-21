@@ -187,10 +187,27 @@ const deleteSection = (req, res) => {
     const num = req.body.num
     const section = req.body.section
 
-    res.status(200).json('Received request to delete ' + year + term + ' ' + (dep + num) + ' ' + section)
-    
-    // TODO: delete from database
-    // DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE year=? AND term=? AND dep=? AND num=? AND section=?)
+    if(year && term && dep && num && section) {
+        const query = 'DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?)'
+
+        db.query((query), [
+            year.toString(),
+            term,
+            dep,
+            num,
+            section
+        ], (err, data) => {
+            if(err) {
+                console.log(err)
+                res.status(500).json(err)
+            }else {
+                res.status(200).json(data)
+                // res.status(200).json('Received request to delete ' + year + term + ' ' + (dep + num) + ' ' + section)
+            }
+        })
+    }else {
+        res.status(400).json("Insufficient information. Please provide all parameters.")
+    }
 }
 
 const deleteCourse = (req, res) => {
@@ -198,11 +215,28 @@ const deleteCourse = (req, res) => {
     const term = req.body.term
     const dep = req.body.dep
     const num = req.body.num
-    res.status(200).json('Received request to delete all sections of ' + year + term + ' ' + (dep + num))
+    // res.status(200).json('Received request to delete all sections of ' + year + term + ' ' + (dep + num))
     
-    // TODO: for each section, delete to database
-    // *since the Courses table has ON DELETE CASCADE set, deleting entries from Groups should delete entries from Courses as well
-    // DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE year=? AND term=? AND dep=? AND num=?)
+    if(year && term && dep && num) {
+        const query = 'DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=?)'
+
+        db.query((query), [
+            year.toString(),
+            term,
+            dep,
+            num
+        ], (err, data) => {
+            if(err) {
+                console.log(err)
+                res.status(500).json(err)
+            }else {
+                res.status(200).json(data)
+                // res.status(200).json('Received request to delete all sections of ' + year + term + ' ' + (dep + num) + ' ' + section)
+            }
+        })
+    }else {
+        res.status(400).json("Insufficient information. Please provide all parameters.")
+    }
 }
 
 
