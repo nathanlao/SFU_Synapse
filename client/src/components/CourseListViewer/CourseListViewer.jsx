@@ -208,7 +208,12 @@ export default function CourseListViewer({year, term}) {
             {dep !== '' && <button onClick={handleBackBtnClick} id="backBtn" type="button">Back</button>}
             
             <ul>
-                {list.length === 0 && <p>Loading data...</p>}
+                {list.length === 0 && 
+                    <div className="loader-wrapper">
+                        <p>Loading data...</p>
+                        <div className="loader"></div>
+                    </div>
+                }
                 {list.map((item, index) => (
                     <li key={item.value} id={item.value} onClick={handleListItemClick} data-index={index} data-num={num} data-title={item.title}>
                         <span>{dep.toUpperCase()}{num.toUpperCase()} {item.value.toUpperCase()} {item.title}</span>
