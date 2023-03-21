@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 
@@ -42,7 +42,32 @@ function ConnectionsSidepanel() {
             </Link>
         )
     })
-    
+
+    const [pendingConnections, setPendingConnections] = useState([])
+
+    useEffect(() => {
+        fetch("http://localhost:3000/connections")
+            .then(res => res.json())
+            .then(data => {
+                setPendingConnections(data)
+            })
+    }, [])
+
+    // Map over the pendingConnections
+    const pendingConnectionsEl = pendingConnections.map((connection) => {
+        return (
+            <Link 
+                to={`${connection.connection_id}`}
+                key={connection.connection_id}
+                state={{ pendingConnections: connection.userB_username }}
+            >
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                        <SidepanelItem title={connection.userB_username}/>
+                </Accordion.Body>
+            </Link>
+        )
+    })
+
     return (
         <div className="sidepanel-container">
             <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
@@ -55,18 +80,10 @@ function ConnectionsSidepanel() {
                 </Accordion.Item>
             </Accordion>
             <Accordion flush style={{backgroundColor: '#11515c'}}>
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="1">
                     <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
                     <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
+                        {pendingConnectionsEl}
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
