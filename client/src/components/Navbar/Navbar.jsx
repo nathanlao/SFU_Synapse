@@ -24,7 +24,7 @@ export default function Navbar() {
                     <img src={connectionLogo} alt="connection logo"/>
                 </Link>
             </div>
-            <Link to="setting" className="setting">
+            <Link to="setting/edit-profile" className="setting">
                 <img src={settingLogo} alt="setting logo"/>
             </Link>
         </nav>

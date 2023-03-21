@@ -118,11 +118,41 @@ function GroupsSidepanel() {
     )
 }
 
+function SettingsSidepanel() {
+    function handleSettingsClick(event) {
+        var items = document.querySelectorAll('.setting-item-div.active');
+
+        if(items.length) 
+            items[0].className = 'setting-item-div';
+
+        event.target.className = 'setting-item-div active';
+    }
+
+    return (
+        <div className="sidepanel-container">
+            <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
+                Settings
+            </Typography>
+            <Link to="/setting/edit-profile">
+                <div className="setting-item-div active" onClick={handleSettingsClick} >
+                    Edit Profile
+                </div>
+            </Link>
+            <Link to="/setting/change-password">
+                <div className="setting-item-div" onClick={handleSettingsClick} >
+                    Change Password
+                </div>
+            </Link>
+        </div>
+    )
+}
+
 export default function Sidepanel(props) {
     return (
         <>
             {props.connections && <ConnectionsSidepanel />}
             {props.groups && <GroupsSidepanel />}
+            {props.settings && <SettingsSidepanel />}
         </>
     );
 }
