@@ -1,4 +1,5 @@
 const db = require("../db/connection.db").pool
+const { v4: uuidv4 } = require('uuid');
 
 const getConnections = (req, res) => {
     const query = "SELECT * FROM Connections"
@@ -19,10 +20,61 @@ const getConnections = (req, res) => {
     })
 }
 
-const createConnection = (req, res) => {
-    res.send(`Received ${req.method} request to /connections`)
+// create Pending connetion: Sender sends a msg to a receiver
+const createPendingConnection = (req, res) => {
+
+    const { senderId, receiverId } = req.body
+
+    const insertQuery = "INSERT INTO Connections (connection_id, userA_id, userB_id, Status) VALUES (?, ?, ?, ?)"
+
+    db.query(insertQuery, [uuidv4(), senderId, receiverId, "Pending"], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            res.status(200).json("Connection created successfully")
+        }
+    })
 }
 
+// update Pending connection to be Active: Receiver replies to the sender
+const updateConnectionStatus = (req, res) => {
+    const { connection_id } = req.body
 
+    // Check if the conection exists and the status is Pending
+    const selectQuery = "SELECT * FROM Connections WHERE connection_id = ? AND Status = 'Pending'"
 
-module.exports = { getConnections, createConnection }
+    db.query(selectQuery, [connection_id], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (!data || data.length === 0) {
+                res.status(404).json("Connection not found")
+            } else {
+                
+                // Pending conection exists and update it to be Active
+                const updateQuery = "UPDATE Connections SET Status = ? WHERE connection_id = ?"
+                db.query(updateQuery, ["Active", connection_id], (err, data) => {
+                    if (err) {
+                        console.log(err)
+                        res.status(500).json("Internal server error")
+                    } else {
+                        res.status(200).json("Connection is now active")
+                    }
+                })
+            }
+        }
+    })
+}
+
+const checkInactiveConnection = (req, res) => {
+
+}
+
+module.exports = { 
+    getConnections, 
+    createPendingConnection, 
+    updateConnectionStatus, 
+    checkInactiveConnection 
+}
