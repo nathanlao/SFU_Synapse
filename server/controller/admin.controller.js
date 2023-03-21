@@ -1,6 +1,7 @@
-const db = require('../db/connection.db').pool
+const { isMapIterator, isSetIterator } = require('util/types')
 const { v4: uuidv4 } = require('uuid')
 
+const db = require('../db/connection.db').pool
 
 class Course{
     constructor(year, term, dep, num, section, title) {
@@ -13,119 +14,196 @@ class Course{
     }
 }
 
-
-var courseCatalog = new Array()
-var allQueries = ''
-
-
-function queryString(year, term, dep, num, section, title) {
-    return `INSERT INTO CourseCatalog (offered_year, offered_term, dep, num, section, title) VALUES ("${year}", "${term}", "${dep}", "${num}", "${section}", "${title}");`
-}
-
-const getCourseCatalog = async (req, res) => {
-    console.log('getting courses catalog')
-    const year = req.body.year
-    const term = req.body.term
-    
-
-    const query = 'SELECT * FROM CourseCatalog WHERE offered_year=? AND offered_term=? ORDER BY dep, num, section LIMIT 100'// add order by
-
-    db.query(query, [year, term], async (err, data) => {
-        if(err) {
-            res.status(500).json(err)
-        }else {
-            if(data.length > 0) {
-                res.status(200).json(data)
-            }else {
-                // get from SFU Course REST API and store in database (then returned that)
-                console.log("Data did not exist in database. Fetching data from API")
-
-                const catalog = await getCourses(year, term)
-
-                db.query(allQueries, (err, data) => {
-                    if(err) {
-                        console.log(err)
-                        res.status(500).json("Internal server error. Please try again later.")
-                    }else {
-                        db.query('SELECT * FROM CourseCatalog WHERE offered_year=? AND offered_term=? ORDER BY dep, num', [year, term], (err, data) => {
-                            if(err) {
-                                res.status(500).json("Internal server error. Please try again later.")
-                            }else {
-                                res.status(200).json(data)
-                            }
-                        })
-                        // res.status(200).json(JSON.stringify(catalog))
-                    }
-                })
-            }
-        }
-    })
-}
-
-
-async function getCourses(year, term) {
-    try {
-        // get departments
-        const result1 = await fetch(`http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}`);
-        const deps = await result1.json()
-
-        if(typeof deps[Symbol.iterator] === 'function') {
-            for(let dep of deps) {
-                const result2 = await fetch(`http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep.value}`);
-                const courses = await result2.json();
-    
-                if(typeof courses[Symbol.iterator] === 'function') {
-                    for(let course of courses) {
-        
-                        const result3 = await fetch(`http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep.value}/${course.value}`);
-                        const sections = await result3.json();
-        
-                        if(typeof sections[Symbol.iterator] === 'function') {
-                            for(let section of sections) {
-                                process.stdout.write('.')
-
-                                courseCatalog.push(new Course(year, term, dep.value, course.value, section.value, section.title))
-                                allQueries += queryString(year, term, dep.value, course.value, section.value, section.title)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return courseCatalog
-    }catch(error) {
-        return error.message
-    }
-}
+const viewLevel = { deps: 0, courses: 1, sections: 2 }
 
 const fetchCourseInfo = async (req, res) => {
     console.log('fetching course information')
     const year = req.body.year
     const term = req.body.term
     const dep = req.body.dep
-    const section = req.body.section
-    const extraPath1 = dep ? `/${dep}` : ''
-    const extraPath2 = (extraPath1 !== '' && section) ? extraPath1 + `/${section}` : extraPath1
+    const num = req.body.num
+    var url = `http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}`
+    var level = viewLevel.deps
+
+    if(num) {
+        // get sections given (year, term, dep, num)
+        url += `/${dep}/${num}`
+        level = viewLevel.sections
+    }else if(dep) {
+        // get courses given (year, term, dep)
+        url += `/${dep}`
+        level = viewLevel.courses
+    }
     
-    console.log(`GET http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}${extraPath2}`)
+    console.log(`GET ` + url)
 
     // fetching information
-    const result = await fetch(`http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}${extraPath2}`);
-    const deps = await result.json()
+    const result = await fetch(url);
+    const list = await result.json()
 
-    if(typeof deps[Symbol.iterator] === 'function') {
-        // var list = []
-        // for(let dep of deps) {
-        //     list.push(dep.value)
-        // }
-        // res.status(200).json(list)
+    if(typeof list[Symbol.iterator] === 'function') {
+
+        const size = list.length
+        var i = 0
         
-        res.status(200).json(deps)
+        for(let item of list) {
+            if(level !== viewLevel.deps) {
+                var targetDep = ''
+                var targetCourse = ''
+                var targetSection = ''
+                if(level === viewLevel.courses) {
+                    targetDep = dep
+                    targetCourse = item.value
+                }else if(level === viewLevel.sections) {
+                    targetDep = dep
+                    targetCourse = num
+                    targetSection = item.value
+                }
+                const recordCount = await countRecords(year, term, targetDep, targetCourse, targetSection)
+                const totalCount = await getSubcount(year, term, targetDep, targetCourse, targetSection)
+
+                if(recordCount === totalCount) {
+                    // all added to courses
+                    item.status = 1
+                }else if(recordCount === 0) {
+                    // none added to courses
+                    item.status = 0
+                }else {
+                    // partially added to courses
+                    item.status = 2
+                }
+            }
+
+            i++
+            
+            if(i === size) {
+                res.status(200).json(list)
+            }
+        }
+
     }else {
         res.status(404).json("No data found.")
     }
 }
 
 
+async function getSubcount(year, term, dep, num, section) {
+    if(section !== '') {
+        return 1
+    }else if(num !== '') {
+        var url = `http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep}/${num}`
+        const result = await fetch(url);
+        const list = await result.json()
+    
+        if(typeof list[Symbol.iterator] === 'function') {
+            return list.length
+        }else {
+            return 0
+        }
+    }else {
+        return 0
+    }
+}
 
-module.exports = { getCourseCatalog, fetchCourseInfo }
+
+async function countRecords(year, term, dep, num, section) {
+    return new Promise(function(resolve) {
+
+        var query = ''
+        var params = []
+    
+        if(section !== '') {
+            query = 'SELECT * FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?'
+            params = [year, term, dep, num, section]
+        }else if(num !== '') {
+            query = 'SELECT * FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=?'
+            params = [year, term, dep, num]
+        }else {
+            return 0
+        }
+    
+            
+        db.query(query, params, (err, data) => {
+            if(err) {
+                // return reject(err)
+                return 0
+            }
+            resolve(data.length)
+        })
+    })
+}
+
+const addSection = (req, res) => {
+    const year = req.body.year
+    const term = req.body.term
+    const dep = req.body.dep
+    const num = req.body.num
+    const section = req.body.section
+    const title = req.body.title
+    if(year && term && dep && num && section) {
+        const entryID = uuidv4()
+        const groupName = `${term.toUpperCase() + year} ${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
+        const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description) VALUES(?, ?, ?);'
+        const query2 = 'INSERT INTO Courses(course_id, offered_year, offered_term, dep, num, section, title) VALUES(?, ?, ?, ?, ?, ?, ?);'
+
+        db.query((query1 + query2), [
+            entryID,
+            groupName,
+            title,
+            entryID,
+            year.toString(),
+            term,
+            dep,
+            num,
+            section,
+            title
+        ], (err, data) => {
+            if(err) {
+                console.log(err)
+                res.status(500).json(err)
+            }else {
+                res.status(200).json(data)
+                // res.status(200).json('Received request to add ' + year + term + ' ' + (dep + num) + ' ' + section)
+            }
+        })
+    }else {
+        res.status(400).json("Insufficient information. Please provide all parameters.")
+    }
+}
+const addCourse = (req, res) => {
+    const year = req.body.year
+    const term = req.body.term
+    const dep = req.body.dep
+    const num = req.body.num
+    res.status(200).json('Received request to add all sections of ' + year + term + ' ' + (dep + num))
+    
+    // TODO: for each section, add to database
+}
+
+const deleteSection = (req, res) => {
+    const year = req.body.year
+    const term = req.body.term
+    const dep = req.body.dep
+    const num = req.body.num
+    const section = req.body.section
+
+    res.status(200).json('Received request to delete ' + year + term + ' ' + (dep + num) + ' ' + section)
+    
+    // TODO: delete from database
+    // DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE year=? AND term=? AND dep=? AND num=? AND section=?)
+}
+
+const deleteCourse = (req, res) => {
+    const year = req.body.year
+    const term = req.body.term
+    const dep = req.body.dep
+    const num = req.body.num
+    res.status(200).json('Received request to delete all sections of ' + year + term + ' ' + (dep + num))
+    
+    // TODO: for each section, delete to database
+    // *since the Courses table has ON DELETE CASCADE set, deleting entries from Groups should delete entries from Courses as well
+    // DELETE FROM `Groups` WHERE group_id IN (SELECT course_id FROM Courses WHERE year=? AND term=? AND dep=? AND num=?)
+}
+
+
+module.exports = { fetchCourseInfo, addSection, addCourse, deleteSection, deleteCourse }

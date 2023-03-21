@@ -20,7 +20,6 @@ export default function Admin() {
         { value: 'summer', text: 'Summer' }
     ])
 
-
     // pass to listviewer component
     const [targetYear, setTargetYear] = useState(years[0])
     const [targetTerm, setTargetTerm] = useState(terms[0].value)
@@ -33,25 +32,22 @@ export default function Admin() {
         setTargetTerm(event.target.value)
     }
 
-
     return (
         <div className="admin-dashboard">
             <h1>Manage courses</h1>
-            <select name="academicYear" id="selectAcademicYear" onChange={handleYearChange}>
-                {years.map((option, index) => (
-                    <option key={index} value={option}>{option}</option>
-                ))}
-            </select>
             <select name="academicTerm" id="selectAcademicTerm" onChange={handleTermChange}>
                 {terms.map((option, index) => (
                     <option key={index} value={option.value}>{option.text}</option>
                 ))}
             </select>
+            <select name="academicYear" id="selectAcademicYear" onChange={handleYearChange}>
+                {years.map((option, index) => (
+                    <option key={index} value={option}>{option}</option>
+                ))}
+            </select>
 
             <section className="workarea">
                 <CourseListViewer year={targetYear} term={targetTerm}/>
-
-                {/* <button type="button" id="aplyChanges">Apply changes</button> */}
             </section>
         </div>
     )
