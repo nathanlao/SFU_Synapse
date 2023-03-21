@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './Login.css';
 
+var md5 = require('md5');
+
 export default function Login() {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
@@ -23,7 +25,7 @@ export default function Login() {
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, userpass: userpass})
+            body: JSON.stringify({ username: username, userpass: md5(userpass)})
         }
 
         fetch('http://localhost:3000/login', options).then(res => {
