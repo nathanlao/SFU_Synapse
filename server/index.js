@@ -15,7 +15,6 @@ const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller
 const { fetchCourseInfo, addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
 const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
-const { verifyLogin } = require('./controller/login.controller')
 
 
 dotenv.config()
