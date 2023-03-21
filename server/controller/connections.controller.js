@@ -2,7 +2,14 @@ const db = require("../db/connection.db").pool
 const { v4: uuidv4 } = require('uuid');
 
 const getConnections = (req, res) => {
-    const query = "SELECT * FROM Connections"
+    // JOIN Connections table with Users table
+    const query = `SELECT c.connection_id, c.Status, 
+                        ua.username AS userA_username, 
+                        ub.username AS userB_username
+                    FROM Connections c 
+                    JOIN Users ua ON c.userA_id = ua.user_id 
+                    JOIN Users ub ON c.userB_id = ub.user_id
+                    WHERE c.status = 'Pending'`
 
     db.query(query, (err, data) => {
         if (err) {
