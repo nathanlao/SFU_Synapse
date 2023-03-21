@@ -7,7 +7,7 @@ const getSettings = (req, res) => {
     
     db.query(qSelect, [req.body.user_id], (err,data) => {
         if (err) return res.status(500).json(err);
-        return res.status(200).json("Found user settings.");
+        return res.status(200).send(data);
     });
 }
 
