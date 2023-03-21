@@ -14,7 +14,7 @@ const { getGroups, createGroup } = require('./controller/groups.controller')
 const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { verifyLogin } = require('./controller/login.controller')
-const { createUser } = require('./controller/signup.controller')
+
 
 dotenv.config()
 app.use(bodyParser.json())
