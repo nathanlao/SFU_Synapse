@@ -4,7 +4,7 @@ const db = require('../db/connection.db').pool
 
 const createUser = (req, res) => {
 
-    const qSelect = "SELECT * FROM users WHERE username = ?";
+    const qSelect = "SELECT * FROM Users WHERE username = ?";
     
     db.query(qSelect, [req.body.username], (err,data) => {
         if (err) return res.status(500).json(err);
