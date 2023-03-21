@@ -12,6 +12,12 @@ export default function Signup() {
     const [isSamePassword, setIsSamePassword] = useState(true);
     const [password, setPassword] = useState('');
     const [confirmPasssword, setConfirmPassword] = useState('');
+    const [passContainsUppercase, setPassContainsUppercase] = useState(false);
+    const [passContainsLowercase, setPassContainsLowercase] = useState(false);
+    const [passContainsNumber, setPassContainsNumber] = useState(false);
+    const [passContainsSymbol, setPassContainsSymbol] = useState(false);
+    const [passContainsEightChars, setPassContainsEightChars] = useState(false);
+    const [passErrorVisible, setPassErrorVisible] = useState(true);
 
     useEffect(() => {
         if (email.endsWith('@sfu.ca')) {
@@ -23,13 +29,47 @@ export default function Signup() {
         }
     }, [email])
 
+    function containsUppercase(str) {
+        return /[A-Z]/.test(str);
+    }
+
+    function containsLowercase(str) {
+        return /[a-z]/.test(str);
+    }
+
+    function containsNumber(str) {
+        return /[0-9]/.test(str);
+    }
+
+    function containsSymbol(str) {
+        return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(str);
+    }
+
+    function containsEightChars(str) {
+        return str.length >= 8;
+    }
+
     useEffect(() => {
         if (confirmPasssword !== '' && password !== confirmPasssword) {
             setIsSamePassword(false);
-        } else {
+        } else if (password === confirmPasssword) {
             setIsSamePassword(true);
         }
-    }, [password, confirmPasssword])
+        containsUppercase(password) ? setPassContainsUppercase(true) : setPassContainsUppercase(false);
+        containsLowercase(password) ? setPassContainsLowercase(true) : setPassContainsLowercase(false);
+        containsNumber(password) ? setPassContainsNumber(true) : setPassContainsNumber(false);
+        containsSymbol(password) ? setPassContainsSymbol(true) : setPassContainsSymbol(false);
+        containsEightChars(password) ? setPassContainsEightChars(true) : setPassContainsEightChars(false);
+
+    }, [password, confirmPasssword]);
+
+    useEffect(() => {
+        if (passContainsUppercase && passContainsLowercase && passContainsNumber && passContainsSymbol && passContainsEightChars)
+            setPassErrorVisible(false);
+        else
+            setPassErrorVisible(true);
+    }, [passContainsUppercase, passContainsLowercase, passContainsNumber, passContainsSymbol, passContainsEightChars]);
+    
 
     function handleEmailChange(event) {
         setEmail(event.target.value);
@@ -48,7 +88,7 @@ export default function Signup() {
     }
 
     function handleSignup() {
-        if (!isSamePassword || confirmPasssword == '' || !isSfuEmail) {
+        if (!isSamePassword || confirmPasssword === '' || !isSfuEmail || passErrorVisible) {
             return;
         }
         const username = document.getElementById("username").value;
@@ -84,12 +124,20 @@ export default function Signup() {
             <div>
                 <label htmlFor="password">Password</label>
                 <input type="password" id="password" onChange={handlePasswordChange}/>
+                {passErrorVisible && <div className="pass-error-box">
+                    {passErrorVisible && <div className="pass-error-text"><b>Your password needs to:</b></div>}
+                    {!passContainsUppercase && <div><li>Contain an uppercase letter</li></div>}
+                    {!passContainsLowercase && <div><li>Contain a lowercase letter</li></div>}
+                    {!passContainsNumber && <div><li>Contain a number</li></div>}
+                    {!passContainsSymbol && <div><li>Contain a symbol</li></div>}
+                    {!passContainsEightChars && <div><li>Be at least 8 characters</li></div>}
+                </div>}
                 <p className="err-msg"></p>
             </div>
             <div>
                 <label htmlFor="confirmedPassword">Confirm password</label>
                 <input type="password" id="confirmedPassword" onChange={handleConfirmPasswordChange}/>
-                {isSamePassword ? <p></p> :<p className="err-msg">*Passwords are not the same</p>}
+                {!isSamePassword && <div className="confirm-pass-error-box"><li>Passwords do not match</li></div>}
             </div>
             <div>
                 <label htmlFor="fname">First name</label>
