@@ -3,7 +3,7 @@ const db = require('../db/connection.db').pool
 
 const getSettings = (req, res) => {
 
-    const qSelect = "SELECT * FROM users WHERE user_id = ?";
+    const qSelect = "SELECT * FROM Users WHERE user_id = ?";
     
     db.query(qSelect, [req.body.user_id], (err,data) => {
         if (err) return res.status(500).json(err);
@@ -24,7 +24,7 @@ const updateSettings = (req, res) => {
         req.body.user_id,
     ];
 
-    const qUpdate = "UPDATE users SET username=?, first_name=?, last_name=?, userpass=?, email=?, photo=?, bio=? WHERE user_id = ?"
+    const qUpdate = "UPDATE Users SET username=?, first_name=?, last_name=?, userpass=?, email=?, photo=?, bio=? WHERE user_id = ?"
 
     db.query(qUpdate, [values], (err,data) => {
         if (err) return res.status(500).json(err);
@@ -34,7 +34,7 @@ const updateSettings = (req, res) => {
 
 const deleteUser = (req, res) => {
 
-    const qDelete = "DELETE FROM users WHERE user_id = ?";
+    const qDelete = "DELETE FROM Users WHERE user_id = ?";
     
     db.query(qDelete, [req.body.user_id], (err,data) => {
         if (err) return res.status(500).json(err);
