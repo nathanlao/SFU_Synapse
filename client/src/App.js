@@ -5,12 +5,16 @@ import MainLayout from './components/MainLayout'
 import Home from './pages/Home/Home'
 import ConnectionsLayout from './components/ConnectionsLayout/ConnectionsLayout'
 import GroupsLayout from './components/GroupsLayout/GroupsLayout'
-import Setting from './pages/Setting/Setting'
+import SettingsLayout from './components/SettingsLayout/SettingsLayout'
 import LoginSignupWindow from './components/LoginSignupWindow/LoginSignupWindow'
+import AdminLogin from './pages/Login/AdminLogin'
 import Chat from './pages/Chat/Chat'
 import Discover from './pages/Discover/Discover'
+import EditProfile from './pages/EditProfile/EditProfile'
+import ChangePassword from './pages/ChangePassword/ChangePassword'
 
 import './App.css'
+import Admin from './pages/Admin/Admin'
 
 export default function App() {
     return (
@@ -30,8 +34,16 @@ export default function App() {
                             <Route path='chat' element={<Chat />} />
                             <Route path='discover' element={<Discover />} />
                         </Route>
-                        <Route path='setting' element={<Setting />} />
+                        <Route path='setting' element={<SettingsLayout />} >
+                            {/* Nested route relative to "/setting" */}
+                            <Route path='edit-profile' element={<EditProfile />} />
+                            <Route path='change-password' element={<ChangePassword />} />
+                        </Route>
                     </Route>
+
+                    {/* Admin pages */}
+                    <Route path='/admin/login' element={<AdminLogin />} />
+                    <Route path='/admin' element={<Admin />} />
                 </Routes>
             </main>
         </div>
