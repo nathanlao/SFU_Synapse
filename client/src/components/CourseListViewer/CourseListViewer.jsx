@@ -87,7 +87,7 @@ export default function CourseListViewer({year, term}) {
     
     function handleBtnClicked(event) {
         event.stopPropagation()
-
+        
         const li = event.currentTarget.parentElement
         const dataset = li.dataset
         const status = Number(event.currentTarget.dataset.status)
@@ -98,13 +98,10 @@ export default function CourseListViewer({year, term}) {
                 // add, remove a section
 
                 if(status === 0) {
-                    console.log('ADD SECTION for ' + dep + dataset.num + ' ' + li.id)
-                    addCourse(dataset.num, li.id, dataset.title)
+                    addCourse(dataset.num, li.id, dataset.title, dataset.index)
                 }else {
-                    console.log('REMOVE SECTION ' + dep + dataset.num + ' ' + li.id)
                     if(window.confirm('Confirm removal of ' + dep.toUpperCase() + (dataset.num).toUpperCase() + ' ' + li.id.toUpperCase() + '. This will result in all data related to this section being deleted.')) {
-                        console.log('Deleting section')
-                        deleteCourse(dataset.num, li.id)
+                        deleteCourse(dataset.num, li.id, dataset.index)
                     }
                     
                 }
@@ -112,21 +109,19 @@ export default function CourseListViewer({year, term}) {
                 // add all, remove all sections
         
                 if(status === 0) {
-                    addCourse(li.id, '', '')
+                    addCourse(li.id, '', '', dataset.index)
                 }else {
                     // make db delete query for all records with (year, term, dep, num)
                     if(window.confirm('Confirm removal of all sections in ' + dep.toUpperCase() + li.id.toUpperCase() + '. This will result in all data related to all of the sections being deleted.')) {
-                        console.log('Deleting all sections')
-                        deleteCourse(li.id, '')
+                        deleteCourse(li.id, '', dataset.index)
                     }
                     
-                    // if response if yes then delete from database
                 }
             }
         }
     }
 
-    function deleteCourse(coursenum, coursesection) {
+    function deleteCourse(coursenum, coursesection, index) {
         if(coursesection !== '') {
             // post request to the server
             const options = {
@@ -138,8 +133,7 @@ export default function CourseListViewer({year, term}) {
             fetch('http://localhost:3000/admin/delete-section', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
-                        // TODO: force rerender to update view
+                        updateList(index, 0)
                     })
                 }
             })
@@ -154,8 +148,7 @@ export default function CourseListViewer({year, term}) {
             fetch('http://localhost:3000/admin/delete-course', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
-                        // TODO: force rerender to update view
+                        updateList(index, 0)
                     })
                 }
             })
@@ -163,7 +156,7 @@ export default function CourseListViewer({year, term}) {
 
     }
 
-    function addCourse(coursenum, coursesection, coursetitle) {
+    function addCourse(coursenum, coursesection, coursetitle, index) {
         if(coursesection !== '') {
             // post request to the server
             const options = {
@@ -175,8 +168,7 @@ export default function CourseListViewer({year, term}) {
             fetch('http://localhost:3000/admin/add-section', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
-                        // TODO: force rerender to update view
+                        updateList(index, 1)
                     })
                 }
             })
@@ -191,12 +183,19 @@ export default function CourseListViewer({year, term}) {
             fetch('http://localhost:3000/admin/add-course', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
-                        // TODO: force rerender to update view
+                        updateList(index, 1)
                     })
                 }
             })
         }
+    }
+
+
+    // updates status at index i in list
+    function updateList(index, status) {
+        var updatedList = [...list]
+        updatedList[index].status = status
+        setList(updatedList)
     }
 
 
@@ -209,11 +208,12 @@ export default function CourseListViewer({year, term}) {
             
             <ul>
                 {list.map((item, index) => (
-                    <li key={index} id={item.value} onClick={handleListItemClick} data-num={num} data-title={item.title}>
+                    <li key={item.value} id={item.value} onClick={handleListItemClick} data-index={index} data-num={num} data-title={item.title}>
                         <span>{dep.toUpperCase()}{num.toUpperCase()} {item.value.toUpperCase()} {item.title}</span>
                         {/* buttons under view level: list of sections */}
                         {dep !== '' && num !== '' && item.status === 0 && <button data-status={item.status} className="add-btn" onClick={handleBtnClicked}>Add</button>}
                         {dep !== '' && num !== '' && item.status === 1 && <button data-status={item.status} className="add-btn" onClick={handleBtnClicked}>Remove</button>}
+   
                         {/* buttons under view level: list of courses */}
                         {dep !== '' && num === '' && item.status === 0 && <button data-status={item.status} className="add-all-btn add-btn" onClick={handleBtnClicked}>Add all sections</button>}
                         {dep !== '' && num === '' && item.status === 1 && <button data-status={item.status} className="remove-btn add-btn" onClick={handleBtnClicked}>Remove all sections</button>}

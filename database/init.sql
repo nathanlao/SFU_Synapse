@@ -43,8 +43,8 @@ CREATE TABLE Connections (
 
 CREATE TABLE `Groups` (
 	group_id VARCHAR(64),
-	group_name VARCHAR(50) NOT NULL, -- if courses then "SPRING2023 CMPT372 D100"
-	group_description TINYTEXT, -- if courses then "Web II - Server-side Development"
+	group_name VARCHAR(50) NOT NULL, -- e.g. if courses "SPRING2023 CMPT372 D100"
+	group_description TINYTEXT, -- e.g. if courses "Web II - Server-side Development"
 	PRIMARY KEY (group_id)
 );
 -- using “Groups” as the table name gives an error. Apparently because groups is a reserved keyword in mysql. Use backticks (`) to refer to this table
