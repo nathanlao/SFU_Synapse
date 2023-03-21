@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 
 import Accordion from "react-bootstrap/Accordion";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import SidepanelItem from "../../pages/SidepanelItem/SidepanelItem";
+import SidepanelItem from "../SidepanelItem/SidepanelItem";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
