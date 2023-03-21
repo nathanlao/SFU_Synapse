@@ -133,6 +133,7 @@ async function countRecords(year, term, dep, num, section) {
     })
 }
 
+// adds a single section in a course
 const addSection = (req, res) => {
     const year = req.body.year
     const term = req.body.term
@@ -170,16 +171,45 @@ const addSection = (req, res) => {
         res.status(400).json("Insufficient information. Please provide all parameters.")
     }
 }
-const addCourse = (req, res) => {
+
+// adds all sections in a course
+const addCourse = async (req, res) => {
     const year = req.body.year
     const term = req.body.term
     const dep = req.body.dep
     const num = req.body.num
-    res.status(200).json('Received request to add all sections of ' + year + term + ' ' + (dep + num))
+    var url = `http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep}/${num}`
     
     // TODO: for each section, add to database
+    console.log('GET ' + url)
+    const result = await fetch(url);
+    const list = await result.json()
+
+    if(typeof list[Symbol.iterator] === 'function') {
+        const size = list.length
+        var i = 0
+
+        for(let item of list) {
+
+            // add to database
+            const result = await addSection_(year, term, dep, num, item.value, item.title)
+
+            if(result) {
+                i++
+                if(i === size) {
+                    res.status(200).json("Successfully added all sections for " + term.toUpperCase() + year.toString() + ' ' + dep.toUpperCase() + num.toUpperCase())
+                }
+            }
+
+            // i++
+            // if(i === size) {
+            //     res.status(200).json(list)
+            // }
+        }
+    }
 }
 
+// deletes a single section in a course
 const deleteSection = (req, res) => {
     const year = req.body.year
     const term = req.body.term
@@ -210,6 +240,7 @@ const deleteSection = (req, res) => {
     }
 }
 
+// deletes all sections in a course
 const deleteCourse = (req, res) => {
     const year = req.body.year
     const term = req.body.term
@@ -236,6 +267,28 @@ const deleteCourse = (req, res) => {
         })
     }else {
         res.status(400).json("Insufficient information. Please provide all parameters.")
+    }
+}
+
+// test function, to be integrated into others when refining code
+async function addSection_(year, term, dep, num, section, title) {
+    if(year && term && dep && num && section && title) {
+        return new Promise(function(resolve) {
+            const id = uuidv4()
+            const groupName = `${term.toUpperCase() + year} ${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
+            const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description) VALUES(?, ?, ?);'
+            const query2 = 'INSERT INTO Courses(course_id, offered_year, offered_term, dep, num, section, title) VALUES(?, ?, ?, ?, ?, ?, ?);'
+            var params = [id, groupName, title, id, year, term, dep, num, section, title]
+                
+            db.query((query1 + query2), params, (err, data) => {
+                if(err) {
+                    return reject(err)
+                }
+                resolve(data)
+            })
+        })
+    }else {
+        return undefined
     }
 }
 

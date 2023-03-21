@@ -112,7 +112,6 @@ export default function CourseListViewer({year, term}) {
                 // add all, remove all sections
         
                 if(status === 0) {
-                    console.log('ADD ALL SECTIONS for ' + dep + li.id)
                     addCourse(li.id, '', '')
                 }else {
                     // make db delete query for all records with (year, term, dep, num)
