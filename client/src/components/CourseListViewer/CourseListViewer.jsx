@@ -55,6 +55,7 @@ export default function CourseListViewer({year, term}) {
             body: body
         }
 
+        setList([])
         fetch('http://localhost:3000/admin', options).then(res => {
             if(res.status === 200) {
                 res.json().then(data => {
@@ -207,6 +208,7 @@ export default function CourseListViewer({year, term}) {
             {dep !== '' && <button onClick={handleBackBtnClick} id="backBtn" type="button">Back</button>}
             
             <ul>
+                {list.length === 0 && <p>Loading data...</p>}
                 {list.map((item, index) => (
                     <li key={item.value} id={item.value} onClick={handleListItemClick} data-index={index} data-num={num} data-title={item.title}>
                         <span>{dep.toUpperCase()}{num.toUpperCase()} {item.value.toUpperCase()} {item.title}</span>
