@@ -10,7 +10,7 @@ Link to application: http://TBD
 <br>
 GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse*
 
-----
+
 ## Checkpoint
 ### Progress
 Entry points are *http://exampleaddress/login*, *http://exampleaddress/signup*, and *http://exampleaddress/admin/login*.
@@ -71,7 +71,6 @@ npm install
 npm start
 ```
 
-----
 
 ## Project proposal
 ##### Situation/Problem
