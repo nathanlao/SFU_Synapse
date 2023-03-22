@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate} from 'react-router-dom'
 
 import MainLayout from './components/MainLayout'
 import Home from './pages/Home/Home'
@@ -44,6 +44,7 @@ export default function App() {
                     {/* Admin pages */}
                     <Route path='/admin/login' element={<AdminLogin />} />
                     <Route path='/admin' element={<Admin />} />
+                    <Route path="*" element={<Navigate to="/login" replace />} /> // page-not-found route
                 </Routes>
             </main>
         </div>
