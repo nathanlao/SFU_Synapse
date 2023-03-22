@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardHeader, CardContent, Typography, Avatar } from "@mui/material";
-import profileIcon from "../../images/default profile picture.png"
+import profileIcon from "../../images/default_profile_picture.png"
 
 import './ProfileCard.css'
 

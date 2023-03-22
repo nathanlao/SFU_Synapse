@@ -15,17 +15,17 @@ export default function Navbar() {
             <img src={appLogo} alt="sfu synapse logo"/>
             <div className="logo-container">
                 <Link to="/">
-                    <img src={homeLogo} alt="home logo"/>
+                    <img className="nav-icon-img" src={homeLogo} alt="home logo"/>
                 </Link>
                 <Link to="connections">
-                    <img src={chatLogo} alt="chat logo"/>
+                    <img className="nav-icon-img" src={chatLogo} alt="chat logo"/>
                 </Link>
                 <Link to="groups">
-                    <img src={connectionLogo} alt="connection logo"/>
+                    <img className="nav-icon-img" src={connectionLogo} alt="connection logo"/>
                 </Link>
             </div>
             <Link to="setting/edit-profile" className="setting">
-                <img src={settingLogo} alt="setting logo"/>
+                <img className="nav-icon-img" src={settingLogo} alt="setting logo"/>
             </Link>
         </nav>
     )
