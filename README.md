@@ -38,11 +38,12 @@ What you can play around with at the moment:
     - Front end is still under development
 - **Groups tab**
     - Groups catagorized into courses and communities can be toggled
-    - Discover and Chat subtabs are linked and be able to navigate in between 
+    - Discover and Chat subtabs are linked and possible to navigate in between 
     - Endpoints: *http://exampleaddress/groups/chat*
     - Front end is still under development
 - **Settings page**
-    - Front end is still under development
+    - implemented: front end UI, backend logic 
+    - to be implemented: front end logic
 
 
 ### Technical Specification (subject to change)
