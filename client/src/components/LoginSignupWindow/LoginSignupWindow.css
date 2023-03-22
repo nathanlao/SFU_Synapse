@@ -1,6 +1,7 @@
 .login-signup-layout {
     width: 100vw;
     height: 100vh;
+    padding: 16px;
     background-image: url('../../images/bg.jpg');
     background-size: cover;
 }
@@ -128,31 +129,32 @@ small {
 }
 
 @media screen and (max-width: 420px) {
-    .login-signup-layout {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
     section.login-signup-window {
         position: static;
+        top: 0;
+        left: 0;
         transform: translate(0, 0);
         width: 100%;
-    }
-    
-}
-
-@media screen and (max-height: 900px) {
-    .login-signup-layout {
-        padding-top: 16px;
-        padding-bottom: 16px;
-    }
-    section.login-signup-window {
-        position: static;
-        transform: translate(0, 0);
         height: 100%;
         max-height: unset;
     }
     section.login-signup-window form {
         height: 75vh;
+    }
+}
+
+@media screen and (max-height: 720px) {
+
+    section.login-signup-window {
+        position: static;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translate(0, 0);
+        height: 100%;
+        max-height: unset;
+    }
+    section.login-signup-window form {
+        height: 70vh;
     }
     
 }
