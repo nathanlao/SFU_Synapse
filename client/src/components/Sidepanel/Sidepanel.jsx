@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { Typography, Button } from "@mui/material";
 
 import Accordion from "react-bootstrap/Accordion";
@@ -196,6 +196,8 @@ function GroupsSidepanel() {
 }
 
 function SettingsSidepanel() {
+    const path = useLocation().pathname;
+
     function handleSettingsClick(event) {
         var items = document.querySelectorAll('.setting-item-div.active');
 
@@ -211,14 +213,16 @@ function SettingsSidepanel() {
                 Settings
             </Typography>
             <Link to="/setting/edit-profile">
-                <div className="setting-item-div active" onClick={handleSettingsClick} >
-                    Edit Profile
-                </div>
+                {(path === "/setting/edit-profile") ? 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit Profile</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Edit Profile</div> 
+                }
             </Link>
             <Link to="/setting/change-password">
-                <div className="setting-item-div" onClick={handleSettingsClick} >
-                    Change Password
-                </div>
+                {(path === "/setting/change-password") ? 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Change Password</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Change Password</div> 
+                }
             </Link>
         </div>
     )
