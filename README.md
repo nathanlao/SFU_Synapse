@@ -34,9 +34,12 @@ What you can play around with at the moment:
     - but we plan to add a separate view with only the courses in the app system
 - **Connections tab**
     - Connections catagorized into different status can be toggled.
+    - Pending connections are able to be switched to active
     - Front end is still under development
 - **Groups tab**
     - Groups catagorized into courses and communities can be toggled
+    - Discover and Chat subtabs are linked and be able to navigate in between 
+    - Endpoints: *http://exampleaddress/groups/chat*
     - Front end is still under development
 - **Settings page**
     - Front end is still under development

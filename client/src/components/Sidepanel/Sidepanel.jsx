@@ -16,32 +16,52 @@ function ConnectionsSidepanel() {
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
     const [clickedConnection, setClickedConnection] = useState(null)
+    const [error, setError] = useState(null)
 
     // Fetching pending connections
     useEffect(() => {
-        fetch(`http://localhost:3000/connections`)
-            .then(res => res.json())
-            .then(data => {
-                console.log("Fetching pending connections")
+        async function getPendingConnections() {
+            try {
+                const response = await fetch(`http://localhost:3000/connections`)
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch pending connections", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
                 setPendingConnections(data)
-            })
-            .catch(err => {
+            } catch (err) {
                 console.log(err)
-            })
+                setError(err)
+            }
+        }
+        getPendingConnections()
     }, [])
 
     // Fetching active connections
     const { id } = useParams()
     useEffect(() => {
-        fetch(`http://localhost:3000/connections/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                console.log("Fetching active connections")
+        async function getActiveConnections() {
+            try {
+                const response = await fetch(`http://localhost:3000/connections/${id}`)
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch active connections", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
                 setActiveConnections(data)
-            })
-            .catch(err => {
+            } catch (err) {
                 console.log(err)
-            })
+                setError(err)
+            }
+        }
     }, [pendingConnections]) // Re-fetch whenever pendingConnections changed
 
     function renderAddButton(connectionId) {
@@ -94,7 +114,8 @@ function ConnectionsSidepanel() {
                         <SidepanelItem
                             indicator={clickedConnection === connection.connection_id 
                                 ? (<Button size="small" variant="contained" color="success" 
-                                        onClick={() => handleUpdateConnection(connection.connection_id)}>
+                                        onClick={() => handleUpdateConnection(connection.connection_id)}
+                                        >
                                         <PersonAddIcon />
                                     </Button>) 
                                 : null}
@@ -104,6 +125,10 @@ function ConnectionsSidepanel() {
             </Link>
         )
     })
+
+    if (error) {
+        return <h4>There was an error: {error.message}</h4>
+    }
 
     return (
         <div className="sidepanel-container">
