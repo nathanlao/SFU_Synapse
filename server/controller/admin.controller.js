@@ -38,52 +38,57 @@ const fetchCourseInfo = async (req, res) => {
     console.log(`GET ` + url)
 
     // fetching information
-    const result = await fetch(url);
-    const list = await result.json()
+    const result = await fetch(url)
+        .then(result => result.json())
+        .then(list => {if(typeof list[Symbol.iterator] === 'function') {
 
-    if(typeof list[Symbol.iterator] === 'function') {
-
-        const size = list.length
-        var i = 0
-        
-        for(let item of list) {
-            if(level !== viewLevel.deps) {
-                var targetDep = ''
-                var targetCourse = ''
-                var targetSection = ''
-                if(level === viewLevel.courses) {
-                    targetDep = dep
-                    targetCourse = item.value
-                }else if(level === viewLevel.sections) {
-                    targetDep = dep
-                    targetCourse = num
-                    targetSection = item.value
-                }
-                const recordCount = await countRecords(year, term, targetDep, targetCourse, targetSection)
-                const totalCount = await getSubcount(year, term, targetDep, targetCourse, targetSection)
-
-                if(recordCount === totalCount) {
-                    // all added to courses
-                    item.status = 1
-                }else if(recordCount === 0) {
-                    // none added to courses
-                    item.status = 0
-                }else {
-                    // partially added to courses
-                    item.status = 2
-                }
-            }
-
-            i++
+            const size = list.length
+            var i = 0
             
-            if(i === size) {
-                res.status(200).json(list)
+            for(let item of list) {
+                console.log(item)
+                if(level !== viewLevel.deps) {
+                    var targetDep = ''
+                    var targetCourse = ''
+                    var targetSection = ''
+                    if(level === viewLevel.courses) {
+                        targetDep = dep
+                        targetCourse = item.value
+                    }else if(level === viewLevel.sections) {
+                        targetDep = dep
+                        targetCourse = num
+                        targetSection = item.value
+                    }
+                    const recordCount =  countRecords(year, term, targetDep, targetCourse, targetSection)
+                    const totalCount =  getSubcount(year, term, targetDep, targetCourse, targetSection)
+    
+                    if(recordCount === totalCount) {
+                        // all added to courses
+                        item.status = 1
+                    }else if(recordCount === 0) {
+                        // none added to courses
+                        item.status = 0
+                    }else {
+                        // partially added to courses
+                        item.status = 2
+                    }
+                }
+    
+                i++
+                console.log(i)
+                console.log(size)
+                if(i === size) {
+                    res.status(200).json(list)
+                }
             }
-        }
+    
+        }else {
+            res.status(404).json("No data found.")
+        }})
+    //const list = await result.json()
 
-    }else {
-        res.status(404).json("No data found.")
-    }
+    
+
 }
 
 
