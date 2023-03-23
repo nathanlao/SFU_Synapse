@@ -6,7 +6,7 @@ Members
 - Jason.N
 - Rachel.S
 
-Link to application: https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse
+Link to application: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/
 <br>
 GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse*
 
