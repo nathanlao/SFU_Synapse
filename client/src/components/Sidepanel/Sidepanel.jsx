@@ -62,6 +62,7 @@ function ConnectionsSidepanel() {
                 setError(err)
             }
         }
+        getActiveConnections();
     }, [pendingConnections]) // Re-fetch whenever pendingConnections changed
 
     function renderAddButton(connectionId) {
