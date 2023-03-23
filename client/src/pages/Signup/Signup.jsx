@@ -101,7 +101,7 @@ export default function Signup() {
             body: JSON.stringify({ username: username, userpass: md5(password), first_name: firstName, last_name: lastName, email: email})
         }
 
-        fetch('http://localhost:3000/signup', options).then(res => {
+        fetch('/api/signup', options).then(res => {
             if(res.status === 200) {
                 return res.text();
             } else {

@@ -24,7 +24,7 @@ const createUser = (req, res) => {
             req.body.email,
         ];
 
-        db.query(qInsert, [values], (err,data) => {
+        db.query(qInsert, values, (err,data) => {
             if (err) return res.status(500).json(err);
             return res.status(200).json("User has been created.");
         });

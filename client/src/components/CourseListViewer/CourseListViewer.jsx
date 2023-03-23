@@ -60,7 +60,7 @@ export default function CourseListViewer({year, term}) {
         }
 
         setList([])
-        fetch('http://localhost:3000/admin', options).then(res => {
+        fetch('/api/admin', options).then(res => {
             if(res.status === 200) {
                 res.json().then(data => {
                     setList(data)
@@ -135,7 +135,7 @@ export default function CourseListViewer({year, term}) {
                 body: JSON.stringify({ year: year, term: term, dep: dep, num: coursenum, section: coursesection})
             }
     
-            fetch('http://localhost:3000/admin/delete-section', options).then(res => {
+            fetch('/api/admin/delete-section', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
                         updateList(index, 0)
@@ -150,7 +150,7 @@ export default function CourseListViewer({year, term}) {
                 body: JSON.stringify({ year: year, term: term, dep: dep, num: coursenum })
             }
             
-            fetch('http://localhost:3000/admin/delete-course', options).then(res => {
+            fetch('/api/admin/delete-course', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
                         updateList(index, 0)
@@ -170,7 +170,7 @@ export default function CourseListViewer({year, term}) {
                 body: JSON.stringify({ year: year, term: term, dep: dep, num: coursenum, section: coursesection, title: coursetitle })
             }
 
-            fetch('http://localhost:3000/admin/add-section', options).then(res => {
+            fetch('/api/admin/add-section', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
                         updateList(index, 1)
@@ -185,7 +185,7 @@ export default function CourseListViewer({year, term}) {
                 body: JSON.stringify({ year: year, term: term, dep: dep, num: coursenum })
             }
             
-            fetch('http://localhost:3000/admin/add-course', options).then(res => {
+            fetch('/api/admin/add-course', options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
                         updateList(index, 1)

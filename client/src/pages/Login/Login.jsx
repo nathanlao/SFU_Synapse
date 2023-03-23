@@ -28,7 +28,7 @@ export default function Login() {
             body: JSON.stringify({ username: username, userpass: md5(userpass)})
         }
 
-        fetch('http://localhost:3000/login', options).then(res => {
+        fetch('/api/login', options).then(res => {
             if(res.status === 200) {
                 navigate("/", {replace: true})
             }else {

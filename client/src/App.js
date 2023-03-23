@@ -44,7 +44,6 @@ export default function App() {
                     {/* Admin pages */}
                     <Route path='/admin/login' element={<AdminLogin />} />
                     <Route path='/admin' element={<Admin />} />
-                    <Route path="*" element={<Navigate to="/login" replace />} /> // page-not-found route
                 </Routes>
             </main>
         </div>

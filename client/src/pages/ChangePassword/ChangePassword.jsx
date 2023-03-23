@@ -81,7 +81,7 @@ export default function ChangePassword() {
             body: JSON.stringify({ username: username, userpass: md5(newPassword)})
         }
 
-        fetch('http://localhost:3000/change-password', options).then(res => {
+        fetch('/api/change-password', options).then(res => {
             if(res.status === 200) {
                 return res.text();
             } else {
@@ -94,6 +94,8 @@ export default function ChangePassword() {
         });
         */
     }
+
+    console.log("ChangePassword");
 
     return(
         <div className="change-password">
