@@ -6,44 +6,46 @@ Members
 - Jason.N
 - Rachel.S
 
-Link to application: http://TBD
+Link to application: https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse
 <br>
 GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse*
 
 
 ## Checkpoint
 ### Progress
-Entry points are *http://exampleaddress/login*, *http://exampleaddress/signup*, and *http://exampleaddress/admin/login*.
+Entry points are https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/login, https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/signup, and https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/admin/login.
 <br>
 What you can play around with at the moment:
 - **Signup page**
-    - Enter credentials (username, password, etc.) and click on "sign up". 
+    - Enter credentials (username, password, email, etc.) and click "sign up".
     - Email verification to be implemented
 - **Login page**
-    - Enter same credentials when signing up.
-- **Admin login page**
-    - Enter the following:
-        - username: default-admin
-        - password: defAdmin@synapse
-- **Admin page**
-    - This page is fully functional (however occasionally there are some bugs which we have not been able to reproduce at the moment).
-    - Change the term or year
-    - Navigate to course listing of a department by clicking on items
-    - Click on buttons to add/remove sections/course(all sections) to the synapse app (database)
-    - List of only the courses added are only viewable from the database, 
-    - but we plan to add a separate view with only the courses in the app system
+    - Enter username & password of an existing account
+    - Navigates to main page when login is successful
 - **Connections tab**
-    - Connections catagorized into different status can be toggled.
-    - Pending connections are able to be switched to active
+    - Can toggle through connections, categorized into different connection statuses (Active, Pending, Inactive)
+    - User is able to switch the status of a connection from ‘Pending’ to ‘Active’
     - Front end is still under development
 - **Groups tab**
-    - Groups catagorized into courses and communities can be toggled
-    - Discover and Chat subtabs are linked and possible to navigate in between 
-    - Endpoints: *http://exampleaddress/groups/chat*
+    - Can toggle course groups and community groups
+    - Can view Discover and Chat subtabs of a group, using the following endpoints (will be linked properly later):
+        - Discover: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/groups/discover
+        - Chat: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/groups/chat
     - Front end is still under development
 - **Settings page**
     - implemented: front end UI, backend logic 
     - to be implemented: front end logic
+- **Admin login page**
+    - Use the following credentials:
+        - username: default-admin
+        - password: defAdmin@synapse
+- **Admin page**
+    - This page is fully functional, with a few bugs that we will resolve later (asynchronous processes causing buttons to not display as expected)
+    - We plan to add a view that only displays the courses in the database
+        - Modify the current term or year, click on departments or courses
+        - View course listings of each department
+
+
 
 
 ### Technical Specification (subject to change)

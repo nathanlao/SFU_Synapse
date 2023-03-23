@@ -26,7 +26,7 @@ const updateSettings = (req, res) => {
 
     const qUpdate = "UPDATE Users SET username=?, first_name=?, last_name=?, userpass=?, email=?, photo=?, bio=? WHERE user_id = ?"
 
-    db.query(qUpdate, [values], (err,data) => {
+    db.query(qUpdate, values, (err,data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json("User settings have been updated.");
     });
