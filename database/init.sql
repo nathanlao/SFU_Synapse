@@ -2,14 +2,14 @@ CREATE DATABASE IF NOT EXISTS synapse_app;
 
 USE synapse_app;
 
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Admins;
-DROP TABLE IF EXISTS Connections;
-DROP TABLE IF EXISTS `Groups`;
-DROP TABLE IF EXISTS Courses;
-DROP TABLE IF EXISTS Communities;
-DROP TABLE IF EXISTS DirectMessages;
-DROP TABLE IF EXISTS GroupMessages;
+--DROP TABLE IF EXISTS Users;
+--DROP TABLE IF EXISTS Admins;
+--DROP TABLE IF EXISTS Connections;
+--DROP TABLE IF EXISTS `Groups`;
+--DROP TABLE IF EXISTS Courses;
+--DROP TABLE IF EXISTS Communities;
+--DROP TABLE IF EXISTS DirectMessages;
+--DROP TABLE IF EXISTS GroupMessages;
 
 
 CREATE TABLE Users (
@@ -120,5 +120,5 @@ INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin
 -- select * from `Groups`;
 -- select G.group_id, G.group_name, G.group_description, C.created_by, C.visibility from `Groups` G, Communities C WHERE G.group_id=C.community_id;
 
-ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'root@synapse';
+--ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'root@synapse';
 flush privileges;
