@@ -22,7 +22,7 @@ function ConnectionsSidepanel() {
     useEffect(() => {
         async function getPendingConnections() {
             try {
-                const response = await fetch(`http://localhost:3000/connections`)
+                const response = await fetch(`/api/connections`)
                 if (!response.ok) {
                     // eslint-disable-next-line no-throw-literal
                     throw {
@@ -46,7 +46,7 @@ function ConnectionsSidepanel() {
     useEffect(() => {
         async function getActiveConnections() {
             try {
-                const response = await fetch(`http://localhost:3000/connections/${id}`)
+                const response = await fetch(`/api/connections/${id}`)
                 if (!response.ok) {
                     // eslint-disable-next-line no-throw-literal
                     throw {
@@ -79,7 +79,7 @@ function ConnectionsSidepanel() {
             body: JSON.stringify({ connection_id: connectionId }),
         };
         
-        fetch(`http://localhost:3000/connections/${connectionId}`, options)
+        fetch(`/api/connections/${connectionId}`, options)
             .then((res) => res.json())
             .then((data) => {
                 setPendingConnections((prevConnections) =>

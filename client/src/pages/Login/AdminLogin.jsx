@@ -29,7 +29,7 @@ export default function AdminLogin() {
             body: JSON.stringify({ adminname: adminname, adminpass: adminpass})
         }
 
-        fetch('http://localhost:3000/admin/login', options).then(res => {
+        fetch('/api/admin/login', options).then(res => {
             if(res.status === 200) {
                 navigate("/admin", {replace: true})
             }else {

@@ -11,7 +11,7 @@ const createUser = (req, res) => {
         
         if (data.length) return res.status(409).json("User already exists!");
         
-        const qInsert = "INSERT INTO Users ('user_id', 'username', 'first_name', 'last_name', 'userpass', 'email') VALUE (?,?,?,?,?,?)";
+        const qInsert = "INSERT INTO Users (user_id, username, first_name, last_name, userpass, email) VALUE (?,?,?,?,?,?)";
 
         const user_id = uuidv4();
 

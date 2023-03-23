@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path');
 const bodyParser = require('body-parser')
 const app = express()
 const Routes = express.Router()
@@ -18,8 +19,14 @@ const { createUser } = require('./controller/signup.controller')
 
 
 dotenv.config()
-app.use(express.static('./public'))
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.json())
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://sfu-synapse.uc.r.appspot.com/");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 app.use(cors({
     origin: '*',
     methods: 'GET,POST,PUT,DELETE',
@@ -69,10 +76,10 @@ Routes.route('/admin/delete-section')
 Routes.route('/admin/delete-course')
     .post(deleteCourse)
 
-app.use('/', Routes)
+app.use('/api', Routes)
 app.all('*', (req, res) => {
-    res.send('404 Not Found. Please check url')
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
 })
 app.use(express.json());
 
-app.listen(process.env.SERVER_PORT, () => console.log(`Server listening on port ${process.env.SERVER_PORT}`))
+app.listen(8080, () => console.log(`Server listening on port 8080`))
