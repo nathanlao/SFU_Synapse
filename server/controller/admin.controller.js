@@ -1,18 +1,9 @@
+const { resolve } = require('path')
 const { isMapIterator, isSetIterator } = require('util/types')
 const { v4: uuidv4 } = require('uuid')
 
 const db = require('../db/connection.db').pool
 
-class Course{
-    constructor(year, term, dep, num, section, title) {
-        this.offered_year = year
-        this.offered_term = term
-        this.dep = dep
-        this.num = num
-        this.section = section 
-        this.title = title
-    }
-}
 
 const viewLevel = { deps: 0, courses: 1, sections: 2 }
 
@@ -38,81 +29,89 @@ const fetchCourseInfo = async (req, res) => {
     console.log(`GET ` + url)
 
     // fetching information
-    const result = await fetch(url)
+    fetch(url)
         .then(result => result.json())
-        .then(list => {if(typeof list[Symbol.iterator] === 'function') {
+        .then(list => {
+            // console.log(list)
 
-            const size = list.length
-            var i = 0
-            
-            for(let item of list) {
-                console.log(item)
-                if(level !== viewLevel.deps) {
-                    var targetDep = ''
-                    var targetCourse = ''
-                    var targetSection = ''
-                    if(level === viewLevel.courses) {
-                        targetDep = dep
-                        targetCourse = item.value
-                    }else if(level === viewLevel.sections) {
-                        targetDep = dep
-                        targetCourse = num
-                        targetSection = item.value
-                    }
-                    const recordCount =  countRecords(year, term, targetDep, targetCourse, targetSection)
-                    const totalCount =  getSubcount(year, term, targetDep, targetCourse, targetSection)
-    
-                    if(recordCount === totalCount) {
-                        // all added to courses
-                        item.status = 1
-                    }else if(recordCount === 0) {
-                        // none added to courses
-                        item.status = 0
-                    }else {
-                        // partially added to courses
-                        item.status = 2
-                    }
-                }
-    
-                i++
-                console.log(i)
-                console.log(size)
-                if(i === size) {
+            if(typeof list[Symbol.iterator] === 'function') {
+                if(level === viewLevel.deps) {
                     res.status(200).json(list)
+                }else {
+        
+                    Promise.all(list.map(async (item) => {
+                        var targetDep = dep
+                        var targetCourse = ''
+                        var targetSection = ''
+
+                        if(level === viewLevel.courses) {
+                            targetCourse = item.value
+                        }else if(level === viewLevel.sections) {
+                            targetCourse = num
+                            targetSection = item.value
+                        }
+
+                        const recordCountPromise = getRecordCount(year, term, targetDep, targetCourse, targetSection)
+                        const subCountPromise = getSubCount(year, term, targetDep, targetCourse, targetSection)
+                        return Promise.all([recordCountPromise, subCountPromise])
+                            .then(([recordCount, subCount]) => {
+                                item.status = status(recordCount, subCount)
+                                // console.log(item.value + '>> record: ' + recordCount + ', sub: ' + subCount + ', status: ' + status(recordCount, subCount))
+                                return status(recordCount, subCount)
+                            })
+                    })).then(() => {
+                        console.log('Sending back the following list to the frontend.')
+                        console.log(list)
+                        res.status(200).json(list)
+                    })
                 }
+            }else {
+                res.status(404).json("No data found.")
             }
-    
-        }else {
-            res.status(404).json("No data found.")
-        }})
-    //const list = await result.json()
-
-    
-
+        })
 }
 
 
-async function getSubcount(year, term, dep, num, section) {
-    if(section !== '') {
-        return 1
-    }else if(num !== '') {
-        var url = `http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep}/${num}`
-        const result = await fetch(url);
-        const list = await result.json()
-    
-        if(typeof list[Symbol.iterator] === 'function') {
-            return list.length
-        }else {
-            return 0
-        }
-    }else {
+// helper function: computes the status by comparing rec-count and sub-count
+function status(rec, sub) {
+    if(rec === 0) {
+        // none added to courses
         return 0
+    }else if(rec === sub) {
+        // all added to courses
+        return 1
+    }else {
+        // partially added to courses
+        return 2
     }
 }
 
 
-async function countRecords(year, term, dep, num, section) {
-    return new Promise(function(resolve) {
+async function getSubCount(year, term, dep, num, section) {
+    return new Promise(function(resolve, reject) {
+        if(section !== '') {
+            resolve(1)
+        }else if(num !== '') {
+            var url = `http://www.sfu.ca/bin/wcm/course-outlines?${year}/${term}/${dep}/${num}`
+            fetch(url)
+                .then(result => result.json())
+                .then(list => {
+                    if(typeof list[Symbol.iterator] === 'function') {
+                        resolve(list.length)
+                    }
+                    // else {
+                    //     reject()
+                    // }
+                })
+        }else {
+            resolve(0)
+        }
+    })
+}
+
+
+async function getRecordCount(year, term, dep, num, section) {
+    return new Promise(function(resolve, reject) {
 
         var query = ''
         var params = []
@@ -124,14 +123,15 @@ async function countRecords(year, term, dep, num, section) {
             query = 'SELECT * FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=?'
             params = [year, term, dep, num]
         }else {
-            return 0
+            // return 0
+            resolve(0)
         }
     
-            
         db.query(query, params, (err, data) => {
             if(err) {
                 // return reject(err)
-                return 0
+                reject(err)
+                // return 0
             }
             resolve(data.length)
         })

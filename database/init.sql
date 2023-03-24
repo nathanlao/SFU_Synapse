@@ -2,14 +2,15 @@ CREATE DATABASE IF NOT EXISTS synapse_app;
 
 USE synapse_app;
 
---DROP TABLE IF EXISTS Users;
---DROP TABLE IF EXISTS Admins;
---DROP TABLE IF EXISTS Connections;
---DROP TABLE IF EXISTS `Groups`;
---DROP TABLE IF EXISTS Courses;
---DROP TABLE IF EXISTS Communities;
---DROP TABLE IF EXISTS DirectMessages;
---DROP TABLE IF EXISTS GroupMessages;
+-- excluded for submission purposes
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Admins;
+DROP TABLE IF EXISTS Connections;
+DROP TABLE IF EXISTS `Groups`;
+DROP TABLE IF EXISTS Courses;
+DROP TABLE IF EXISTS Communities;
+DROP TABLE IF EXISTS DirectMessages;
+DROP TABLE IF EXISTS GroupMessages;
 
 
 CREATE TABLE Users (

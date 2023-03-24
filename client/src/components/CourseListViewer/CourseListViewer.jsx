@@ -63,6 +63,7 @@ export default function CourseListViewer({year, term}) {
         fetch('/api/admin', options).then(res => {
             if(res.status === 200) {
                 res.json().then(data => {
+                    console.log(data)
                     setList(data)
                 })
             }else {
