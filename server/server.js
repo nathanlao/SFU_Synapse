@@ -13,9 +13,10 @@ const { getHomeContent } = require('./controller/home.controller')
 const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections} = require('./controller/connections.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
-const { fetchCourseInfo, addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
+const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
 const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
+const { fetchCourseInfo } = require('./controller/course-list.controller')
 
 
 dotenv.config()
@@ -42,11 +43,10 @@ app.use(cors({
 //     })
 // )
 
+// Route: main
 Routes.route('/')
     .get(getHomeContent)
-Routes.route('/signup')
-    .post(createUser)
-Routes.route('/connections')
+    Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
 Routes.route('/connections/:id')
@@ -55,14 +55,22 @@ Routes.route('/connections/:id')
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
-Routes.route('/setting')
+    Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
     .delete(deleteUser)
-Routes.route('/login')
-    .post(verifyLogin)
+
+
+// Route: signup
 Routes.route('/signup')
     .post(createUser)
+
+// Route: login
+Routes.route('/login')
+    .post(verifyLogin)
+
+
+// Route: admin
 Routes.route('/admin/login')
     .post(verifyAdminLogin)
 Routes.route('/admin')

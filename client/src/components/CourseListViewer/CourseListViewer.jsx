@@ -8,6 +8,7 @@ export default function CourseListViewer({year, term}) {
     const [num, setNum] = useState('') // course number (372)
     const [list, setList] = useState([])
     const [heading, setHeading] = useState('Departments')
+    const [loading, setLoadingStatus] = useState(false)
 
     const viewLevel = { deps: 0, courses: 1, sections: 2 }
 
@@ -51,7 +52,7 @@ export default function CourseListViewer({year, term}) {
         }
     }
 
-    function getData(level) {
+    async function getData(level) {
         const body = getBody(level)
         const options = {
             method: 'POST',
@@ -60,16 +61,17 @@ export default function CourseListViewer({year, term}) {
         }
 
         setList([])
-        fetch('/api/admin', options).then(res => {
-            if(res.status === 200) {
-                res.json().then(data => {
-                    console.log(data)
-                    setList(data)
-                })
-            }else {
-                handleError(level)
-            }
-        })
+        setLoadingStatus(true)
+        const result = await fetch('/api/admin', options)
+        setLoadingStatus(false)
+        if(result.status !== 200) {
+            handleError(level)
+            return
+        }
+
+        const data = await result.json()
+        // console.log(data)
+        setList(data)
     }
 
 
@@ -213,7 +215,7 @@ export default function CourseListViewer({year, term}) {
             <span>/{dep}{num !== '' && '/' + num}</span>
 
             <ul>
-                {list.length === 0 && 
+                {loading && 
                     <div className="loader-wrapper">
                         <p>Loading data...</p>
                         <div className="loader"></div>
