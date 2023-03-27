@@ -2,7 +2,7 @@
 Filename: db-courses.controller.js
 Purpose: getting data from Courses table in database
 */
-const db = require('../db/connection.db').pool
+const db = require('../../db/connection.db').pool
 
 // gets all deparments for a given semester stored in database
 const getDepartments = async (req, res) => {

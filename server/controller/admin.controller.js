@@ -1,9 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-
 const db = require('../db/connection.db').pool
-
-
-// const viewLevel = { deps: 0, courses: 1, sections: 2 }
 
 
 // adds a single section in a course
@@ -33,11 +29,9 @@ const addSection = (req, res) => {
             title
         ], (err, data) => {
             if(err) {
-                console.log(err)
                 res.status(500).json(err)
             }else {
                 res.status(200).json(data)
-                // res.status(200).json('Received request to add ' + year + term + ' ' + (dep + num) + ' ' + section)
             }
         })
     }else {
@@ -124,7 +118,6 @@ const deleteCourse = (req, res) => {
             num
         ], (err, data) => {
             if(err) {
-                console.log(err)
                 res.status(500).json(err)
             }else {
                 res.status(200).json(data)

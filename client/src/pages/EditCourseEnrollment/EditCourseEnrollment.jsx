@@ -37,9 +37,38 @@ export default function EditCourseEnrollment() {
         }
     }
 
+    async function handleBtnClick() {
+                   
+        // 1 remove existing courses which are labeled as not to keep
+        const promises1 = list.filter((item) => {
+            return item.keep === false
+        }).map((item) => {
+            const username = 'testuser' // DEV: replace when login session implemented
+            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            return fetch(url, { method: 'DELETE' })
+        })
+        await Promise.all(promises1)
+        console.log('Removed courses')
+        
+        // 2 add new courses
+        const promises2 = list.filter((item) => {
+            return item.keep && item.new_item
+        }).map((item) => {
+            const username = 'testuser' // DEV: replace when login session implemented
+            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            return fetch(url, { method: 'POST' })
+        })
+        await Promise.all(promises2)
+        console.log('Added new courses')
+
+        console.log('Edited course enrollment!!')
+    }
+
     return (
         <div className="edit-course-enrollment">
             <CourseSelector year={year} term={term} updateParentList={updateList} setup={false} />
+            <button type="button" className="btn btn-light" onClick={handleBtnClick}>Confirm changes</button>
+            <small>*Refresh after clicking: just for now. haven't implemented it to make component update yet</small>
         </div>
     )
 }

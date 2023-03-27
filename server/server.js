@@ -17,8 +17,10 @@ const { addSection, addCourse, deleteCourse, deleteSection } = require('./contro
 const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
-const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-courses.controller');
+const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
+const { updateUser } = require('./controller/db-operation/db-users.controller');
+const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
 
 
 dotenv.config()
@@ -65,13 +67,18 @@ Routes.route('/groups')
 
 // Route: signup
 Routes.route('/signup')
-    .post(createUser)
+.post(createUser)
+// Route: account setup
 Routes.route('/course-list/:year/:term')
-    .get(getDepartments)
+.get(getDepartments)
 Routes.route('/course-list/:year/:term/:dep')
     .get(getCourses)
 Routes.route('/course-list/:year/:term/:dep/:course')
     .get(getSections)
+Routes.route('/:username/setup/bio')
+    .put(setProfileBio)
+Routes.route('/:username/setup/photo')
+    .put(setProfilePhoto)
 
 // Route: login
 Routes.route('/login')
@@ -92,7 +99,8 @@ Routes.route('/admin/delete-section')
 Routes.route('/admin/delete-course')
     .post(deleteCourse)
 
-// Database
+
+// User specific data
 Routes.route('/:username/course/:year/:term')
     .get(getEnrolledCourses)
 Routes.route('/:username/:year/:term/:dep/:num/:section')

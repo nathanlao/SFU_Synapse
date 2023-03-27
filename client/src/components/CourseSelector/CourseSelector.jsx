@@ -154,7 +154,6 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
         console.log(event.target.id)
         const targetIndex = event.target.id
 
-        // if(true) { // test
         if(event.target.dataset.newItem === 'false') {
             const modifiedList = [...selectedList]
             modifiedList[targetIndex].keep = false

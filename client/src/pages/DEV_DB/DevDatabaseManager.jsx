@@ -105,21 +105,27 @@ export default function DevDatabaseManager() {
     
     
     return (
-        <div className="dev-database-manager">
+        <div className="dev-database-manager" id="topOfPage">
             <h1>DEV DATABASE MANAGER</h1>
 
-            <menu>
-                <ul>
-                    <li><a href="#users">Users</a></li>
-                    <li><a href="#admins">Admins</a></li>
-                    <li><a href="#connections">Connections</a></li>
-                    <li><a href="#groups">Groups</a></li>
-                    <li><a href="#courses">Courses</a></li>
-                    <li><a href="#communities">Communities</a></li>
-                    <li><a href="#directMessages">DirectMessages</a></li>
-                    <li><a href="#groupMessages">GroupMessages</a></li>
-                </ul>
-            </menu>
+            <h5>Links to tables</h5>
+            <div className="links-to-tables">
+                <button type="button" className="btn btn-light"><a href="#users">Users</a></button>
+                <button type="button" className="btn btn-light"><a href="#admins">Admins</a></button>
+                <button type="button" className="btn btn-light"><a href="#connections">Connections</a></button>
+                <button type="button" className="btn btn-light"><a href="#groups">Groups</a></button>
+                <button type="button" className="btn btn-light"><a href="#courses">Courses</a></button>
+                <button type="button" className="btn btn-light"><a href="#communities">Communities</a></button>
+                <button type="button" className="btn btn-light"><a href="#directMessages">DirectMessages</a></button>
+                <button type="button" className="btn btn-light"><a href="#groupMessages">GroupMessages</a></button>
+            </div>
+
+            <button type="button" className="to-top-floating-btn btn btn-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-bar-up" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 11.854a.5.5 0 0 0 .708 0L8 8.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708zM2.4 5.2c0 .22.18.4.4.4h10.4a.4.4 0 0 0 0-.8H2.8a.4.4 0 0 0-.4.4z"/>
+                </svg>
+                <a href="#topOfPage">To page top</a>
+            </button>
 
             {/* Users */}
             <h2 id="users">Users</h2>
@@ -140,7 +146,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {users.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.user_id}</td>
                         <td>{item.username}</td>
                         <td>{item.first_name}</td>
@@ -169,7 +175,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {admins.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.admin_id}</td>
                         <td>{item.adminname}</td>
                         <td>{item.adminpass}</td>
@@ -193,7 +199,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {connections.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.connection_id}</td>
                         <td>{item.userA_id}</td>
                         <td>{item.userB_id}</td>
@@ -219,7 +225,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {groups.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.group_id}</td>
                         <td>{item.group_name}</td>
                         <td>{item.group_description}</td>
@@ -246,7 +252,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {courses.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.course_id}</td>
                         <td>{item.offered_year}</td>
                         <td>{item.offered_term}</td>
@@ -274,7 +280,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {communities.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.community_id}</td>
                         <td>{item.created_by}</td>
                         <td>{item.visibility}</td>
@@ -297,7 +303,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {directMessages.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.id}</td>
                         <td>{item.sender_id}</td>
                         <td>{item.receiver_id}</td>
@@ -320,7 +326,7 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {groupMessages.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.id}</td>
                         <td>{item.group_id}</td>
                         <td>{item.user_id}</td>
@@ -342,15 +348,13 @@ export default function DevDatabaseManager() {
                 <tbody>
                     {memberOf.map((item, index) => (
                         <tr>
-                        <th scope="row">{index}</th>
+                        <th scope="row">{index+1}</th>
                         <td>{item.group_id}</td>
                         <td>{item.user_id}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
-
         </div>
     )
 }

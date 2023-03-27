@@ -16,45 +16,52 @@ export default function AccountSetup() {
     })
 
 
-    
-
     async function handleBtnClick() {
-        console.log('Account setup Completed!!')
-        console.log(list) // add user to these courses
-
-        // update user table with input from bio (Users)
-
-        // add user to the selected course groups (MemberOf)
+               
+        // 1 remove existing courses which are labeled as not to keep
+        const promises1 = list.filter((item) => {
+            return item.keep === false
+        }).map((item) => {
+            const username = 'testuser' // DEV: replace when login session implemented
+            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            return fetch(url, { method: 'DELETE' })
+        })
+        await Promise.all(promises1)
+        console.log('Removed courses')
+        
+        // 2 add new courses
+        const promises2 = list.filter((item) => {
+            return item.keep && item.new_item
+        }).map((item) => {
+            const username = 'testuser' // DEV: replace when login session implemented
+            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            return fetch(url, { method: 'POST' })
+        })
+        await Promise.all(promises2)
+        console.log('Added new courses')
+        
+        // 3 update user's bio
+        const username = 'testuser' // DEV: replace when login session implemented
         const bio = document.getElementById('bioTextarea')
         console.log(bio.value)
-
-
-        try {
-            // remove existing courses which are labeled as not to keep
-            const promises1 = list.filter((item) => {
-                return item.keep === false
-            }).map((item) => {
-                const username = 'testuser' // DEV: replace when login session implemented
-                const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
-                return fetch(url, { method: 'DELETE' })
-            })
-            await Promise.all(promises1)
-            console.log('Removed courses')
-            
-            // add new courses
-            const promises2 = list.filter((item) => {
-                return item.keep && item.new_item
-            }).map((item) => {
-                const username = 'testuser' // DEV: replace when login session implemented
-                const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
-                return fetch(url, { method: 'POST' })
-            })
-            await Promise.all(promises2)
-            console.log('Added new courses')
-
-        }catch(err) {
-            console.log(err)
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bio: bio.value })
         }
+        const result = await fetch(`/api/${username}/setup/bio`, options)
+        if(result !== 200) {
+            const msg = await result.json()
+            console.log(msg)
+            return
+        }
+        console.log('Profile bio saved')
+            
+
+        // 4 update user's profile
+
+
+        console.log('Account setup Completed!!')
     }
 
 
@@ -90,6 +97,15 @@ export default function AccountSetup() {
         }
     }
 
+    function handleFileChange(event) {
+        if(event.target.files && event.target.files[0]) {
+            const file = event.target.files[0]
+            console.log('file size: ' + file.size)
+        }else {
+            console.log('file not selected')
+        }
+    }
+
 
     return (
         <div className="account-setup">
@@ -99,13 +115,17 @@ export default function AccountSetup() {
                     <h3>Select your enrolled courses</h3>
                     <CourseSelector year={year} term={term} updateParentList={updateList} setup={true} />
                 </section>
+                <section className="photo">
+                    <h3>Profile photo</h3>
+                    <input type="file" accept="image/*" name="file" id="profilePhoto" className="form-control" onChange={handleFileChange} />
+                </section>
                 <section className="bio">
                     <h3>Bio</h3>
-                    <textarea id="bioTextarea" onChange={checkWordCount} />
+                    <textarea id="bioTextarea" className="form-control" onChange={checkWordCount} />
                     <small>{bioLen} / {bioMaxLen}</small>
                 </section>
                 <div className="submit-btn">
-                    <button type="button" id="completeBtn" onClick={handleBtnClick} disabled={bioLen > bioMaxLen}>Complete account setup</button>
+                    <button type="button" id="completeBtn" className="btn btn-light" onClick={handleBtnClick} disabled={bioLen > bioMaxLen}>Complete account setup</button>
                 </div>
             </section>
         </div>

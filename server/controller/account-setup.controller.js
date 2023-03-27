@@ -1,32 +1,37 @@
-// gets all (unique) departments from Courses table in database for a given year and term
-const getDepartments = (req, res) => {
-    var deps = []
-    res.status(200).json(deps)
+const { updateUser } = require('./db-operation/db-users.controller')
+
+// updates bio
+const setProfileBio = async (req, res) => {
+    console.log('Received request: setProfileBio')
+    const username = req.params.username
+    const bio = req.body.bio
+
+    console.log(username, bio)
+
+    try {
+        await updateUser(username, 'bio', bio)
+        res.status(200).json('Setting profile bio: success')
+    }catch(err) {
+        console.log(err)
+        res.status(500).json(err)
+    }
 }
 
-// gets all (unique) courses from Courses table in database for a given year, term, and department
-const getCourses = (req, res) => {
-    var courses = []
+// updates user's profile photo
+const setProfilePhoto = async (req, res) => {
+    console.log('Received request: setProfilePhoto')
+    const username = req.params.username
+    const photo = req.body.photo
+    
+    try {
+        await updateUser(username, 'photo', photo)
+        res.status(200).json('Setting profile photo: success')
 
-    res.status(200).json(courses)
+    }catch(err) {
+        res.status(500).json(err)
+    }
 }
 
-// gets all sections from Courses table in database for a given year, term, department, and course number
-const getSections = (req, res) => {
-    var sections = []
+// update enrolled courses
 
-    res.status(200).json(sections)
-}
-
-// adds a user to a course group
-const addToCourses = (req, res) => {
-    // get list of selected courses from request body
-    // for each item in the list call addCourseMember()
-    res.status(200).json('Successfully added to your selected courses!')
-}
-
-// adds user to a group (course)
-async function addCourseMember(userID, year, term, dep, num, section) {
-    // query database to get group id for the course (given: year, term, dep, num, section)
-    // addMember() from member.controller.js
-}
+module.exports = { setProfileBio, setProfilePhoto }
