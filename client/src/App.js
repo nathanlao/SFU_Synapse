@@ -15,6 +15,9 @@ import ChangePassword from './pages/ChangePassword/ChangePassword'
 
 import './App.css'
 import Admin from './pages/Admin/Admin'
+import AccountSetup from './pages/Signup/AccountSetup'
+import EditCourseEnrollment from './pages/EditCourseEnrollment/EditCourseEnrollment'
+import DevDatabaseManager from './pages/DEV_DB/DevDatabaseManager'
 
 export default function App() {
     return (
@@ -23,6 +26,7 @@ export default function App() {
                 <Routes>
                     <Route path='/login' element={<LoginSignupWindow />} />
                     <Route path='/signup' element={<LoginSignupWindow />} />
+                    <Route path='/signup/setup' element={<AccountSetup />} />
                     <Route path='/' element={<MainLayout />}>
                         <Route index element={<Home />} />
                         <Route path='connections' element={<ConnectionsLayout />} >
@@ -38,12 +42,14 @@ export default function App() {
                             {/* Nested route relative to "/setting" */}
                             <Route path='edit-profile' element={<EditProfile />} />
                             <Route path='change-password' element={<ChangePassword />} />
+                            <Route path='edit-course-enrollment' element={<EditCourseEnrollment />} />
                         </Route>
                     </Route>
 
                     {/* Admin pages */}
                     <Route path='/admin/login' element={<AdminLogin />} />
                     <Route path='/admin' element={<Admin />} />
+                    <Route path='/database-manager' element={<DevDatabaseManager />} />
                 </Routes>
             </main>
         </div>

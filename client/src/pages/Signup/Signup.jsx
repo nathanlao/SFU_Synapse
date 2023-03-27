@@ -87,7 +87,7 @@ export default function Signup() {
         setConfirmPassword(event.target.value);
     }
 
-    function handleSignup() {
+    async function handleSignup() {
         if (!isSamePassword || confirmPasssword === '' || !isSfuEmail || passErrorVisible) {
             return;
         }
@@ -101,17 +101,13 @@ export default function Signup() {
             body: JSON.stringify({ username: username, userpass: md5(password), first_name: firstName, last_name: lastName, email: email})
         }
 
-        fetch('/api/signup', options).then(res => {
-            if(res.status === 200) {
-                return res.text();
-            } else {
-                // show error message in view
-            }
-        })
-        .then((text) => {
-            console.log(text);
-            navigate("/", {replace: true});
-        });
+        const result = await fetch('/api/signup', options)
+        if(result.status !== 200) {
+            alert('Something went wrong.. Please try again')
+            return
+        }
+
+        navigate("/signup/setup", {replace: true})
     }
 
     return (

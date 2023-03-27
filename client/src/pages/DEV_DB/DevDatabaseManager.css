@@ -1,0 +1,9 @@
+div.dev-database-manager {
+    padding: 32px;
+}
+div.dev-database-manager h1 {
+    color: #11515D;
+}
+div.dev-database-manager table {
+    width: 100%;
+}

@@ -17,6 +17,8 @@ const { addSection, addCourse, deleteCourse, deleteSection } = require('./contro
 const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
+const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-courses.controller');
+const { getTableData } = require('./controller/dev.controller');
 
 
 dotenv.config()
@@ -64,6 +66,12 @@ Routes.route('/groups')
 // Route: signup
 Routes.route('/signup')
     .post(createUser)
+Routes.route('/course-list/:year/:term')
+    .get(getDepartments)
+Routes.route('/course-list/:year/:term/:dep')
+    .get(getCourses)
+Routes.route('/course-list/:year/:term/:dep/:course')
+    .get(getSections)
 
 // Route: login
 Routes.route('/login')
@@ -83,6 +91,17 @@ Routes.route('/admin/delete-section')
     .post(deleteSection)
 Routes.route('/admin/delete-course')
     .post(deleteCourse)
+
+// Database
+Routes.route('/:username/course/:year/:term')
+    .get(getEnrolledCourses)
+Routes.route('/:username/:year/:term/:dep/:num/:section')
+    .delete(removeUserFromCourse)
+    .post(addUserToCourse)
+
+// Development purpose
+Routes.route('/dev/db/:table')
+    .get(getTableData)
 
 app.use('/api', Routes)
 app.all('*', (req, res) => {

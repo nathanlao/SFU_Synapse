@@ -1,0 +1,24 @@
+div.course-selector {
+    background-color: antiquewhite;
+}
+div.course-selector div.controllers {
+    margin-bottom: 16px;
+}
+
+div.course-selector div.course-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+div.course-selector section.list {
+    border: 2px solid gray;
+}
+
+div.course-selector div.course-list > section ul {
+    max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+

@@ -1,0 +1,18 @@
+div.account-setup {
+    padding: 16px;
+}
+
+
+
+
+
+
+/* Bio textarea */
+div.account-setup section.bio {
+    margin-top: 16px;
+    margin-bottom: 16px;
+
+}
+div.account-setup #bioTextarea {
+    width: 100%;
+}
