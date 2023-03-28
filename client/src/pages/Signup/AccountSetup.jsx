@@ -6,6 +6,7 @@ export default function AccountSetup() {
     const bioMaxLen = 150
     const [bioLen, setBioLen] = useState(0)
     const [list, setList] = useState([])
+    const [photo, setPhoto] = useState({})
 
     const [year] = useState(() => {
         return getYearAndTerm().year
@@ -81,6 +82,27 @@ export default function AccountSetup() {
 
     }, [list])
 
+    function handleFileChange(event) {
+        if(event.target.files && event.target.files[0]) {
+            const file = event.target.files[0]
+
+            if(sizeInKB(file.size) <= 200) {
+                const img = {
+                    preview: URL.createObjectURL(file),
+                    data: file
+                }
+                setPhoto(img)
+                console.log(photo)
+            }else {
+                setPhoto({})
+                event.target.value = ''
+                alert('[File size: ' + sizeInKB(file.size) + ' KB] The maximum file size allowed is 200KB.')
+            }
+        }else {
+            setPhoto({})
+        }
+    }
+
 
     // helper function
     function getYearAndTerm() {
@@ -96,15 +118,15 @@ export default function AccountSetup() {
             return { year: year, term: 'fall'}
         }
     }
+    
 
-    function handleFileChange(event) {
-        if(event.target.files && event.target.files[0]) {
-            const file = event.target.files[0]
-            console.log('file size: ' + file.size)
-        }else {
-            console.log('file not selected')
-        }
+    function sizeInKB(bytes, decimals = 2) {
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        return parseFloat((bytes / k).toFixed(dm))
     }
+
+    
 
 
     return (
@@ -117,6 +139,7 @@ export default function AccountSetup() {
                 </section>
                 <section className="photo">
                     <h3>Profile photo</h3>
+                    {photo.preview && <img src={photo.preview} width='100' height='100' />}
                     <input type="file" accept="image/*" name="file" id="profilePhoto" className="form-control" onChange={handleFileChange} />
                 </section>
                 <section className="bio">

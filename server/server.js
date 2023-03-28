@@ -19,7 +19,6 @@ const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
-const { updateUser } = require('./controller/db-operation/db-users.controller');
 const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
 
 
