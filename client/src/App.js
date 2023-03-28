@@ -12,6 +12,7 @@ import Chat from './pages/Chat/Chat'
 import Discover from './pages/Discover/Discover'
 import EditProfile from './pages/EditProfile/EditProfile'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
+import Disconnect from './pages/Disconnect/Disconnect'
 
 import './App.css'
 import Admin from './pages/Admin/Admin'
@@ -31,7 +32,8 @@ export default function App() {
                         <Route index element={<Home />} />
                         <Route path='connections' element={<ConnectionsLayout />} >
                             {/* Nested route relative to "/connection" */}
-                            <Route path=':id' element={<Chat />} />
+                            <Route path=':connectionId' element={<Chat />} />
+                            <Route path=':connectionId/setting' element={<Disconnect />} />
                         </Route>
                         <Route path='groups' element={<GroupsLayout />} >
                             {/* Nested route relative to "/groups" */}
