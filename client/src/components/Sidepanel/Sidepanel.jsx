@@ -18,6 +18,17 @@ function ConnectionsSidepanel() {
     const [clickedConnection, setClickedConnection] = useState(null)
     const [error, setError] = useState(null)
 
+    // Used to determine whether this is connections path or setting path
+    const path = useLocation().pathname
+
+    function handleSettingsClick(event) {
+        var items = document.querySelectorAll('.setting-item-div.active');
+        if(items.length) 
+            items[0].className = 'setting-item-div';
+            
+        event.target.className = 'setting-item-div active';
+    }
+
     // Fetching pending connections
     useEffect(() => {
         async function getPendingConnections() {
@@ -42,11 +53,11 @@ function ConnectionsSidepanel() {
     }, [])
 
     // Fetching active connections
-    const { id } = useParams()
+    const { connectionId } = useParams()
     useEffect(() => {
         async function getActiveConnections() {
             try {
-                const response = await fetch(`/api/connections/${id}`)
+                const response = await fetch(`/api/connections/${connectionId}`)
                 if (!response.ok) {
                     // eslint-disable-next-line no-throw-literal
                     throw {
@@ -134,36 +145,44 @@ function ConnectionsSidepanel() {
     return (
         <div className="sidepanel-container">
             <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
-                Connections
+                {path === `/connections/${connectionId}/setting` ? "Setting" : "Connections"}
             </Typography>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Active connections</Accordion.Header>
-                        {activeConnectionsEl}
-                </Accordion.Item>
-            </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}}>
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="1">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
-                        {pendingConnectionsEl}
-                </Accordion.Item>
-            </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
+            {path === `/connections/${connectionId}/setting` ? (
+                <Link to={`/connections/${connectionId}/setting`}>
+                    <div className="setting-item-div active" onClick={handleSettingsClick}>Disconnect</div> : 
+                </Link>
+            ) : (
+                <>
+                    <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                        <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                            <Accordion.Header style={{backgroundColor: '#11515c'}}>Active connections</Accordion.Header>
+                                {activeConnectionsEl}
+                        </Accordion.Item>
+                    </Accordion>
+                    <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                        <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                            <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
+                                {pendingConnectionsEl}
+                        </Accordion.Item>
+                    </Accordion>
+                    <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                        <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                            <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
+                            <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore
+                                magna aliqua. Ut enim ad minim veniam, quis nostrud
+                                exercitation ullamco laboris nisi ut aliquip ex ea
+                                commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu
+                                fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                                non proident, sunt in culpa qui officia deserunt mollit
+                                anim id est laborum.
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+                </>
+            )}
         </div>
     );
 }
