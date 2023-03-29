@@ -5,6 +5,10 @@ const app = express()
 const Routes = express.Router()
 const dotenv = require('dotenv')
 const cors = require('cors')
+// For building server with socketio
+const http = require('http')
+const { Server } = require('socket.io')
+
 // const session = require('express-session')
 
 
@@ -20,7 +24,8 @@ const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
-
+const server = http.createServer(app)
+const io = new Server(server)
 
 dotenv.config()
 // Serve the static files from the React app
@@ -116,4 +121,13 @@ app.all('*', (req, res) => {
 })
 app.use(express.json());
 
-app.listen(8080, () => console.log(`Server listening on port 8080`))
+// Socketio Server listens for connection event
+io.on("connection", (socket) => {
+    console.log("New connection: ", socket.id)
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnect", socket.id)
+    })
+})
+
+server.listen(8080, () => console.log(`Server listening on port 8080`))
