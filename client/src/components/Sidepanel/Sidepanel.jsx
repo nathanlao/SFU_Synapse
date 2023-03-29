@@ -18,17 +18,6 @@ function ConnectionsSidepanel() {
     const [clickedConnection, setClickedConnection] = useState(null)
     const [error, setError] = useState(null)
 
-    // Used to determine whether this is connections path or setting path
-    const path = useLocation().pathname
-
-    function handleSettingsClick(event) {
-        var items = document.querySelectorAll('.setting-item-div.active');
-        if(items.length) 
-            items[0].className = 'setting-item-div';
-
-        event.target.className = 'setting-item-div active';
-    }
-
     // Fetching pending connections
     useEffect(() => {
         async function getPendingConnections() {

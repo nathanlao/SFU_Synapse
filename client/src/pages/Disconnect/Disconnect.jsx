@@ -23,7 +23,7 @@ export default function Disconnect() {
 
     function handlePopupClose() {
         setOpenPopup(false);
-        nagivate(`/connections/${connectionId}`)
+        nagivate(`/connections/${connectionId}`, {replace: true})
     };
     
     // DELETE request
