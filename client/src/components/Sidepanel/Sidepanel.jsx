@@ -108,7 +108,11 @@ function ConnectionsSidepanel() {
             <Link 
                 to={`${connection.connection_id}`}
                 key={connection.connection_id}
-                state={{ pendingConnections: connection.userB_username }}
+                state={{ 
+                    pendingConnections: connection.userB_username, 
+                    userAId: connection.userA_id, 
+                    userBId: connection.userB_id 
+                }}
                 onClick={() => renderAddButton(connection.connection_id)}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
