@@ -126,12 +126,12 @@ app.all('*', (req, res) => {
 })
 app.use(express.json());
 
-// Socketio Server listens for connection event
+// Socketio Server listens for "connection" event
 io.on("connection", (socket) => {
     console.log("User connected: ", socket.id)
 
     socket.on('private-chat', (data) => {
-        console.log(data)
+        console.log("Data from front end: ", data)
     })
 
     socket.on("disconnect", () => {

@@ -19,25 +19,36 @@ export default function Chat() {
     const location = useLocation()
     const userA_id = location?.state?.userAId
     const userB_id = location?.state?.userBId
-    console.log(userA_id, "sending to " , userB_id)
-
+    
     const [message, setMessage] = useState("")
-
+    
     const handleInputChange = (e) => {
         setMessage(e.target.value)
     }
-
-    const sendMessage = (e) => {
+    
+    const sendMessage = async (e) => {
         e.preventDefault()
 
-        socket.emit('private-chat', {
-            sender_id: userA_id,
-            receiver_id: userB_id,
-            message: message,
-            timestamp: Date.now()
-        })
-        // Clear the input after sent
-        setMessage("")
+        if (message !== "") {
+            console.log(userA_id, "sending to " , userB_id)
+            console.log(message)
+
+            const messageData = {
+                sender_id: userA_id,
+                receiver_id: userB_id,
+                message: message,
+                timestamp: 
+                    new Date(Date.now()).getHours() + 
+                    ":" + 
+                    new Date(Date.now()).getMinutes()
+            }
+    
+            await socket.emit('private-chat', messageData)
+
+            // Clear the input after sent
+            setMessage("")
+        }
+        
     }
 
     return (
