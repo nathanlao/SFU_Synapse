@@ -59,10 +59,10 @@ app.use(cors({
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-    Routes.route('/connections')
+    Routes.route('/connections/:userId')
     .get(getPendingConnections)
     .post(createPendingConnection)
-Routes.route('/connections/:id')
+Routes.route('/connections/:userId/:id')
     .get(getActiveConnections)
     .put(updateConnectionStatus)    
 Routes.route('/groups')
@@ -130,8 +130,10 @@ app.use(express.json());
 io.on("connection", (socket) => {
     console.log("User connected: ", socket.id)
 
-    socket.on('private-chat', (data) => {
-        console.log("Data from front end: ", data)
+    socket.on('send-private-message', (data) => {
+        console.log("Data from front end: ", data.receiver_id)
+
+        io.to(data.receiver_id).emit("receive-private-message", data)
     })
 
     socket.on("disconnect", () => {

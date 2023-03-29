@@ -28,14 +28,16 @@ export default function Login() {
             body: JSON.stringify({ username: username, userpass: md5(userpass)})
         }
 
-        fetch('/api/login', options).then(res => {
-            if(res.status === 200) {
-                navigate("/", {replace: true})
-            }else {
-                // show error message in view
-            }
-        })
-
+        fetch('/api/login', options)
+            .then(res => res.json())
+            .then(data => {
+                if(data[0].user_id) {
+                    localStorage.setItem('userId', data[0].user_id);
+                    navigate("/", { replace: true})
+                }else {
+                    // show error message in view
+                }
+            })
     }
 
 

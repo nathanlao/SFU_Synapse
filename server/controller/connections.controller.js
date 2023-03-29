@@ -2,6 +2,9 @@ const db = require("../db/connection.db").pool
 const { v4: uuidv4 } = require('uuid');
 
 const getPendingConnections = (req, res) => {
+    const userId = req.params.userId
+
+    // GET data with the correct userId 
     // JOIN Connections table with Users table
     const query = `SELECT c.connection_id, c.Status, 
                         ua.username AS userA_username, 
@@ -10,9 +13,10 @@ const getPendingConnections = (req, res) => {
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
-                    WHERE c.status = 'Pending'`
+                    WHERE c.status = 'Pending'
+                    AND (c.userA_id = ? OR c.userB_id = ?)`
 
-    db.query(query, (err, data) => {
+    db.query(query, [userId, userId], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
