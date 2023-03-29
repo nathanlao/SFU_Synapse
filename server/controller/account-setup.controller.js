@@ -10,6 +10,7 @@ const setProfileBio = async (req, res) => {
 
     try {
         await updateUser(username, 'bio', bio)
+        console.log('Setting profile bio: success')
         res.status(200).json('Setting profile bio: success')
     }catch(err) {
         console.log(err)
@@ -17,21 +18,5 @@ const setProfileBio = async (req, res) => {
     }
 }
 
-// updates user's profile photo
-const setProfilePhoto = async (req, res) => {
-    console.log('Received request: setProfilePhoto')
-    const username = req.params.username
-    const photo = req.body.photo
-    
-    try {
-        await updateUser(username, 'photo', photo)
-        res.status(200).json('Setting profile photo: success')
 
-    }catch(err) {
-        res.status(500).json(err)
-    }
-}
-
-// update enrolled courses
-
-module.exports = { setProfileBio, setProfilePhoto }
+module.exports = { setProfileBio }
