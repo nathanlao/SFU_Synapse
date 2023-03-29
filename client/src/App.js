@@ -33,7 +33,7 @@ export default function App() {
                         <Route path='connections' element={<ConnectionsLayout />} >
                             {/* Nested route relative to "/connection" */}
                             <Route path=':connectionId' element={<Chat />} />
-                            <Route path=':connectionId/setting' element={<Disconnect />} />
+                            <Route path=':connectionId/settings' element={<Disconnect />} />
                         </Route>
                         <Route path='groups' element={<GroupsLayout />} >
                             {/* Nested route relative to "/groups" */}

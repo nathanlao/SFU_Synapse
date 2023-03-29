@@ -35,7 +35,7 @@ export default function ChatTopBar() {
                             <Typography variant="h6">
                                 {chatNames}
                             </Typography>
-                            <Link to={`/connections/${connectionId}/setting`}>
+                            <Link to={`/connections/${connectionId}/settings`}>
                                 <img className="logo" src={settingLogo} alt="setting logo"/>
                             </Link>
                         </>
