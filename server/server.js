@@ -25,7 +25,12 @@ const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCo
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
 const server = http.createServer(app)
-const io = new Server(server)
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
 
 dotenv.config()
 // Serve the static files from the React app
@@ -123,7 +128,11 @@ app.use(express.json());
 
 // Socketio Server listens for connection event
 io.on("connection", (socket) => {
-    console.log("New connection: ", socket.id)
+    console.log("User connected: ", socket.id)
+
+    socket.on('private-chat', (data) => {
+        console.log(data)
+    })
 
     socket.on("disconnect", () => {
         console.log("User Disconnect", socket.id)

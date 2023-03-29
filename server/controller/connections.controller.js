@@ -5,7 +5,8 @@ const getPendingConnections = (req, res) => {
     // JOIN Connections table with Users table
     const query = `SELECT c.connection_id, c.Status, 
                         ua.username AS userA_username, 
-                        ub.username AS userB_username
+                        ub.username AS userB_username, 
+                        c.userA_id, c.userB_id
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
