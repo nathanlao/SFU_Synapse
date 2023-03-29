@@ -1,7 +1,8 @@
 const express = require('express')
+const app = express()
+const multer = require('multer')
 const path = require('path');
 const bodyParser = require('body-parser')
-const app = express()
 const Routes = express.Router()
 const dotenv = require('dotenv')
 const cors = require('cors')
@@ -19,12 +20,14 @@ const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
-const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
+const { setProfileBio } = require('./controller/account-setup.controller');
+const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 
 
 dotenv.config()
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use('/images', express.static('public/images')) // for serving profile images stored in server
 app.use(bodyParser.json())
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://sfu-synapse.uc.r.appspot.com/");
@@ -46,6 +49,9 @@ app.use(cors({
 //     })
 // )
 
+
+
+
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
@@ -58,7 +64,7 @@ Routes.route('/connections/:id')
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
-    Routes.route('/setting')
+Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
     .delete(deleteUser)
@@ -75,9 +81,12 @@ Routes.route('/course-list/:year/:term/:dep')
 Routes.route('/course-list/:year/:term/:dep/:course')
     .get(getSections)
 Routes.route('/:username/setup/bio')
-    .put(setProfileBio)
-Routes.route('/:username/setup/photo')
-    .put(setProfilePhoto)
+    .put(setProfileBio) // should rename to setUserBio to differentiate it from setGroupBio 
+// photo file CRUD
+Routes.route('/user-photo/:username')
+    .post(setUserPhoto)
+    .get(getUserPhoto)
+    .delete(deleteUserPhoto)
 
 // Route: login
 Routes.route('/login')

@@ -11,7 +11,7 @@ div.edit-profile .editor-window {
     padding: 16px;
     display: grid;
     grid-template-rows: min-content min-content 1fr;
-    grid-template-columns: 150px 1fr;
+    grid-template-columns: 100px 1fr;
 
     margin-top: 64px;
     margin-left: auto;
@@ -29,7 +29,9 @@ div.edit-profile .editor-window .profile-image {
     /* background-color: green; */
 }
 div.edit-profile .editor-window .profile-image img {
+    width: 48px;
     height: 48px;
+    border-radius: 50%;
 }
 div.edit-profile .editor-window .profile-username {
     display: flex;
@@ -48,6 +50,9 @@ div.edit-profile .editor-window .profile-username a {
     font-weight: bold;
     color: #0095F6;
     text-decoration: none;
+}
+div.edit-profile .editor-window .profile-username a:hover {
+    cursor: pointer;
 }
 
 /* grid: second row */
@@ -113,3 +118,4 @@ div.edit-profile button:hover {
 div.edit-profile button:disabled:hover {
     background-color: #5E9697;
 }
+
