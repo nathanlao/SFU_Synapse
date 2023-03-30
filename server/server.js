@@ -23,6 +23,7 @@ const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
+const { createCommunity } = require('./controller/communities.controller');
 const session = require('express-session');
 
 
@@ -62,7 +63,7 @@ app.use('/', function(req,res,next){
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-    Routes.route('/connections')
+Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
 Routes.route('/connections/:id')
@@ -119,6 +120,9 @@ Routes.route('/admin/delete-section')
 Routes.route('/admin/delete-course')
     .post(deleteCourse)
 
+//Route: community
+Routes.route('/community/add')
+    .post(createCommunity)
 
 // User specific data
 Routes.route('/course/:year/:term')
