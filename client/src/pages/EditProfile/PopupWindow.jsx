@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import closeBtnImg from "../../images/close-btn.png"
 import './PopupWindow.css'
 
-export default function PopupWindow({notifyClosure, notifyChange, username}) {
+export default function PopupWindow({notifyClosure, notifyChange}) {
     
     const views = {
         menu: { name: 'options', heading: 'Change profile photo' },
@@ -113,7 +113,7 @@ export default function PopupWindow({notifyClosure, notifyChange, username}) {
                 method: 'POST',
                 body: data
             }
-            const response = await fetch(`/api/user-photo/${username}`, options)
+            const response = await fetch('/api/user-photo', options)
             const result = await response.json()
 
             if(response.status !== 200) {
@@ -130,7 +130,7 @@ export default function PopupWindow({notifyClosure, notifyChange, username}) {
     }
     
     async function deletePhoto() {
-        const response = await fetch(`/api/user-photo/${username}`, { method: 'DELETE' })
+        const response = await fetch('/api/user-photo', { method: 'DELETE' })
         const result = await response.json()
         
         if(response.status !== 200) {

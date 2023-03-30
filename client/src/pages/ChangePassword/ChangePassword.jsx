@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import defProfilePhoto from "../../images/default_profile_picture.png"
 import './ChangePassword.css'
 
 var md5 = require('md5');
@@ -21,7 +20,7 @@ export default function ChangePassword() {
 
     useEffect(()=> {
         async function init() {
-            const response = await fetch(`/api/user-photo/${username}`)
+            const response = await fetch('/api/user-photo')
             const result = await response.json()
             
             if(response.status !== 200) {
