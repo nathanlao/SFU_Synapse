@@ -20,7 +20,7 @@ const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
-
+const { createCommunity } = require('./controller/communities.controller');
 
 dotenv.config()
 // Serve the static files from the React app
@@ -49,7 +49,7 @@ app.use(cors({
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-    Routes.route('/connections')
+Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
 Routes.route('/connections/:id')
@@ -58,7 +58,7 @@ Routes.route('/connections/:id')
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
-    Routes.route('/setting')
+Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
     .delete(deleteUser)
@@ -98,6 +98,9 @@ Routes.route('/admin/delete-section')
 Routes.route('/admin/delete-course')
     .post(deleteCourse)
 
+//Route: community
+Routes.route('/community/add')
+    .post(createCommunity)
 
 // User specific data
 Routes.route('/:username/course/:year/:term')
