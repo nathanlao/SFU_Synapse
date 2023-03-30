@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useLocation } from 'react-router-dom';
 import io from 'socket.io-client'
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
@@ -13,29 +13,33 @@ import './Chat.css'
 const socket = io.connect("http://localhost:8080")
 
 export default function Chat() {
-
+    
     const { connectionId } = useParams()
     // state value from sidepanel.jsx
     const location = useLocation()
-    const userA_id = location?.state?.userAId
-    const userB_id = location?.state?.userBId
+
+    const connectionObj = location.state?.pendingConnections?.find(connection => {
+        return connection.connection_id === connectionId
+    })
+
+    console.log(connectionObj)
     
     const [message, setMessage] = useState("")
-    
+    const [messageList, setMessageList] = useState([])
+
     const handleInputChange = (e) => {
         setMessage(e.target.value)
     }
-    
-    const sendMessage = async (e) => {
+
+    const sendMessage = (e) => {
         e.preventDefault()
 
         if (message !== "") {
-            console.log(userA_id, "sending to " , userB_id)
-            console.log(message)
-
             const messageData = {
-                sender_id: userA_id,
-                receiver_id: userB_id,
+                connectionId: connectionObj.connection_id,
+                sender_name: connectionObj.userA_username,
+                sender_id: connectionObj.userA_id,
+                receiver_id: connectionObj.userB_id,
                 message: message,
                 timestamp: 
                     new Date(Date.now()).getHours() + 
@@ -43,13 +47,54 @@ export default function Chat() {
                     new Date(Date.now()).getMinutes()
             }
     
-            await socket.emit('private-chat', messageData)
-
+            socket.emit('send-private-message', messageData)
+            
             // Clear the input after sent
             setMessage("")
         }
-        
     }
+
+    useEffect(() => {
+        if (connectionId) {
+
+            socket.emit('join-private-room', connectionId);
+    
+            socket.on("receive-private-message", (data) => {
+                if (data.connectionId === connectionId) {
+                    setMessageList(prevMessageList => [...prevMessageList, data])
+                }
+            })
+
+            return () => {
+                socket.off('receive-private-message');
+                socket.emit('leave-private-room', connectionId);
+            }
+        }
+    }, [connectionId])
+
+    const messagesEl = messageList.map((messageContent, index) => {
+        const sender = messageContent.sender_id === connectionObj.userA_id ? 'You' : messageContent.sender_name;
+        return (
+            <div className="chat-content" key={index}>
+                <Avatar src={tempPic} alt="user icon" className="user-icon"/>
+                <div>
+                    <Box sx={{ fontWeight: 'bold' }}>
+                        <Typography variant="body1">
+                            {sender}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body3">
+                        {messageContent.message}
+                    </Typography>
+                </div>
+                <div className="chat-time">
+                    <Typography variant="body1">
+                        {messageContent.timestamp}
+                    </Typography>
+                </div>
+            </div>
+        )
+    })
 
     return (
         <>  
@@ -58,64 +103,7 @@ export default function Chat() {
             <div className="chat-content-container">
                 {/* TODO: display the conversation here, 
                     now only hard coded chats with styling now */}
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Corey
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            whats up
-                        </Typography>
-                    </div>
-                    <div className="chat-time">
-                        <Typography variant="body1">
-                            2:45pm
-                        </Typography>
-                    </div>
-                </div>
-
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Bryan
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-                            consequat. 
-                        </Typography>
-                    </div>
-                    <Typography variant="body1" className="chat-time">
-                        2:46pm  
-                    </Typography>
-                </div>
-
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Corey
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </Typography>
-                    </div>
-                    <Typography variant="body1" className="chat-time">
-                        2:47pm
-                    </Typography>
-                </div>
-
+                {messagesEl}
             </div>
 
             <Divider />

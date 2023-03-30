@@ -106,7 +106,7 @@ function ConnectionsSidepanel() {
     const pendingConnectionsEl = pendingConnections.map((connection) => {
         return (
             <Link 
-                to={`${connection.connection_id}`}
+                to={`/connections/${connection.connection_id}`}
                 key={connection.connection_id}
                 state={{ 
                     receiver_name: connection.userB_username, 

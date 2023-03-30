@@ -2,7 +2,8 @@ const db = require("../db/connection.db").pool
 const { v4: uuidv4 } = require('uuid');
 
 const getPendingConnections = (req, res) => {
-    const userId = req.params.userId
+    //
+    const userId = "1d204095-4797-4e01-8dd5-ee7afca89f37"
 
     // GET data with the correct userId 
     // JOIN Connections table with Users table

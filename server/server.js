@@ -8,13 +8,14 @@ const cors = require('cors')
 // For building server with socketio
 const http = require('http')
 const { Server } = require('socket.io')
+const db = require("./db/connection.db").pool
 
 // const session = require('express-session')
 
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
-const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections} = require('./controller/connections.controller')
+const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -46,6 +47,34 @@ app.use(cors({
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }))
+
+// Socketio Server listens for "connection" event
+io.on("connection", (socket) => {
+    console.log("User connected: ", socket.id)
+
+    // Direct Message
+    socket.on('join-private-room', (connectionId) => {
+        socket.join(connectionId);
+        console.log(`${socket.id} Joined room: ${connectionId}`);
+    });
+
+    socket.on('leave-private-room', (connectionId) => {
+        socket.leave(connectionId);
+        console.log(`${socket.id} Left room: ${connectionId}`);
+    });
+
+    socket.on('send-private-message', (messageData) => {
+        console.log("Data from front end: ", messageData)
+        console.log("Sending to connectionId room: ", messageData.connectionId)
+        io.to(messageData.connectionId).emit("receive-private-message", messageData)
+        // socket.broadcast.emit("receive-private-message", messageData)
+    })
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnect", socket.id)
+    })
+})
+
 // app.use(
 //     session({
 //         name: 'session_name',
@@ -59,12 +88,12 @@ app.use(cors({
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-    Routes.route('/connections/:userId')
+Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
-Routes.route('/connections/:userId/:id')
+Routes.route('/connections/:connetionId')
     .get(getActiveConnections)
-    .put(updateConnectionStatus)    
+    .put(updateConnectionStatus) 
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
@@ -125,20 +154,5 @@ app.all('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build/index.html'));
 })
 app.use(express.json());
-
-// Socketio Server listens for "connection" event
-io.on("connection", (socket) => {
-    console.log("User connected: ", socket.id)
-
-    socket.on('send-private-message', (data) => {
-        console.log("Data from front end: ", data.receiver_id)
-
-        io.to(data.receiver_id).emit("receive-private-message", data)
-    })
-
-    socket.on("disconnect", () => {
-        console.log("User Disconnect", socket.id)
-    })
-})
 
 server.listen(8080, () => console.log(`Server listening on port 8080`))
