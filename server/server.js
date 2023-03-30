@@ -22,7 +22,7 @@ const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCo
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
-const { checkLoginStatus } = require('./middleware/express-session.middleware');
+const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const session = require('express-session');
 
 
@@ -100,6 +100,9 @@ Routes.route('/login')
     .post(verifyLogin)
 Routes.route('/checkLoginStatus/:userType')
     .get(checkLoginStatus)
+
+Routes.route('/logout')
+    .post(logout)
 
 
 // Route: admin
