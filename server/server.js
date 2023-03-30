@@ -6,7 +6,6 @@ const path = require('path');
 const bodyParser = require('body-parser')
 const Routes = express.Router()
 const dotenv = require('dotenv')
-const cors = require('cors')
 // For building server with socketio
 const http = require('http')
 const { Server } = require('socket.io')

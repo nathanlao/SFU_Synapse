@@ -2,10 +2,13 @@ const db = require("../db/connection.db").pool
 const { v4: uuidv4 } = require('uuid');
 
 const getPendingConnections = (req, res) => {
-    //
-    const userId = "1d204095-4797-4e01-8dd5-ee7afca89f37"
 
-    // GET data with the correct userId 
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const username = req.session.user.username
+
+    // GET data with the login user 
     // JOIN Connections table with Users table
     const query = `SELECT c.connection_id, c.Status, 
                         ua.username AS userA_username, 
@@ -15,9 +18,9 @@ const getPendingConnections = (req, res) => {
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
                     WHERE c.status = 'Pending'
-                    AND (c.userA_id = ? OR c.userB_id = ?)`
+                    AND (ua.username = ? OR ub.username = ?)`
 
-    db.query(query, [userId, userId], (err, data) => {
+    db.query(query, [username, username], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
