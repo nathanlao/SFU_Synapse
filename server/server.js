@@ -22,7 +22,8 @@ const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCo
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
-const { createCommunity } = require('./controller/communities.controller');const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
+const { createCommunity } = require('./controller/communities.controller');
+const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus } = require('./middleware/express-session.middleware');
 const session = require('express-session');
 
