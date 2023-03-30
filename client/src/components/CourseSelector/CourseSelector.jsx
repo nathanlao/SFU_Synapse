@@ -41,8 +41,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
             console.log("getting enrolled courses")
 
             async function fetchEnrolledCourses() {
-                const username = 'testuser' // DEV replace once login sessions are implemented
-                const url = `/api/${username}/course/${year}/${term}`
+                const url = `/api/course/${year}/${term}`
                 const result = await fetch(url)
                 if(result.status !== 200) {
                     console.log('DEBUG: CourseSelector.jsx: 48')

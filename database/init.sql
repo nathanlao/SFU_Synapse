@@ -20,7 +20,7 @@ CREATE TABLE Users (
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
     userpass VARCHAR(128) NOT NULL,
-    photo VARCHAR(1024) DEFAULT '/path/to/default/user/profile/picture', -- path to where the user's profile photo is stored
+    photo VARCHAR(1024) DEFAULT '/images/default/default-user-photo.png',
 	bio TINYTEXT,
 	PRIMARY KEY (user_id)
 );
@@ -46,6 +46,7 @@ CREATE TABLE `Groups` (
 	group_id VARCHAR(64),
 	group_name VARCHAR(50) NOT NULL, -- e.g. if courses "SPRING2023 CMPT372 D100"
 	group_description TINYTEXT, -- e.g. if courses "Web II - Server-side Development"
+	photo VARCHAR(1024) NOT NULL,
 	PRIMARY KEY (group_id)
 );
 -- using “Groups” as the table name gives an error. Apparently because groups is a reserved keyword in mysql. Use backticks (`) to refer to this table

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { requiresLogin } from "../../services/authentication.service";
 import './AdminLogin.css';
 
 // assets
@@ -9,6 +10,17 @@ export default function AdminLogin() {
     const navigate = useNavigate()
     const [adminname, setAdminname] = useState('')
     const [adminpass, setPassword] = useState('')
+
+    useEffect(() => {
+        async function init() {
+            // check login status
+            const login = await requiresLogin('admin')
+            if(!login) {
+                navigate('/admin', { replace: true })
+            }
+        }
+        init()
+    }, [])
 
     function handleAdminnameChange(event) {
         setAdminname(event.target.value)

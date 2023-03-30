@@ -1,9 +1,13 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useNavigate } from 'react-router-dom';
 import CourseListViewer from "../../components/CourseListViewer/CourseListViewer"
+import { requiresLogin } from "../../services/authentication.service"
 import './Admin.css'
 
 
 export default function Admin() {
+    const navigate = useNavigate()
+
     // selector options
     const [years] = useState(() => {
         const time = new Date()
@@ -23,6 +27,16 @@ export default function Admin() {
     // pass to listviewer component
     const [targetYear, setTargetYear] = useState(years[0])
     const [targetTerm, setTargetTerm] = useState(terms[0].value)
+
+    useEffect(() => {
+        async function init() {
+            // check login status
+            if(await requiresLogin('admin')) {
+                navigate('/admin/login', { replace: true })
+            }
+        }
+        init()
+    }, [])
 
 
     function handleYearChange(event) {

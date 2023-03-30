@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import defProfilePhoto from "../../images/default_profile_picture.png"
 import './ChangePassword.css'
 
 var md5 = require('md5');
 
 export default function ChangePassword() {
+    const username = 'testuser' // for now
+    const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
+
+    // form data
     const [isSamePassword, setIsSamePassword] = useState(true);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPasssword, setConfirmPassword] = useState('');
@@ -14,6 +17,22 @@ export default function ChangePassword() {
     const [passContainsSymbol, setPassContainsSymbol] = useState(false);
     const [passContainsEightChars, setPassContainsEightChars] = useState(false);
     const [passErrorVisible, setPassErrorVisible] = useState(true);
+
+    useEffect(()=> {
+        async function init() {
+            const response = await fetch('/api/user-photo')
+            const result = await response.json()
+            
+            if(response.status !== 200) {
+                alert(result)
+                return
+            }
+
+            setPhoto(result)
+        }
+        init()
+    }, [])
+
 
     function containsUppercase(str) {
         return /[A-Z]/.test(str);
@@ -101,7 +120,7 @@ export default function ChangePassword() {
         <div className="change-password">
             <div className="editor-window">
                 <div className="left-column profile-image">
-                    <img src={defProfilePhoto} alt="" />
+                    <img src={photo} alt="" />
                 </div>
                 <div className="right-column profile-username">
                     <p id="username">LobsterBoy</p>
