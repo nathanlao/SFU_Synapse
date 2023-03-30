@@ -3,7 +3,8 @@ const path = require('path')
 const fs = require('fs')
 const { upload } = require('../../middleware/multer.middleware')
 const db = require('../../db/connection.db').pool
-const DEFAULT_USER_PHOTO_PATH = '/images/default/default-user-photo.png'
+const dotenv = require('dotenv')
+dotenv.config()
 
 
 // updates a field in user table with username
@@ -27,15 +28,21 @@ function getUserField(username, field) {
 }
 
 
-// entry point (/user-photo/:username).post()
+// entry point (/user-photo).post()
 const setUserPhoto = async (req, res) => {
     console.log('Received request: setUserPhoto')
-    const username = req.params.username
+
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+
+    const username = req.session.user.username
 
     try {
         // delete current image if not default
         const data = await getUserField(username, 'photo')
-        if(data[0].photo !== DEFAULT_USER_PHOTO_PATH) {
+        if(data[0].photo !== process.env.DEFAULT_USER_PHOTO_PATH) {
             // delete current photo
             const currentpath = data[0].photo
             const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
@@ -57,7 +64,7 @@ const setUserPhoto = async (req, res) => {
             
             // save filename in database
             const filepath = '/images/uploads/' + req.file.filename
-            await updateUser(req.params.username, 'photo', filepath)
+            await updateUser(username, 'photo', filepath)
 
             // send response
             return res.status(200).json(filepath)
@@ -69,13 +76,12 @@ const setUserPhoto = async (req, res) => {
 }
 
 const getUserPhoto = async (req, res) => {
-    if(!req.params.username) {
-        res.status(400).json('Missing parameter username.')
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
     }
 
     try {
-        const data = await getUserField(req.params.username, 'photo')
-        // console.log(data[0].photo)
+        const data = await getUserField(req.session.user.username, 'photo')
         res.status(200).json(data[0].photo)
     }catch(err) {
         res.status(500).json(err)
@@ -84,14 +90,19 @@ const getUserPhoto = async (req, res) => {
 
 const deleteUserPhoto = async (req, res) => {
     console.log('Received request: deleteUserPhoto')
-    const username = req.params.username
+
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const username = req.session.user.username
 
     try {
         const data = await getUserField(username, 'photo')
         const currentpath = data[0].photo
 
 
-        if(currentpath !== DEFAULT_USER_PHOTO_PATH) {
+        if(currentpath !== process.env.DEFAULT_USER_PHOTO_PATH) {
             const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
             fs.unlink(imgPath, (err) => {
                 if(err) {
@@ -101,10 +112,10 @@ const deleteUserPhoto = async (req, res) => {
                 return
             })
 
-            await updateUser(username, 'photo', DEFAULT_USER_PHOTO_PATH)
+            await updateUser(username, 'photo', process.env.DEFAULT_USER_PHOTO_PATH)
         }
 
-        res.status(200).json(DEFAULT_USER_PHOTO_PATH)
+        res.status(200).json(process.env.DEFAULT_USER_PHOTO_PATH)
 
     }catch(err) {
         res.status(500).json(err)

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import defProfilePhoto from "../../images/default_profile_picture.png"
 import './EditProfile.css'
 import PopupWindow from './PopupWindow'
 
 export default function EditProfile() {
-    const username = 'testuser' // for now
     const wordLimit = 150
     const [wordCount, setWordCount] = useState(0)
     const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
@@ -22,7 +20,7 @@ export default function EditProfile() {
     useEffect(() => {
         async function init() {
             // get user profile photo
-            const result = await fetch(`/api/user-photo/${username}`)
+            const result = await fetch('/api/user-photo')
             if(result.status === 200) {
                 const data = await result.json()
                 console.log(data)
@@ -70,7 +68,7 @@ export default function EditProfile() {
                 </div>
             </div>
 
-            {popupWindowState && <PopupWindow notifyClosure={closePopupWindow} notifyChange={updatePhoto} username={username} />}
+            {popupWindowState && <PopupWindow notifyClosure={closePopupWindow} notifyChange={updatePhoto} />}
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import CourseSelector from "../../components/CourseSelector/CourseSelector"
+import { requiresLogin } from "../../services/authentication.service"
 import './AccountSetup.css'
 
 export default function AccountSetup() {
@@ -18,6 +19,16 @@ export default function AccountSetup() {
         return getYearAndTerm().term
     })
 
+    useEffect(() => {
+        async function init() {
+            // check login status
+            if(await requiresLogin('user')) {
+                navigate('/signup', { replace: true })
+            }
+        }
+        init()
+    }, [])
+
     const username = 'testuser' // DEV: replace when login session implemented
 
 
@@ -27,7 +38,7 @@ export default function AccountSetup() {
         const promises1 = list.filter((item) => {
             return item.keep === false
         }).map((item) => {
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'DELETE' })
         })
         await Promise.all(promises1)
@@ -37,7 +48,7 @@ export default function AccountSetup() {
         const promises2 = list.filter((item) => {
             return item.keep && item.new_item
         }).map((item) => {
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'POST' })
         })
         await Promise.all(promises2)
@@ -52,7 +63,7 @@ export default function AccountSetup() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ bio: bio.value })
             }
-            const result = await fetch(`/api/${username}/setup/bio`, options)
+            const result = await fetch('/api/setup/bio', options)
             if(result.status !== 200) {
                 const msg = await result.json()
                 console.log(msg)
@@ -72,7 +83,7 @@ export default function AccountSetup() {
                 method: 'POST',
                 body: data
             }
-            const response = await fetch(`/api/user-photo/${username}`, options)
+            const response = await fetch('/api/user-photo', options)
             const result = await response.json()
 
             if(response.status !== 200) {
@@ -126,6 +137,10 @@ export default function AccountSetup() {
         }
     }
 
+    function handleSkipBtnClick() {
+        navigate('/', { replace: true })
+    }
+
 
     // helper function
     function getYearAndTerm() {
@@ -171,6 +186,7 @@ export default function AccountSetup() {
                     <small>{bioLen} / {bioMaxLen}</small>
                 </section>
                 <div className="submit-btn">
+                    <button type="button" id="skipBtn" className="btn btn-light" onClick={handleSkipBtnClick}>Skip</button>
                     <button type="button" id="completeBtn" className="btn btn-light" onClick={handleBtnClick} disabled={bioLen > bioMaxLen}>Complete account setup</button>
                 </div>
             </section>

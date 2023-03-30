@@ -220,6 +220,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">group_id</th>
                     <th scope="col">group_name</th>
                     <th scope="col">group_description</th>
+                    <th scope="col">photo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -229,6 +230,7 @@ export default function DevDatabaseManager() {
                         <td>{item.group_id}</td>
                         <td>{item.group_name}</td>
                         <td>{item.group_description}</td>
+                        <td>{item.photo}</td>
                         </tr>
                     ))}
                 </tbody>
