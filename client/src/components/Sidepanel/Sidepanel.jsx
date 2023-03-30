@@ -109,9 +109,8 @@ function ConnectionsSidepanel() {
                 to={`${connection.connection_id}`}
                 key={connection.connection_id}
                 state={{ 
-                    pendingConnections: connection.userB_username, 
-                    userAId: connection.userA_id, 
-                    userBId: connection.userB_id 
+                    receiver_name: connection.userB_username, 
+                    pendingConnections: pendingConnections
                 }}
                 onClick={() => renderAddButton(connection.connection_id)}
             >
