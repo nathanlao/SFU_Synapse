@@ -101,7 +101,12 @@ async function queryDB(queryStr, queryParams) {
 // gets all courses a user (with userid) is enrolled in the given semester
 const getEnrolledCourses = async (req, res) => {
     console.log('Received reuqest: getEnrolledCourses')
-    const username = req.params.username
+
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const username = req.session.user.username
     const year = req.params.year
     const term = req.params.term
     console.log(username, year, term)
@@ -119,7 +124,12 @@ const getEnrolledCourses = async (req, res) => {
 
 const addUserToCourse = (req, res) => {
     console.log('Received reuqest: addUserToCourse')
-    const username = req.params.username
+
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const username = req.session.user.username
     const year = req.params.year
     const term = req.params.term
     const dep = req.params.dep
@@ -138,7 +148,12 @@ const addUserToCourse = (req, res) => {
 
 const removeUserFromCourse = async (req, res) => {
     console.log('Received reuqest: removeUserFromCourse')
-    const username = req.params.username
+
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const username = req.session.user.username
     const year = req.params.year
     const term = req.params.term
     const dep = req.params.dep

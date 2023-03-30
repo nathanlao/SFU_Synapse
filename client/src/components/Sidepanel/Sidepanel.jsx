@@ -18,6 +18,17 @@ function ConnectionsSidepanel() {
     const [clickedConnection, setClickedConnection] = useState(null)
     const [error, setError] = useState(null)
 
+    // Used to determine whether this is connections path or setting path
+    const path = useLocation().pathname
+
+    function handleSettingsClick(event) {
+        var items = document.querySelectorAll('.setting-item-div.active');
+        if(items.length) 
+            items[0].className = 'setting-item-div';
+
+        event.target.className = 'setting-item-div active';
+    }
+
     // Fetching pending connections
     useEffect(() => {
         async function getPendingConnections() {
@@ -42,11 +53,11 @@ function ConnectionsSidepanel() {
     }, [])
 
     // Fetching active connections
-    const { id } = useParams()
+    const { connectionId } = useParams()
     useEffect(() => {
         async function getActiveConnections() {
             try {
-                const response = await fetch(`/api/connections/${id}`)
+                const response = await fetch(`/api/connections/${connectionId}`)
                 if (!response.ok) {
                     // eslint-disable-next-line no-throw-literal
                     throw {
@@ -142,8 +153,8 @@ function ConnectionsSidepanel() {
                         {activeConnectionsEl}
                 </Accordion.Item>
             </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}}>
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="1">
+            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                     <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
                         {pendingConnectionsEl}
                 </Accordion.Item>

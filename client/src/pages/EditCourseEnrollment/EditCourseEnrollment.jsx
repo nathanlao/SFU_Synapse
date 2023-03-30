@@ -43,8 +43,7 @@ export default function EditCourseEnrollment() {
         const promises1 = list.filter((item) => {
             return item.keep === false
         }).map((item) => {
-            const username = 'testuser' // DEV: replace when login session implemented
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'DELETE' })
         })
         await Promise.all(promises1)
@@ -54,8 +53,7 @@ export default function EditCourseEnrollment() {
         const promises2 = list.filter((item) => {
             return item.keep && item.new_item
         }).map((item) => {
-            const username = 'testuser' // DEV: replace when login session implemented
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'POST' })
         })
         await Promise.all(promises2)

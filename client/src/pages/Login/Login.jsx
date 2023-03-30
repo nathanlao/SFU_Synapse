@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { requiresLogin } from "../../services/authentication.service";
 import './Login.css';
 
 var md5 = require('md5');
@@ -8,6 +9,17 @@ export default function Login() {
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
     const [userpass, setPassword] = useState('')
+
+    useEffect(() => {
+        async function init() {
+            // check login status
+            const login = await requiresLogin('user')
+            if(!login) {
+                navigate('/', { replace: true })
+            }
+        }
+        init()
+    }, [])
 
     function handleUsernameChange(event) {
         setUsername(event.target.value)

@@ -1,4 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
+const dotenv = require('dotenv')
+dotenv.config()
 const db = require('../db/connection.db').pool
 
 
@@ -12,14 +14,16 @@ const addSection = (req, res) => {
     const title = req.body.title
     if(year && term && dep && num && section) {
         const entryID = uuidv4()
+        const photo = process.env.DEFAULT_COURSE_PHOTO_BASEPATH + getRandomInteger(1, 5) + '.png'
         const groupName = `${term.toUpperCase() + year} ${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
-        const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description) VALUES(?, ?, ?);'
+        const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description, photo) VALUES(?, ?, ?, ?);'
         const query2 = 'INSERT INTO Courses(course_id, offered_year, offered_term, dep, num, section, title) VALUES(?, ?, ?, ?, ?, ?, ?);'
 
         db.query((query1 + query2), [
             entryID,
             groupName,
             title,
+            photo,
             entryID,
             year.toString(),
             term,
@@ -29,6 +33,7 @@ const addSection = (req, res) => {
             title
         ], (err, data) => {
             if(err) {
+                console.log(err)
                 res.status(500).json(err)
             }else {
                 res.status(200).json(data)
@@ -133,10 +138,11 @@ async function addSection_(year, term, dep, num, section, title) {
     if(year && term && dep && num && section && title) {
         return new Promise(function(resolve) {
             const id = uuidv4()
+            const photo = process.env.DEFAULT_COURSE_PHOTO_BASEPATH + getRandomInteger(1, 5) + '.png'
             const groupName = `${term.toUpperCase() + year} ${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
-            const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description) VALUES(?, ?, ?);'
+            const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description, photo) VALUES(?, ?, ?, ?);'
             const query2 = 'INSERT INTO Courses(course_id, offered_year, offered_term, dep, num, section, title) VALUES(?, ?, ?, ?, ?, ?, ?);'
-            var params = [id, groupName, title, id, year, term, dep, num, section, title]
+            var params = [id, groupName, title, photo, id, year, term, dep, num, section, title]
                 
             db.query((query1 + query2), params, (err, data) => {
                 if(err) {
@@ -148,6 +154,11 @@ async function addSection_(year, term, dep, num, section, title) {
     }else {
         return undefined
     }
+}
+
+// helper function
+function getRandomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
 

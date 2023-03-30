@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import CourseSelector from "../../components/CourseSelector/CourseSelector"
+import { requiresLogin } from "../../services/authentication.service"
 import './AccountSetup.css'
 
 export default function AccountSetup() {
+    const navigate = useNavigate()
     const bioMaxLen = 150
     const [bioLen, setBioLen] = useState(0)
     const [list, setList] = useState([])
@@ -16,6 +19,18 @@ export default function AccountSetup() {
         return getYearAndTerm().term
     })
 
+    useEffect(() => {
+        async function init() {
+            // check login status
+            if(await requiresLogin('user')) {
+                navigate('/signup', { replace: true })
+            }
+        }
+        init()
+    }, [])
+
+    const username = 'testuser' // DEV: replace when login session implemented
+
 
     async function handleBtnClick() {
                
@@ -23,8 +38,7 @@ export default function AccountSetup() {
         const promises1 = list.filter((item) => {
             return item.keep === false
         }).map((item) => {
-            const username = 'testuser' // DEV: replace when login session implemented
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'DELETE' })
         })
         await Promise.all(promises1)
@@ -34,35 +48,55 @@ export default function AccountSetup() {
         const promises2 = list.filter((item) => {
             return item.keep && item.new_item
         }).map((item) => {
-            const username = 'testuser' // DEV: replace when login session implemented
-            const url = `/api/${username}/${year}/${term}/${item.dep}/${item.num}/${item.section}`
+            const url = `/api/${year}/${term}/${item.dep}/${item.num}/${item.section}`
             return fetch(url, { method: 'POST' })
         })
         await Promise.all(promises2)
         console.log('Added new courses')
         
         // 3 update user's bio
-        const username = 'testuser' // DEV: replace when login session implemented
         const bio = document.getElementById('bioTextarea')
         console.log(bio.value)
-        const options = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bio: bio.value })
+        if(bio.value !== '') {
+            const options = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bio: bio.value })
+            }
+            const result = await fetch('/api/setup/bio', options)
+            if(result.status !== 200) {
+                const msg = await result.json()
+                console.log(msg)
+                return
+            }else {
+                console.log('Profile bio saved')
+            }
         }
-        const result = await fetch(`/api/${username}/setup/bio`, options)
-        if(result !== 200) {
-            const msg = await result.json()
-            console.log(msg)
-            return
-        }
-        console.log('Profile bio saved')
             
 
         // 4 update user's profile
+        if(photo.data) {
+            const data = new FormData()
+            data.append('file', photo.data)
+
+            const options = {
+                method: 'POST',
+                body: data
+            }
+            const response = await fetch('/api/user-photo', options)
+            const result = await response.json()
+
+            if(response.status !== 200) {
+                alert(result)
+                return
+            }
+
+            console.log('Profile photo saved')
+        }
 
 
         console.log('Account setup Completed!!')
+        navigate("/", {replace: true})
     }
 
 
@@ -101,6 +135,10 @@ export default function AccountSetup() {
         }else {
             setPhoto({})
         }
+    }
+
+    function handleSkipBtnClick() {
+        navigate('/', { replace: true })
     }
 
 
@@ -148,6 +186,7 @@ export default function AccountSetup() {
                     <small>{bioLen} / {bioMaxLen}</small>
                 </section>
                 <div className="submit-btn">
+                    <button type="button" id="skipBtn" className="btn btn-light" onClick={handleSkipBtnClick}>Skip</button>
                     <button type="button" id="completeBtn" className="btn btn-light" onClick={handleBtnClick} disabled={bioLen > bioMaxLen}>Complete account setup</button>
                 </div>
             </section>

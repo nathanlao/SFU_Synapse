@@ -1,0 +1,57 @@
+.pop-up-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pop-up-content-container {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px !important;
+}
+
+.pop-up-content {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+}
+
+.dialog-card {
+    width: 200px;
+    height: 80px;
+    box-shadow: none !important;
+}
+
+.inactive-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.inactive-arrow img {
+    filter: invert(48%) sepia(20%) saturate(2918%) hue-rotate(12deg) brightness(96%) contrast(104%);
+    width: 60px;
+    margin-top: 10px;
+}
+
+.inactive {
+    color: #bf860a;
+    margin-top: -15px !important;
+}
+
+.disconnect-prompt {
+    color: #41a0e8;
+    display: flex;
+    align-items: center;
+}
+
+.disconnect-prompt button {
+    display: inline-block;
+    padding: 0;
+    margin-left: 10px;
+    background-color: white;
+    color: #41a0e8;
+    border-style: none;
+    border-bottom: 1px solid #41a0e8;
+}

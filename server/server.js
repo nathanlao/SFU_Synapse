@@ -1,11 +1,12 @@
 const express = require('express')
+// const cookieParser = require('cookie-parser');
+const cors = require('cors')
+const app = express()
 const path = require('path');
 const bodyParser = require('body-parser')
-const app = express()
 const Routes = express.Router()
 const dotenv = require('dotenv')
-const cors = require('cors')
-// const session = require('express-session')
+dotenv.config()
 
 
 // controllers
@@ -19,12 +20,17 @@ const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
-const { setProfileBio, setProfilePhoto } = require('./controller/account-setup.controller');
-const { createCommunity } = require('./controller/communities.controller');
+const { setProfileBio } = require('./controller/account-setup.controller');
+const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
+const { createCommunity } = require('./controller/communities.controller');const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
+const { checkLoginStatus } = require('./middleware/express-session.middleware');
+const session = require('express-session');
 
-dotenv.config()
+
+
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use('/images', express.static('public/images')) // for serving profile images stored in server
 app.use(bodyParser.json())
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://sfu-synapse.uc.r.appspot.com/");
@@ -36,15 +42,23 @@ app.use(cors({
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }))
-// app.use(
-//     session({
-//         name: 'session_name',
-//         secret: 'choose_secure_secret',
-//         resave: false,
-//         maxAge: 1000 * 60 * 60 * 24,
-//         saveUninitialized: true
-//     })
-// )
+app.use(session({
+    name: 'synapse-login',
+    secret: process.env.SESSION_SECRET_STRING,
+    resave: false,
+    maxAge: 24 * 60 * 60 * 1000,
+    saveUninitialized: false
+}))
+
+// log to console [DEV]
+app.use('/', function(req,res,next){
+    console.log(req.method, 'request: ', req.url, JSON.stringify(req.body))
+    next()
+})
+
+
+
+
 
 // Route: main
 Routes.route('/')
@@ -74,14 +88,19 @@ Routes.route('/course-list/:year/:term/:dep')
     .get(getCourses)
 Routes.route('/course-list/:year/:term/:dep/:course')
     .get(getSections)
-Routes.route('/:username/setup/bio')
-    .put(setProfileBio)
-Routes.route('/:username/setup/photo')
-    .put(setProfilePhoto)
+Routes.route('/setup/bio')
+    .put(setProfileBio) // should rename to setUserBio to differentiate it from setGroupBio 
+// photo file CRUD
+Routes.route('/user-photo')
+    .post(setUserPhoto)
+    .get(getUserPhoto)
+    .delete(deleteUserPhoto)
 
 // Route: login
 Routes.route('/login')
     .post(verifyLogin)
+Routes.route('/checkLoginStatus/:userType')
+    .get(checkLoginStatus)
 
 
 // Route: admin
@@ -103,9 +122,9 @@ Routes.route('/community/add')
     .post(createCommunity)
 
 // User specific data
-Routes.route('/:username/course/:year/:term')
+Routes.route('/course/:year/:term')
     .get(getEnrolledCourses)
-Routes.route('/:username/:year/:term/:dep/:num/:section')
+Routes.route('/:year/:term/:dep/:num/:section')
     .delete(removeUserFromCourse)
     .post(addUserToCourse)
 
