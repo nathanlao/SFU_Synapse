@@ -92,9 +92,11 @@ const deleteAccount = async (req, res) => {
         return res.sendStatus(401)
     }
 
+    const user_id = req.session.user.user_id
+
     try {
         // compare with current password
-        const data1 = await getUserField(req.session.user.user_id, 'userpass')
+        const data1 = await getUserField(user_id, 'userpass')
         if(data1[0].userpass !== req.body.password) {
             return res.status(400).json('Incorrect password.')
         }
@@ -105,7 +107,7 @@ const deleteAccount = async (req, res) => {
         console.log('1. check if user is owner (creater) of any community')
         const promise1 = new Promise((resolve, reject) => {
             const qSearch = 'SELECT COUNT(community_id) AS ownership FROM Communities WHERE created_by=?'
-            db.query(qSearch, [req.session.user.user_id], (err, data) => {
+            db.query(qSearch, [user_id], (err, data) => {
                 if(err) {
                     reject(err)
                 }
@@ -121,7 +123,7 @@ const deleteAccount = async (req, res) => {
 
 
         // get current photo path (before updating database)
-        const data2 = await getUserField(req.session.user.user_id, 'photo')
+        const data2 = await getUserField(user_id, 'photo')
 
 
         // 2. update user in database
@@ -131,12 +133,12 @@ const deleteAccount = async (req, res) => {
                 '<anonymous>', 
                 'Deleted', 
                 'Account', 
-                req.session.user.user_id, 
+                user_id, 
                 '', 
                 process.env.DEFAULT_DELETED_USER_PHOTO_PATH,
                 null, 
                 0, 
-                req.session.user.user_id
+                user_id
             ]
         
             const qDelete = "UPDATE Users SET username=?, first_name=?, last_name=?, email=?, userpass=?, photo=?, bio=?, status=? WHERE user_id = ?";
@@ -165,6 +167,8 @@ const deleteAccount = async (req, res) => {
                 }
             })
         }
+
+        // 4. TBD -- do we want to remove records from the MemberOf and Connections table too? (user_id)
 
         console.log('all done')
         req.session.destroy()
