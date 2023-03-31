@@ -6,12 +6,21 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const Routes = express.Router()
 const dotenv = require('dotenv')
+// For building server with socketio
+const http = require('http')
+const { Server } = require('socket.io')
+const db = require("./db/connection.db").pool
+
+// const session = require('express-session')
 dotenv.config()
 
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
-const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections} = require('./controller/connections.controller')
+const { getCurrentLoginUser } = require('./controller/current-user.controller')
+const { getUserDetails } = require('./controller/user-details.controller')
+const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
+const { getDirectMessages } = require('./controller/direct-messages.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -24,9 +33,18 @@ const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/communities.controller');
+const socketController = require('./controller/socket-io.controller')
 const session = require('express-session');
 
-
+// socket.io to enable bidirectional communication
+const server = http.createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
+socketController(io)
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
@@ -42,6 +60,7 @@ app.use(cors({
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }))
+
 app.use(session({
     name: 'synapse-login',
     secret: process.env.SESSION_SECRET_STRING,
@@ -57,18 +76,21 @@ app.use('/', function(req,res,next){
 })
 
 
-
-
-
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
+Routes.route('/currentuser')
+    .get(getCurrentLoginUser)
+Routes.route('/userDetails/:userId')
+    .get(getUserDetails)
 Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
-Routes.route('/connections/:id')
+Routes.route('/connections/:connetionId')
     .get(getActiveConnections)
-    .put(updateConnectionStatus)    
+    .put(updateConnectionStatus) 
+Routes.route('/connections/chat/:sender_id/:receiver_id')
+    .get(getDirectMessages)
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
@@ -142,4 +164,4 @@ app.all('*', (req, res) => {
 })
 app.use(express.json());
 
-app.listen(8080, () => console.log(`Server listening on port 8080`))
+server.listen(8080, () => console.log(`Server listening on port 8080`))

@@ -16,7 +16,7 @@ export default function ChatTopBar() {
     const isGroupPage = from.split("/")[1] === "groups"
 
     // testData from Sidepanel.jsx
-    const chatNames = useLocation().state?.pendingConnections
+    const chatNames = useLocation().state?.receiver_name
 
     const activeStyle = {
         fontWeight: 'bold',
