@@ -5,7 +5,8 @@ const getDirectMessages = (req, res) => {
 
     const selectMsgQuery = `
         SELECT * FROM DirectMessages
-        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)`
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+        ORDER BY id`
 
     db.query(selectMsgQuery, [sender_id, receiver_id, receiver_id, sender_id], (err, data) => {
         if (err) {

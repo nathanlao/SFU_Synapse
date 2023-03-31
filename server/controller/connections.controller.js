@@ -6,8 +6,8 @@ const getPendingConnections = (req, res) => {
     if (!req.session || !req.session.user) {
         return res.sendStatus(401)
     }
-    // Need to change to userId
-    const userId = "bf77ceac-3d41-487d-b585-6afb7ca5558b"
+
+    const userId = req.session.user.user_id
 
     // GET data with the login user 
     // JOIN Connections table with Users table
