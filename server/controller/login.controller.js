@@ -13,7 +13,7 @@ const verifyLogin = (req, res) => {
             res.status(500).json(err)
         }else {
             if(data.length > 0 && data[0].userpass === userpass) {
-                req.session.user = { username: username }
+                req.session.user = { username: username, user_id: data[0].user_id }
                 res.status(200).json("Login: success")
             }else {
                 res.status(401).json("Incorrect username or password")

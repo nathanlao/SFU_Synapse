@@ -22,7 +22,8 @@ const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCo
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
-const { createCommunity } = require('./controller/communities.controller');
+const { createCommunity } = require('./controller/add-communities.controller');
+const { getCommunities , joinCommunity } = require('./controller/browse-communities.controller');
 const { checkLoginStatus } = require('./middleware/express-session.middleware');
 const session = require('express-session');
 
@@ -120,6 +121,9 @@ Routes.route('/admin/delete-course')
 //Route: community
 Routes.route('/community/add')
     .post(createCommunity)
+Routes.route('/community/browse')
+    .get(getCommunities)
+    .post(joinCommunity)
 
 // User specific data
 Routes.route('/course/:year/:term')
