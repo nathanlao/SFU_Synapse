@@ -15,7 +15,7 @@ const { getPendingConnections, createPendingConnection, updateConnectionStatus, 
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
-const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
+const { getSettings, updateSettings, deleteUser, updatePassoword } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
@@ -76,7 +76,8 @@ Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
     .delete(deleteUser)
-
+Routes.route('/change-password')
+    .put(updatePassoword)
 
 // Route: signup
 Routes.route('/signup')

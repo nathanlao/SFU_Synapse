@@ -4,9 +4,10 @@ import PopupWindow from './PopupWindow'
 
 export default function EditProfile() {
     const wordLimit = 150
-    const [wordCount, setWordCount] = useState(0)
+
     const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
     const [username, setUsername] = useState('')
+    const [currentUsername, setCurrentUsername] = useState('')
     const [bio, setBio] = useState('')
 
     const [popupWindowState, setPopupWindowState] = useState(false)
@@ -30,6 +31,7 @@ export default function EditProfile() {
             }
 
             console.log(data[0].username, data[0].bio, data[0].photo)
+            setCurrentUsername(data[0].username)
             setUsername(data[0].username)
             setPhoto(data[0].photo)
             if(data[0].bio) {
@@ -41,11 +43,34 @@ export default function EditProfile() {
     }, [])
 
     function handleBioChange(event) {
-        setWordCount(event.target.value.length)
+        setBio(event.target.value)
+    }
+
+    function handleUsernameChange(event) {
+        setUsername(event.target.value)
     }
 
     function updatePhoto(path) {
         setPhoto(path)
+    }
+
+    async function handleSaveSettings() {
+        console.log(username, bio)
+
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, bio: bio })
+        }
+
+        const response = await fetch('/api/setting', options)
+        const data = await response.json()
+
+        if(response.status !== 200) {
+            return alert(data)
+        }
+
+        console.log(data)
     }
 
 
@@ -56,22 +81,22 @@ export default function EditProfile() {
                     <img src={photo} alt="user profile photo" />
                 </div>
                 <div className="right-column profile-username">
-                    <p>{username}</p>
+                    <p>{currentUsername}</p>
                     <a onClick={showPopupWindow}>Change profile photo</a>
                 </div>
                 <div className="left-column profile-input-label">
                 <label htmlFor="">Username</label>
                 </div>
                 <div className="right-column profile-input">
-                    <input type="text" defaultValue={username} />
+                    <input type="text" defaultValue={username} onChange={handleUsernameChange} />
                 </div>
                 <div className="left-column profile-textarea-label">
                     <label htmlFor="">Bio</label>
                 </div>
                 <div className="right-column profile-textarea">
-                    <textarea name="" id="" cols="30" rows="5" defaultValue={bio} onChange={handleBioChange}></textarea>
-                    <small><span className={wordCount <= wordLimit ? 'valid-length' : 'invalid-length'}>{wordCount}</span> / {wordLimit}</small>
-                    <button type='button' id='saveProfileBtn' disabled={wordCount > wordLimit}>Save</button>
+                    <textarea cols="30" rows="5" defaultValue={bio} onChange={handleBioChange}></textarea>
+                    <small><span className={bio.length <= wordLimit ? 'valid-length' : 'invalid-length'}>{bio.length}</span> / {wordLimit}</small>
+                    <button type='button' id='saveProfileBtn' disabled={bio.length > wordLimit || username.length === 0} onClick={handleSaveSettings}>Save</button>
                 </div>
             </div>
 

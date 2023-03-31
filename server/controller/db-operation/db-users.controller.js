@@ -122,4 +122,4 @@ const deleteUserPhoto = async (req, res) => {
     }
 }
 
-module.exports = { updateUser, setUserPhoto, getUserPhoto, deleteUserPhoto }
+module.exports = { updateUser, setUserPhoto, getUserPhoto, deleteUserPhoto, getUserField }
