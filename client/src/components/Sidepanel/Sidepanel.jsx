@@ -16,7 +16,29 @@ function ConnectionsSidepanel() {
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
     const [clickedConnection, setClickedConnection] = useState(null)
+    const [currentUserId, setCurrentUserId] = useState(null);
     const [error, setError] = useState(null)
+
+    useEffect(() => {
+        async function getCurrentLoginUser() {
+            try {
+                const response = await fetch("/api/currentuser")
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch current login user", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
+                setCurrentUserId(data[0].user_id)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCurrentLoginUser()
+    }, []);
 
     // Fetching pending connections
     useEffect(() => {
@@ -109,14 +131,19 @@ function ConnectionsSidepanel() {
                 to={`/connections/${connection.connection_id}`}
                 key={connection.connection_id}
                 state={{ 
-                    receiver_name: connection.userB_username, 
+                    sender_id: currentUserId,
+                    receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
                     pendingConnections: pendingConnections
                 }}
                 onClick={() => renderAddButton(connection.connection_id)}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                         <SidepanelItem
-                            image={connection.userB_photo}
+                            image={
+                                connection.userA_id === currentUserId
+                                    ? connection.userB_photo
+                                    : connection.userA_photo
+                            }
                             indicator={clickedConnection === connection.connection_id 
                                 ? (<Button size="small" variant="contained" color="success" 
                                         onClick={() => handleUpdateConnection(connection.connection_id)}
@@ -124,7 +151,11 @@ function ConnectionsSidepanel() {
                                         <PersonAddIcon />
                                     </Button>) 
                                 : null}
-                            title={connection.userB_username} 
+                                title={
+                                    connection.userA_id === currentUserId
+                                        ? connection.userB_username
+                                        : connection.userA_username
+                                }
                         />
                 </Accordion.Body>
             </Link>
