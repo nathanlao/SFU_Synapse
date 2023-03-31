@@ -1,6 +1,7 @@
 const db = require('../db/connection.db').pool
 const { getUserField } = require('../controller/db-operation/db-users.controller')
-
+const dotenv = require('dotenv')
+dotenv.config()
 
 const getSettings = (req, res) => {
     
@@ -16,10 +17,28 @@ const getSettings = (req, res) => {
     });
 }
 
-const updateSettings = (req, res) => {
+const updateSettings = async (req, res) => {
 
     if(!req.session || !req.session.user) {
         return res.sendStatus(401)
+    }
+
+    // check if username is unique
+    const promise = new Promise((resolve, reject) => {
+        db.query('SELECT COUNT(*) AS count FROM Users WHERE username=?', [req.body.username], (err, data) => {
+            if(err) reject(err)
+            resolve(data[0].count)
+        })
+    })
+
+    try {
+        const count = await promise
+        console.log(count + ' accounts with the same username')
+        if(count > 0) {
+            return res.status(400).json('This username is already taken. Please choose another one.')
+        }
+    }catch(err) {
+        return res.status(500).json(err)
     }
 
     const values = [
@@ -44,10 +63,14 @@ const updatePassoword = async (req, res) => {
         return res.sendStatus(401)
     }
 
-    // compare with current password
-    const data = await getUserField(req.session.user.user_id, 'userpass')
-    if(data[0].userpass !== req.body.oldPassword) {
-        return res.status(400).json('Incorrect password.')
+    try {
+        // compare with current password
+        const data = await getUserField(req.session.user.user_id, 'userpass')
+        if(data[0].userpass !== req.body.oldPassword) {
+            return res.status(400).json('Incorrect password.')
+        }
+    }catch(err) {
+        res.status(500).json(err)
     }
 
     // update password
@@ -60,15 +83,84 @@ const updatePassoword = async (req, res) => {
     })
 }
 
-const deleteUser = (req, res) => {
+const deleteAccount = async (req, res) => {
+    console.log('Received request: deleteAccount')
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
 
-    const qDelete = "DELETE FROM Users WHERE user_id = ?";
+    try {
+        // compare with current password
+        const data = await getUserField(req.session.user.user_id, 'userpass')
+        if(data[0].userpass !== req.body.password) {
+            return res.status(400).json('Incorrect password.')
+        }
+    }catch(err) {
+        return res.status(500).json(err)
+    }
+
+    // 1. check if user is owner (creater) of a community
+    const promise1 = new Promise((resolve, reject) => {
+        const qSearch = 'SELECT COUNT(community_id) AS ownership FROM Communities WHERE created_by=?'
+        db.query(qSearch, [req.session.user.user_id], (err, data) => {
+            if(err) {
+                reject(err)
+            }
     
-    db.query(qDelete, [req.body.user_id], (err,data) => {
+            resolve(data[0].ownership)
+        })
+    })
+
+    try {
+        const count = await promise1
+        console.log('Ownership: ' + count)
+        if(count > 0) {
+            return res.status(400).json(`It seems you are an owner of ${count} community group${count > 1 ? 's' : ''}. Please transfer all ownership before attempting to delete your account.`)
+        }
+    }catch(err) {
+        return res.status(500).json(err)
+    }
+
+
+    // 2. delete uploaded photo
+    try {
+        const data = await getUserField(req.session.user.user_id, 'photo')
+        if(data[0].photo !== process.env.DEFAULT_USER_PHOTO_PATH) {
+            const imgPath = path.join(__dirname, '..', '..', 'public') + data[0].photo
+            fs.unlink(imgPath, (err) => {
+                if(err) {
+                    console.log(err)
+                    throw err
+                }
+                return
+            })
+        }
+    }catch(err) {
+        return res.status(500).json(err)
+    }
+
+
+    // 3. update user in database
+    const values = [
+        'anonymous', 
+        'Deleted', 
+        'Account', 
+        req.session.user.user_id, 
+        '', 
+        process.env.DEFAULT_DELETED_USER_PHOTO_PATH,
+        null, 
+        0, 
+        req.session.user.user_id
+    ]
+
+    const qDelete = "UPDATE Users username=?, first_name=?, last_name=?, email=?, userpass=?, bio=?, photo=?, status=? WHERE user_id = ?";
+    
+    db.query(qDelete, values, (err) => {
         if (err) return res.status(500).json(err);
+        req.session.destroy()
         return res.status(200).json("Deleted user.");
     });
 }
 
 
-module.exports = { getSettings, updateSettings, updatePassoword, deleteUser }
+module.exports = { getSettings, updateSettings, updatePassoword, deleteAccount }
