@@ -70,7 +70,11 @@ export default function EditProfile() {
             return alert(data)
         }
 
+        setCurrentUsername(username)
+
+        // toast (data) for usability
         console.log(data)
+        
     }
 
 
