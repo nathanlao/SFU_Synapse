@@ -106,14 +106,16 @@ const getEnrolledCourses = async (req, res) => {
         return res.sendStatus(401)
     }
 
-    const username = req.session.user.username
+    // const username = req.session.user.username
+    const user_id = req.session.user.user_id
     const year = req.params.year
     const term = req.params.term
-    console.log(username, year, term)
+    console.log(user_id, year, term)
 
 
-    const queryStr = 'SELECT C.dep, C.num, C.section FROM MemberOf M, Courses C, Users U WHERE M.group_id=C.course_id AND U.user_id=M.user_id AND U.username=? AND C.offered_year=? AND C.offered_term=? ORDER BY C.dep, C.num, C.section'
-    db.query(queryStr, [username, year, term], (err, data) => {
+
+    const queryStr = 'SELECT C.dep, C.num, C.section FROM MemberOf M, Courses C WHERE M.group_id=C.course_id AND M.user_id=? AND C.offered_year=? AND C.offered_term=? ORDER BY C.dep, C.num, C.section'
+    db.query(queryStr, [user_id, year, term], (err, data) => {
         if(err) {
             console.log(err)
             res.status(500).json(err)
@@ -129,17 +131,18 @@ const addUserToCourse = (req, res) => {
         return res.sendStatus(401)
     }
 
-    const username = req.session.user.username
+    // const username = req.session.user.username
+    const user_id = req.session.user.user_id
     const year = req.params.year
     const term = req.params.term
     const dep = req.params.dep
     const num = req.params.num
     const section = req.params.section
 
-    console.log(username, year, term, dep, num, section)
+    console.log(user_id, year, term, dep, num, section)
     
-    const queryStr = 'INSERT INTO MemberOf (group_id, user_id) VALUES ((SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?), (SELECT user_id FROM Users WHERE username=?))'
-    db.query(queryStr, [year, term, dep, num, section, username], (err) => {
+    const queryStr = 'INSERT INTO MemberOf (group_id, user_id) VALUES ((SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?), ?)'
+    db.query(queryStr, [year, term, dep, num, section, user_id], (err) => {
         if(err) res.status(500).json(err)
         res.status(200).json("Database insertion: success!")
         return
@@ -153,15 +156,16 @@ const removeUserFromCourse = async (req, res) => {
         return res.sendStatus(401)
     }
 
-    const username = req.session.user.username
+    // const username = req.session.user.username
+    const user_id = req.session.user.user_id
     const year = req.params.year
     const term = req.params.term
     const dep = req.params.dep
     const num = req.params.num
     const section = req.params.section
 
-    const queryStr = 'DELETE FROM MemberOf WHERE group_id=(SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?) AND user_id=(SELECT user_id FROM Users WHERE username=?)'
-    db.query(queryStr, [year, term, dep, num, section, username], (err) => {
+    const queryStr = 'DELETE FROM MemberOf WHERE group_id=(SELECT course_id FROM Courses WHERE offered_year=? AND offered_term=? AND dep=? AND num=? AND section=?) AND user_id=?'
+    db.query(queryStr, [year, term, dep, num, section, user_id], (err) => {
         if(err) {
             console.log(err)
             res.status(500).json(err)

@@ -22,7 +22,7 @@ CREATE TABLE Users (
     userpass VARCHAR(128) NOT NULL,
     photo VARCHAR(1024) DEFAULT '/images/default/default-user-photo.png',
 	bio TINYTEXT,
-	active BOOL DEFAULT 1,
+	status BOOL DEFAULT 1,
 	PRIMARY KEY (user_id)
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE Connections (
 	connection_id VARCHAR(64),
 	userA_id VARCHAR(64) NOT NULL,
 	userB_id VARCHAR(64) NOT NULL,
-	Status CHAR(10) NOT NULL  DEFAULT 'pending',
+	status CHAR(10) NOT NULL  DEFAULT 'pending',
 	PRIMARY KEY (connection_id),
 	FOREIGN KEY (userA_id) REFERENCES Users (user_id),
 	FOREIGN KEY (userB_id) REFERENCES Users (user_id)

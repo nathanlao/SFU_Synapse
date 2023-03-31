@@ -156,7 +156,7 @@ export default function DevDatabaseManager() {
                         <td>{item.userpass}</td>
                         <td>{item.photo}</td>
                         <td>{item.bio}</td>
-                        <td>{item.active ? 'active' : 'deleted'}</td>
+                        <td>{item.status ? 'active' : 'deleted'}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -195,7 +195,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">connection_id</th>
                     <th scope="col">userA_id</th>
                     <th scope="col">userB_id</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -205,7 +205,7 @@ export default function DevDatabaseManager() {
                         <td>{item.connection_id}</td>
                         <td>{item.userA_id}</td>
                         <td>{item.userB_id}</td>
-                        <td>{item.Status}</td>
+                        <td>{item.status}</td>
                         </tr>
                     ))}
                 </tbody>

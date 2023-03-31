@@ -77,7 +77,7 @@ const updateConnectionStatus = (req, res) => {
 
 const getActiveConnections = (req, res) => {
 
-    const query = `SELECT c.connection_id, c.Status, 
+    const query = `SELECT c.connection_id, c.status, 
                         ua.username AS userA_username, 
                         ub.username AS userB_username
                     FROM Connections c 

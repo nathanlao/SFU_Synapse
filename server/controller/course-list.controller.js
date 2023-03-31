@@ -54,7 +54,6 @@ const fetchCourseInfo = async (req, res) => {
         return Promise.all([recordCountPromise, subCountPromise])
             .then(([recordCount, subCount]) => {
                 item.status = status(recordCount, subCount)
-                // console.log(item.value + '>> record: ' + recordCount + ', sub: ' + subCount + ', status: ' + status(recordCount, subCount))
                 return
             })
     }))
@@ -62,51 +61,6 @@ const fetchCourseInfo = async (req, res) => {
     console.log('Sending back the updated list')
     console.log(list)
     res.status(200).json(list)
-
-
-    // fetch(url)
-    //     .then(result => {
-    //         if(result.status !== 200) {
-    //         }
-    //         result.json()
-    //     })
-    //     .then(list => {
-    //         // console.log(list)
-
-    //         // status 200(OK)
-    //         if(level === viewLevel.deps) {
-    //             res.status(200).json(list)
-    //             return
-    //         }
-
-
-    //         // returned list of courses or sections
-    //         Promise.all(list.map(async (item) => {
-    //             var targetDep = dep
-    //             var targetCourse = ''
-    //             var targetSection = ''
-
-    //             if(level === viewLevel.courses) {
-    //                 targetCourse = item.value
-    //             }else if(level === viewLevel.sections) {
-    //                 targetCourse = num
-    //                 targetSection = item.value
-    //             }
-
-    //             const recordCountPromise = getRecordCount(year, term, targetDep, targetCourse, targetSection)
-    //             const subCountPromise = getSubCount(year, term, targetDep, targetCourse, targetSection)
-    //             return Promise.all([recordCountPromise, subCountPromise])
-    //                 .then(([recordCount, subCount]) => {
-    //                     item.status = status(recordCount, subCount)
-    //                     // console.log(item.value + '>> record: ' + recordCount + ', sub: ' + subCount + ', status: ' + status(recordCount, subCount))
-    //                     return
-    //                 })
-    //         })).then(() => {
-    //             console.log('Sending back the following list to the frontend.')
-    //             console.log(list)
-    //             res.status(200).json(list)
-    //         })
-    //     })
 }
 
 
