@@ -26,7 +26,7 @@ const createUser = (req, res) => {
 
         db.query(qInsert, values, (err,data) => {
             if (err) return res.status(500).json(err);
-            req.session.user = { username: req.body.username, user_id: user_id }
+            req.session.user = { user_id: user_id }
             return res.status(200).json("User has been created.");
         });
     });

@@ -32,7 +32,6 @@ export default function Login() {
     
     async function validateLogin() {
         console.log('validating login')
-        console.log(`username: ${username}, password: ${userpass}`)
 
         const options = {
             method: 'POST',

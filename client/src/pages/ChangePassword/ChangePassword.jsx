@@ -8,15 +8,20 @@ export default function ChangePassword() {
     const [username, setUsername] = useState('')
 
     // form data
-    const [isSamePassword, setIsSamePassword] = useState(true);
+    const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('');
     const [confirmPasssword, setConfirmPassword] = useState('');
-    const [passContainsUppercase, setPassContainsUppercase] = useState(false);
-    const [passContainsLowercase, setPassContainsLowercase] = useState(false);
-    const [passContainsNumber, setPassContainsNumber] = useState(false);
-    const [passContainsSymbol, setPassContainsSymbol] = useState(false);
-    const [passContainsEightChars, setPassContainsEightChars] = useState(false);
-    const [passErrorVisible, setPassErrorVisible] = useState(true);
+    
+    // password conditions
+    const [uppercase, validateUppercase] = useState(false)
+    const [lowercase, validateLowercase] = useState(false)
+    const [number, validateNumber] = useState(false)
+    const [symbol, validateSymbol] = useState(false)
+    const [passlength, validatePasslength] = useState(false)
+    
+    // new password validity
+    const [validNewPassword, validateNewPassword] = useState(false)
+    const [isMatching, setIsMatching] = useState(true);
 
     useEffect(()=> {
         
@@ -37,6 +42,39 @@ export default function ChangePassword() {
     }, [])
 
 
+    // state changes
+    useEffect(() => {
+        validateNewPassword(uppercase && lowercase && number && symbol && passlength)
+    }, [uppercase, lowercase, number, symbol, passlength])
+
+    useEffect(() => {
+        validateUppercase(containsUppercase(newPassword))
+        validateLowercase(containsLowercase(newPassword))
+        validateNumber(containsNumber(newPassword))
+        validateSymbol(containsSymbol(newPassword))
+        validatePasslength(containsEightChars(newPassword))
+    }, [newPassword])
+
+    useEffect(() => {
+        if(confirmPasssword !== '') {
+            setIsMatching(newPassword === confirmPasssword)
+        }
+    }, [confirmPasssword])
+
+
+    function handleOldPasswordChange(event) {
+        setOldPassword(event.target.value)
+    }
+
+    function handleNewPasswordChange(event) {
+        setNewPassword(event.target.value);
+    }
+
+    function handleConfirmPasswordChange(event) {
+        setConfirmPassword(event.target.value);
+    }
+
+    // password validators
     function containsUppercase(str) {
         return /[A-Z]/.test(str);
     }
@@ -57,67 +95,38 @@ export default function ChangePassword() {
         return str.length >= 8;
     }
 
-    function handlePasswordChange(event) {
-        setNewPassword(event.target.value);
-    }
 
-    function handleConfirmPasswordChange(event) {
-        setConfirmPassword(event.target.value);
-    }
-
-    useEffect(() => {
-        if (confirmPasssword !== '' && newPassword !== confirmPasssword) {
-            setIsSamePassword(false);
-        } else if (newPassword === confirmPasssword) {
-            setIsSamePassword(true);
-        }
-        containsUppercase(newPassword) ? setPassContainsUppercase(true) : setPassContainsUppercase(false);
-        containsLowercase(newPassword) ? setPassContainsLowercase(true) : setPassContainsLowercase(false);
-        containsNumber(newPassword) ? setPassContainsNumber(true) : setPassContainsNumber(false);
-        containsSymbol(newPassword) ? setPassContainsSymbol(true) : setPassContainsSymbol(false);
-        containsEightChars(newPassword) ? setPassContainsEightChars(true) : setPassContainsEightChars(false);
-
-    }, [newPassword, confirmPasssword]);
-
-    useEffect(() => {
-        if (passContainsUppercase && passContainsLowercase && passContainsNumber && passContainsSymbol && passContainsEightChars)
-            setPassErrorVisible(false);
-        else
-            setPassErrorVisible(true);
-    }, [passContainsUppercase, passContainsLowercase, passContainsNumber, passContainsSymbol, passContainsEightChars]);
-
-    function handleChangePassword() {
-        if (!isSamePassword || confirmPasssword === '' || passErrorVisible) {
-            return;
-        }
-        /*
-        const username = document.getElementById("username").value;
-        const oldPassword = document.getElementById("old-password").value;
-
-        // todo: check to see if the md5 of oldPassword matches the md5 of the password in database
-        // if it does then change password...
-
+    async function handleBtnClick() {
         const options = {
-            method: 'POST',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, userpass: md5(newPassword)})
+            body: JSON.stringify({ oldPassword: md5(oldPassword), newPassword: md5(newPassword) })
         }
 
-        fetch('/api/change-password', options).then(res => {
-            if(res.status === 200) {
-                return res.text();
-            } else {
-                // show error message in view
-            }
-        })
-        .then((text) => {
-            console.log(text);
-            navigate("/setting/change-password", {replace: true});
-        });
-        */
+        const response = await fetch('/api/change-password', options)
+        const data = await response.json()
+
+        if(response.status !== 200) {
+            return alert(data)
+        }
+
+        console.log(data)
+        // display toast (data) for usability
+
+        reset()
+    }
+    
+    function reset() {
+        document.getElementById('old-password').value = ''
+        document.getElementById('new-password').value = ''
+        document.getElementById('confirm-password').value = ''
+        validateUppercase(false)
+        validateLowercase(false)
+        validateNumber(false)
+        validateSymbol(false)
+        validatePasslength(false)
     }
 
-    console.log("ChangePassword");
 
     return(
         <div className="change-password">
@@ -133,21 +142,21 @@ export default function ChangePassword() {
                     <label htmlFor="">Old password</label>
                 </div>
                 <div className="right-column pass-input">
-                    <input type="password" id="old-password"/>
+                    <input type="password" id="old-password" onChange={handleOldPasswordChange}/>
                 </div>
                 {/* new password */}
                 <div className="left-column input-label">
                     <label htmlFor="">New password</label>
                 </div>
                 <div className="right-column pass-input">
-                    <input type="password" id="new-password" onChange={handlePasswordChange}/>
-                    {passErrorVisible && <div className="change-pass-error-box">
-                        {passErrorVisible && <div className="pass-error-text"><b>Your password needs to:</b></div>}
-                        {!passContainsUppercase && <div><li>Contain an uppercase letter</li></div>}
-                        {!passContainsLowercase && <div><li>Contain a lowercase letter</li></div>}
-                        {!passContainsNumber && <div><li>Contain a number</li></div>}
-                        {!passContainsSymbol && <div><li>Contain a symbol</li></div>}
-                        {!passContainsEightChars && <div><li>Be at least 8 characters</li></div>}
+                    <input type="password" id="new-password" onChange={handleNewPasswordChange}/>
+                    {!validNewPassword && <div className="change-pass-error-box">
+                        <div className="pass-error-text"><b>Your password needs to:</b></div>
+                        {!uppercase && <div><li>Contain an uppercase letter</li></div>}
+                        {!lowercase && <div><li>Contain a lowercase letter</li></div>}
+                        {!number && <div><li>Contain a number</li></div>}
+                        {!symbol && <div><li>Contain a symbol</li></div>}
+                        {!passlength && <div><li>Be at least 8 characters</li></div>}
                     </div>}
                 </div>
                 {/* confirm new password */}
@@ -155,9 +164,9 @@ export default function ChangePassword() {
                     <label htmlFor="">Confirm new password</label>
                 </div>
                 <div className="right-column pass-input">
-                    <input type="password" onChange={handleConfirmPasswordChange}/>
-                    {!isSamePassword && <div className="pass-match-error">*Passwords do not match</div> }
-                    <button type='button' id='saveProfileBtn' onClick={handleChangePassword}>Change password</button>
+                    <input type="password" id="confirm-password" onChange={handleConfirmPasswordChange}/>
+                    {!isMatching && <div className="pass-match-error">*Passwords do not match</div> }
+                    <button type='button' onClick={handleBtnClick} disabled={!validNewPassword || !isMatching || oldPassword === ''}>Change password</button>
                     <p><a href="">Forgot password?</a></p>
                 </div>
             </div>
