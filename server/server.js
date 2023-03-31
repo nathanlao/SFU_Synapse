@@ -9,6 +9,7 @@ const dotenv = require('dotenv')
 // For building server with socketio
 const http = require('http')
 const { Server } = require('socket.io')
+const db = require("./db/connection.db").pool
 
 // const session = require('express-session')
 dotenv.config()
@@ -16,6 +17,8 @@ dotenv.config()
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
+const { getCurrentLoginUser } = require('./controller/current-user.controller')
+const { getUserDetails } = require('./controller/user-details.controller')
 const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
 const { getDirectMessages } = require('./controller/direct-messages.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
@@ -76,6 +79,10 @@ app.use('/', function(req,res,next){
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
+Routes.route('/currentuser')
+    .get(getCurrentLoginUser)
+Routes.route('/userDetails/:userId')
+    .get(getUserDetails)
 Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)

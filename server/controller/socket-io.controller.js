@@ -1,10 +1,19 @@
 const db = require("../db/connection.db").pool
 
 const socketController = (io) => {
+    // Create a mapping of user IDs to their corresponding socket IDs
+    const userIdToSocketId = new Map();
 
     // Socketio Server listens for "connection" event
     io.on("connection", (socket) => {
-        console.log("User connected: ", socket.id)
+
+        socket.on("joinConnection", (userId) => {
+            console.log("User joined with: ", userId)
+            // Save the mapping of the user's ID to their socket ID
+            userIdToSocketId.set(userId, socket.id);
+        })
+
+        // Listen for "sendMessage" event from client
         socket.on('sendMessage', ( { sender_id, receiver_id, message, timestamp} ) => {
             const newMessage = {
                 sender_id,
@@ -12,6 +21,7 @@ const socketController = (io) => {
                 message,
                 timestamp
             }
+            // console.log("Sending to: ", receiver_id)
 
             // Save the message to the database
             const insertQuery = 'INSERT INTO DirectMessages SET ?'
@@ -24,7 +34,10 @@ const socketController = (io) => {
             })
 
             // Emit the message to the receiver
-            socket.broadcast.to(receiver_id).emit('receiveMessage', newMessage)
+            const receiverSocketId = userIdToSocketId.get(receiver_id)
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit('receiveMessage', newMessage)
+            }
         })
 
         socket.on("disconnect", () => {
