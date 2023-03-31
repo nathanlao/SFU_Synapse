@@ -2,10 +2,14 @@ const db = require('../db/connection.db').pool
 
 
 const getSettings = (req, res) => {
-
-    const qSelect = "SELECT * FROM Users WHERE user_id = ?";
     
-    db.query(qSelect, [req.body.user_id], (err,data) => {
+    if(!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const qSelect = "SELECT username, bio, photo FROM Users WHERE user_id = ?";
+    
+    db.query(qSelect, [req.session.user.user_id], (err,data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).send(data);
     });

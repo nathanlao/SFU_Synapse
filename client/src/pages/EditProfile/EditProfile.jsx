@@ -6,6 +6,8 @@ export default function EditProfile() {
     const wordLimit = 150
     const [wordCount, setWordCount] = useState(0)
     const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
+    const [username, setUsername] = useState('')
+    const [bio, setBio] = useState('')
 
     const [popupWindowState, setPopupWindowState] = useState(false)
 
@@ -19,15 +21,28 @@ export default function EditProfile() {
 
     useEffect(() => {
         async function init() {
-            // get user profile photo
-            const result = await fetch('/api/user-photo')
-            if(result.status === 200) {
-                const data = await result.json()
-                console.log(data)
-                setPhoto(data)
-            }else {
-                console.log(result.statusText)
+            // // get user profile photo
+            // const response1 = await fetch('/api/user-photo')
+            // if(response1.status === 200) {
+            //     const data = await response1.json()
+            //     console.log(data)
+            //     setPhoto(data)
+            // }else {
+            //     console.log(response1.statusText)
+            // }
+
+            // // get username
+            // const response2 = await fetch('/api/')
+
+            // get username, bio, photo
+            const response = await fetch('/api/setting')
+            const data = await response.json()
+
+            if(response.status !== 200) {
+                return alert(data)
             }
+
+            console.log(data[0].username, data[0].bio, data[0].photo)
         }
 
         init()
