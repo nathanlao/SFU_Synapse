@@ -7,7 +7,7 @@ const getLatestMessage = (req, res) => {
     console.log("got id here:", sender_id, receiver_id)
 
     const getLatestMsgQuery = `
-        SELECT * FROM DirectMessages
+        SELECT message FROM DirectMessages
         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
         ORDER BY id DESC
         LIMIT 1`
