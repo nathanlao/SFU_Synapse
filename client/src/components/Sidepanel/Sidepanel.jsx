@@ -40,6 +40,21 @@ function ConnectionsSidepanel() {
         getCurrentLoginUser()
     }, []);
 
+    async function fetchLatestMessage(sender_id, receiver_id) {
+        try {
+            const res = await fetch(`/api/connections/chat/latest/${sender_id}/${receiver_id}`)
+            const data = await res.json()
+            if (data[0]?.message) {
+                return data[0].message
+            } else {
+                return "No messages yet"
+            }
+        } catch (err) {
+            console.error(err)
+        }
+        return null
+    }
+
     // Fetching pending connections
     useEffect(() => {
         async function getPendingConnections() {
@@ -54,14 +69,27 @@ function ConnectionsSidepanel() {
                     }
                 }
                 const data =  await response.json()
-                setPendingConnections(data)
+
+                const updatedConnections = [];
+                for (const connection of data) {
+                    const otherUserId = (connection.userA_id === currentUserId) 
+                        ? connection.userB_id 
+                        : connection.userA_id
+                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
+                    console.log(updatedConnections)
+                }
+
+                setPendingConnections(updatedConnections)
             } catch (err) {
                 console.log(err)
                 setError(err)
             }
         }
-        getPendingConnections()
-    }, [])
+        if (currentUserId) {
+            getPendingConnections()
+        }
+    }, [currentUserId])
 
     // Fetching active connections
     const { connectionId } = useParams()
@@ -156,6 +184,7 @@ function ConnectionsSidepanel() {
                                         ? connection.userB_username
                                         : connection.userA_username
                                 }
+                                subtitle={connection.latestMessage}
                         />
                 </Accordion.Body>
             </Link>
