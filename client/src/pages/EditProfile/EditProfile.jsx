@@ -21,20 +21,7 @@ export default function EditProfile() {
 
     useEffect(() => {
         async function init() {
-            // // get user profile photo
-            // const response1 = await fetch('/api/user-photo')
-            // if(response1.status === 200) {
-            //     const data = await response1.json()
-            //     console.log(data)
-            //     setPhoto(data)
-            // }else {
-            //     console.log(response1.statusText)
-            // }
-
-            // // get username
-            // const response2 = await fetch('/api/')
-
-            // get username, bio, photo
+            // get user info
             const response = await fetch('/api/setting')
             const data = await response.json()
 
@@ -43,6 +30,11 @@ export default function EditProfile() {
             }
 
             console.log(data[0].username, data[0].bio, data[0].photo)
+            setUsername(data[0].username)
+            setPhoto(data[0].photo)
+            if(data[0].bio) {
+                setBio(data[0].bio)
+            }
         }
 
         init()
@@ -64,20 +56,20 @@ export default function EditProfile() {
                     <img src={photo} alt="user profile photo" />
                 </div>
                 <div className="right-column profile-username">
-                    <p>LobsterBoy</p>
+                    <p>{username}</p>
                     <a onClick={showPopupWindow}>Change profile photo</a>
                 </div>
                 <div className="left-column profile-input-label">
                 <label htmlFor="">Username</label>
                 </div>
                 <div className="right-column profile-input">
-                    <input type="text" />
+                    <input type="text" defaultValue={username} />
                 </div>
                 <div className="left-column profile-textarea-label">
                     <label htmlFor="">Bio</label>
                 </div>
                 <div className="right-column profile-textarea">
-                    <textarea name="" id="" cols="30" rows="5" onChange={handleBioChange}></textarea>
+                    <textarea name="" id="" cols="30" rows="5" defaultValue={bio} onChange={handleBioChange}></textarea>
                     <small><span className={wordCount <= wordLimit ? 'valid-length' : 'invalid-length'}>{wordCount}</span> / {wordLimit}</small>
                     <button type='button' id='saveProfileBtn' disabled={wordCount > wordLimit}>Save</button>
                 </div>

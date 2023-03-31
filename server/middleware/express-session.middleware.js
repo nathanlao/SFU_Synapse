@@ -3,8 +3,6 @@ const checkLoginStatus = (req, res) => {
 
     const userType = req.params.userType
     console.log(req.session)
-    console.log(userType)
-    console.log(typeof userType)
 
     if(userType === 'user' && req.session.user) {
         return res.sendStatus(200)

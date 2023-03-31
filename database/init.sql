@@ -22,7 +22,7 @@ CREATE TABLE Users (
     userpass VARCHAR(128) NOT NULL,
     photo VARCHAR(1024) DEFAULT '/images/default/default-user-photo.png',
 	bio TINYTEXT,
-	status BOOL DEFAULT 1,
+	status BOOL NOT NULL DEFAULT 1,
 	PRIMARY KEY (user_id)
 );
 
