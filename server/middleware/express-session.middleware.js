@@ -3,8 +3,6 @@ const checkLoginStatus = (req, res) => {
 
     const userType = req.params.userType
     console.log(req.session)
-    console.log(userType)
-    console.log(typeof userType)
 
     if(userType === 'user' && req.session.user) {
         return res.sendStatus(200)
@@ -17,4 +15,21 @@ const checkLoginStatus = (req, res) => {
     return res.sendStatus(401)
 }
 
-module.exports = { checkLoginStatus }
+// '/api/logout' .post()
+const logout = (req, res) => {
+    console.log('Received request: logoutUser')
+
+    if(!req.session || !req.session.user) {
+        res.sendStatus(401)
+    }
+
+    console.log('destroying session')
+    req.session.destroy(err => {
+        if(err) {
+          return res.status(500).json(err)
+        }
+        return res.status(200).json('Logout successful')
+    })
+}
+
+module.exports = { checkLoginStatus, logout }

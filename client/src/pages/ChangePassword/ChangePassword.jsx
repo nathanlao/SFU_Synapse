@@ -4,8 +4,8 @@ import './ChangePassword.css'
 var md5 = require('md5');
 
 export default function ChangePassword() {
-    const username = 'testuser' // for now
     const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
+    const [username, setUsername] = useState('')
 
     // form data
     const [isSamePassword, setIsSamePassword] = useState(true);
@@ -19,16 +19,19 @@ export default function ChangePassword() {
     const [passErrorVisible, setPassErrorVisible] = useState(true);
 
     useEffect(()=> {
+        
         async function init() {
-            const response = await fetch('/api/user-photo')
-            const result = await response.json()
-            
+            // get user info
+            const response = await fetch('/api/setting')
+            const data = await response.json()
+
             if(response.status !== 200) {
-                alert(result)
-                return
+                return alert(data)
             }
 
-            setPhoto(result)
+            console.log(data[0].username, data[0].photo)
+            setUsername(data[0].username)
+            setPhoto(data[0].photo)
         }
         init()
     }, [])
@@ -123,7 +126,7 @@ export default function ChangePassword() {
                     <img src={photo} alt="" />
                 </div>
                 <div className="right-column profile-username">
-                    <p id="username">LobsterBoy</p>
+                    <p id="username">{username}</p>
                 </div>
                 {/* old password */}
                 <div className="left-column input-label">

@@ -15,13 +15,14 @@ DROP TABLE IF EXISTS GroupMessages;
 
 CREATE TABLE Users (
 	user_id VARCHAR(64),
-	username VARCHAR(50) UNIQUE NOT NULL, -- has to be usnique in order to for login function
+	username VARCHAR(50) NOT NULL, -- has to be usnique in order to for login function
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
     userpass VARCHAR(128) NOT NULL,
     photo VARCHAR(1024) DEFAULT '/images/default/default-user-photo.png',
 	bio TINYTEXT,
+	status BOOL NOT NULL DEFAULT 1,
 	PRIMARY KEY (user_id)
 );
 
@@ -36,7 +37,7 @@ CREATE TABLE Connections (
 	connection_id VARCHAR(64),
 	userA_id VARCHAR(64) NOT NULL,
 	userB_id VARCHAR(64) NOT NULL,
-	Status CHAR(10) NOT NULL  DEFAULT 'pending',
+	status CHAR(10) NOT NULL  DEFAULT 'pending',
 	PRIMARY KEY (connection_id),
 	FOREIGN KEY (userA_id) REFERENCES Users (user_id),
 	FOREIGN KEY (userB_id) REFERENCES Users (user_id)

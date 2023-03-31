@@ -235,6 +235,12 @@ function SettingsSidepanel() {
                 <div className="setting-item-div" onClick={handleSettingsClick} >Edit Course Enrollment</div> 
                 }
             </Link>
+            <Link to="/setting/logout">
+                {(path === "/setting/logout") ? 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Logout</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Logout</div> 
+                }
+            </Link>
         </div>
     )
 }
