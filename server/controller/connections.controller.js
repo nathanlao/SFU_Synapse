@@ -11,7 +11,7 @@ const getPendingConnections = (req, res) => {
 
     // GET data with the login user 
     // JOIN Connections table with Users table
-    const query = `SELECT c.connection_id, c.Status, 
+    const query = `SELECT c.connection_id, c.status, 
                         ua.username AS userA_username, 
                         ub.username AS userB_username, 
                         c.userA_id, c.userB_id,

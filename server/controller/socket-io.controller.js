@@ -18,10 +18,8 @@ const socketController = (io) => {
             db.query(insertQuery, newMessage, (err, data) => {
                 if (err) {
                     console.log(err)
-                    res.status(500).json("Internal server error")
                 } else {
                     console.log('Message saved to the database')
-                    res.status(200).json(data)
                 }       
             })
 
