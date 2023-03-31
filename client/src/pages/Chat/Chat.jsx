@@ -14,12 +14,14 @@ export default function Chat() {
     const { connectionId } = useParams()
     // state value from sidepanel.jsx
     const location = useLocation()
+    const currentUserId = location?.state?.sender_id
     const connectionObj = location.state?.pendingConnections?.find(connection => {
         return connection.connection_id === connectionId
     })
     
     const [input, setInput] = useState("")
     const [messageList, setMessageList] = useState([])
+    const [userDetails, setUserDetails] = useState({});
 
     function formatTimestamp(date) {
         const hours24 = date.getHours()
@@ -42,8 +44,10 @@ export default function Chat() {
 
         if (input !== "") {
             const messageData = {
-                sender_id: connectionObj.userA_id,
-                receiver_id: connectionObj.userB_id,
+                sender_id: currentUserId,
+                receiver_id: (currentUserId === connectionObj.userA_id) 
+                            ? connectionObj.userB_id 
+                            : connectionObj.userA_id,
                 message: input,
                 timestamp: formatTimestamp(new Date(Date.now()))
             }
@@ -58,9 +62,21 @@ export default function Chat() {
         }
     }
 
+    async function fetchUserDetails(userId) {
+        try {
+            const res = await fetch(`/api/userDetails/${userId}`);
+            const data = await res.json();
+            setUserDetails((prevUserDetails) => ({
+                ...prevUserDetails,
+                [userId]: data,
+            }));
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     useEffect(() => {
         if (connectionId) {
-
             async function fetchChatHistory() {
                 const sender_id = connectionObj.userA_id;
                 const receiver_id = connectionObj.userB_id;
@@ -75,10 +91,16 @@ export default function Chat() {
             }
             fetchChatHistory()
 
-            socketRef.current = io.connect('http://localhost:8080');
+            fetchUserDetails(connectionObj.userA_id)
+            fetchUserDetails(connectionObj.userB_id)
+
+            socketRef.current = io.connect('http://localhost:8080')
+
+             // Join connection with the current user's ID
+            socketRef.current.emit('joinConnection', currentUserId);
 
             socketRef.current.on("receiveMessage", (message) => {
-                setMessageList((prevMessages) => [...prevMessages, message]);
+                setMessageList((prevMessages) => [...prevMessages, message])
             })
 
             return () => {
@@ -88,21 +110,17 @@ export default function Chat() {
     }, [connectionId])
 
     const messagesEl = messageList.map((messageContent, index) => {
-        const sender = (messageContent.sender_id === connectionObj.userA_id) 
-            ? connectionObj.userA_username 
-            : connectionObj.userB_username
-
-        const profilePic = (messageContent.sender_id === connectionObj.userA_id)
-            ? connectionObj.userA_photo
-            : connectionObj.userB_photo
+        const senderUser = userDetails[messageContent.sender_id]
+        const senderUsername = senderUser?.username || ''
+        const senderProfilePic = senderUser?.photo || ''
 
         return (
             <div className="chat-content" key={index}>
-                <Avatar src={profilePic} alt="user icon" className="user-icon"/>
+                <Avatar src={senderProfilePic} alt="user icon" className="user-icon"/>
                 <div>
                     <Box sx={{ fontWeight: 'bold' }}>
                         <Typography variant="body1">
-                            {sender}
+                            {senderUsername}
                         </Typography>
                     </Box>
                     <Typography variant="body3">
