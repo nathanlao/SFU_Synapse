@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom';
 import io from 'socket.io-client'
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
@@ -6,77 +6,99 @@ import Avatar from '@mui/joy/Avatar';
 import SendIcon from '@mui/icons-material/Send';
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 
-import tempPic from "../../images/temp.png"
-
 import './Chat.css'
 
-const socket = io.connect("http://localhost:8080")
-
 export default function Chat() {
-    
+    const socketRef = useRef();
+
     const { connectionId } = useParams()
     // state value from sidepanel.jsx
     const location = useLocation()
-
     const connectionObj = location.state?.pendingConnections?.find(connection => {
         return connection.connection_id === connectionId
     })
-
-    console.log(connectionObj)
     
-    const [message, setMessage] = useState("")
+    const [input, setInput] = useState("")
     const [messageList, setMessageList] = useState([])
 
-    const handleInputChange = (e) => {
-        setMessage(e.target.value)
+    function formatTimestamp(date) {
+        const hours24 = date.getHours()
+        const ampm = hours24 < 12 ? "AM" : "PM"
+        const hours12 = hours24 % 12 || 12
+        const minutes = date.getMinutes()
+
+        const formattedHours = hours12.toString().padStart(2, '0')
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes} ${ampm}`;
     }
 
-    const sendMessage = (e) => {
+    function handleInputChange(e) {
+        setInput(e.target.value)
+    }
+
+    function sendMessage(e) {
         e.preventDefault()
 
-        if (message !== "") {
+        if (input !== "") {
             const messageData = {
-                connectionId: connectionObj.connection_id,
-                sender_name: connectionObj.userA_username,
                 sender_id: connectionObj.userA_id,
                 receiver_id: connectionObj.userB_id,
-                message: message,
-                timestamp: 
-                    new Date(Date.now()).getHours() + 
-                    ":" + 
-                    new Date(Date.now()).getMinutes()
+                message: input,
+                timestamp: formatTimestamp(new Date(Date.now()))
             }
     
-            socket.emit('send-private-message', messageData)
+            socketRef.current.emit('sendMessage', messageData)
             
+            // Update the messageList state with the sent message
+            setMessageList((prevMessages) => [...prevMessages, messageData]);
+
             // Clear the input after sent
-            setMessage("")
+            setInput("")
         }
     }
 
     useEffect(() => {
         if (connectionId) {
 
-            socket.emit('join-private-room', connectionId);
-    
-            socket.on("receive-private-message", (data) => {
-                if (data.connectionId === connectionId) {
-                    setMessageList(prevMessageList => [...prevMessageList, data])
+            async function fetchChatHistory() {
+                const sender_id = connectionObj.userA_id;
+                const receiver_id = connectionObj.userB_id;
+            
+                try {
+                    const res = await fetch(`/api/connections/chat/${sender_id}/${receiver_id}`);
+                    const data = await res.json();
+                    setMessageList(data);
+                } catch (err) {
+                    console.error(err);
                 }
+            }
+            fetchChatHistory()
+
+            socketRef.current = io.connect('http://localhost:8080');
+
+            socketRef.current.on("receiveMessage", (message) => {
+                setMessageList((prevMessages) => [...prevMessages, message]);
             })
 
             return () => {
-                socket.off('receive-private-message');
-                socket.emit('leave-private-room', connectionId);
+                socketRef.current.disconnect()
             }
         }
     }, [connectionId])
 
     const messagesEl = messageList.map((messageContent, index) => {
-        const sender = messageContent.sender_id === connectionObj.userA_id ? 'You' : messageContent.sender_name;
+        const sender = (messageContent.sender_id === connectionObj.userA_id) 
+            ? connectionObj.userA_username 
+            : connectionObj.userB_username
+
+        const profilePic = (messageContent.sender_id === connectionObj.userA_id)
+            ? connectionObj.userA_photo
+            : connectionObj.userB_photo
+
         return (
             <div className="chat-content" key={index}>
-                <Avatar src={tempPic} alt="user icon" className="user-icon"/>
+                <Avatar src={profilePic} alt="user icon" className="user-icon"/>
                 <div>
                     <Box sx={{ fontWeight: 'bold' }}>
                         <Typography variant="body1">
@@ -101,8 +123,6 @@ export default function Chat() {
             <ChatTopBar />
 
             <div className="chat-content-container">
-                {/* TODO: display the conversation here, 
-                    now only hard coded chats with styling now */}
                 {messagesEl}
             </div>
 
@@ -111,7 +131,7 @@ export default function Chat() {
                 <InputBase 
                     className="input-field"
                     placeholder="Type a message"
-                    value={message}
+                    value={input}
                     onChange={handleInputChange}>
                 </InputBase>
                 <IconButton type="submit">
