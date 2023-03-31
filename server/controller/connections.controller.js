@@ -6,21 +6,23 @@ const getPendingConnections = (req, res) => {
     if (!req.session || !req.session.user) {
         return res.sendStatus(401)
     }
-    const username = req.session.user.username
+    // Need to change to userId
+    const userId = "bf77ceac-3d41-487d-b585-6afb7ca5558b"
 
     // GET data with the login user 
     // JOIN Connections table with Users table
     const query = `SELECT c.connection_id, c.Status, 
                         ua.username AS userA_username, 
                         ub.username AS userB_username, 
-                        c.userA_id, c.userB_id
+                        c.userA_id, c.userB_id,
+                        ua.photo AS userA_photo, ub.photo AS userB_photo
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
                     WHERE c.status = 'Pending'
-                    AND (ua.username = ? OR ub.username = ?)`
+                    AND (c.userA_id = ? OR c.userB_id = ?)`
 
-    db.query(query, [username, username], (err, data) => {
+    db.query(query, [userId, userId], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
@@ -88,7 +90,9 @@ const getActiveConnections = (req, res) => {
 
     const query = `SELECT c.connection_id, c.Status, 
                         ua.username AS userA_username, 
-                        ub.username AS userB_username
+                        ub.username AS userB_username,
+                        ua.photo AS userA_photo, 
+                        ub.photo AS userB_photo
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
