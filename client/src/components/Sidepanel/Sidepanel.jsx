@@ -226,20 +226,26 @@ function SettingsSidepanel() {
             </Typography>
             <Link to="/setting/edit-profile">
                 {(path === "/setting/edit-profile") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit Profile</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Edit Profile</div> 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit profile</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Edit profile</div> 
                 }
             </Link>
             <Link to="/setting/change-password">
                 {(path === "/setting/change-password") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Change Password</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Change Password</div> 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Change password</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Change password</div> 
                 }
             </Link>
             <Link to="/setting/edit-course-enrollment">
                 {(path === "/setting/edit-course-enrollment") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit Course Enrollment</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Edit Course Enrollment</div> 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit course enrollment</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Edit course enrollment</div> 
+                }
+            </Link>
+            <Link to="/setting/delete-account">
+                {(path === "/setting/delete-account") ? 
+                <div className="setting-item-div active" onClick={handleSettingsClick} >Delete account</div> : 
+                <div className="setting-item-div" onClick={handleSettingsClick} >Delete account</div> 
                 }
             </Link>
             <Link to="/setting/logout">

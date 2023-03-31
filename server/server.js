@@ -2,7 +2,7 @@ const express = require('express')
 // const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const app = express()
-const path = require('path');
+const path = require('path')
 const bodyParser = require('body-parser')
 const Routes = express.Router()
 const dotenv = require('dotenv')
@@ -15,7 +15,7 @@ const { getPendingConnections, createPendingConnection, updateConnectionStatus, 
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
-const { getSettings, updateSettings, deleteUser, updatePassoword } = require('./controller/setting.controller')
+const { getSettings, updateSettings, deleteAccount, updatePassoword } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
@@ -75,7 +75,7 @@ Routes.route('/groups')
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
-    .delete(deleteUser)
+    .delete(deleteAccount)
 Routes.route('/change-password')
     .put(updatePassoword)
 
