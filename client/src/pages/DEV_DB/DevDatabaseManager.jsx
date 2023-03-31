@@ -141,6 +141,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">userpass</th>
                     <th scope="col">photo</th>
                     <th scope="col">bio</th>
+                    <th scope="col">status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -155,6 +156,7 @@ export default function DevDatabaseManager() {
                         <td>{item.userpass}</td>
                         <td>{item.photo}</td>
                         <td>{item.bio}</td>
+                        <td>{item.active ? 'active' : 'deleted'}</td>
                         </tr>
                     ))}
                 </tbody>
