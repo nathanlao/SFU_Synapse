@@ -24,10 +24,6 @@ const updateSettings = (req, res) => {
 
     const values = [
         req.body.username,
-        // req.body.first_name,
-        // req.body.last_name,
-        // req.body.email,
-        // req.body.photo,
         req.body.bio,
         req.session.user.user_id,
     ];
@@ -35,7 +31,6 @@ const updateSettings = (req, res) => {
     console.log(req.body.username, req.body.bio, req.session.user.user_id)
 
     const qUpdate = "UPDATE Users SET username=?, bio=? WHERE user_id = ?"
-    // const qUpdate = "UPDATE Users SET username=?, first_name=?, last_name=?, userpass=?, email=?, photo=?, bio=? WHERE user_id = ?"
 
     db.query(qUpdate, values, (err) => {
         if (err) return res.status(500).json(err);

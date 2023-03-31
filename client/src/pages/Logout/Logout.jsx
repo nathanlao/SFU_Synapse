@@ -19,7 +19,9 @@ export default function Logout() {
 
     return (
         <div className="logout">
-            Would you like to log out from your account? <button type="button" className="btn btn-outline-danger" onClick={handleLogout}>Log out</button>
+            <h2>Log out</h2>
+            <p>Would you like to log out from your account?</p>
+            <button type="button" className="btn btn-outline-danger" onClick={handleLogout}>Log out</button>
         </div>
     )
 }
