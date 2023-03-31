@@ -1,6 +1,9 @@
 const db = require('../db/connection.db').pool
+const path = require('path');
+const fs = require('fs')
 const { getUserField } = require('../controller/db-operation/db-users.controller')
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const { resolve } = require('path');
 dotenv.config()
 
 const getSettings = (req, res) => {
@@ -91,75 +94,86 @@ const deleteAccount = async (req, res) => {
 
     try {
         // compare with current password
-        const data = await getUserField(req.session.user.user_id, 'userpass')
-        if(data[0].userpass !== req.body.password) {
+        const data1 = await getUserField(req.session.user.user_id, 'userpass')
+        if(data1[0].userpass !== req.body.password) {
             return res.status(400).json('Incorrect password.')
         }
-    }catch(err) {
-        return res.status(500).json(err)
-    }
 
-    // 1. check if user is owner (creater) of a community
-    const promise1 = new Promise((resolve, reject) => {
-        const qSearch = 'SELECT COUNT(community_id) AS ownership FROM Communities WHERE created_by=?'
-        db.query(qSearch, [req.session.user.user_id], (err, data) => {
-            if(err) {
-                reject(err)
-            }
-    
-            resolve(data[0].ownership)
+
+
+        // 1. check if user is owner (creater) of any community
+        console.log('1. check if user is owner (creater) of any community')
+        const promise1 = new Promise((resolve, reject) => {
+            const qSearch = 'SELECT COUNT(community_id) AS ownership FROM Communities WHERE created_by=?'
+            db.query(qSearch, [req.session.user.user_id], (err, data) => {
+                if(err) {
+                    reject(err)
+                }
+                resolve(data[0].ownership)
+            })
         })
-    })
 
-    try {
         const count = await promise1
         console.log('Ownership: ' + count)
         if(count > 0) {
             return res.status(400).json(`It seems you are an owner of ${count} community group${count > 1 ? 's' : ''}. Please transfer all ownership before attempting to delete your account.`)
         }
-    }catch(err) {
-        return res.status(500).json(err)
-    }
 
 
-    // 2. delete uploaded photo
-    try {
-        const data = await getUserField(req.session.user.user_id, 'photo')
-        if(data[0].photo !== process.env.DEFAULT_USER_PHOTO_PATH) {
-            const imgPath = path.join(__dirname, '..', '..', 'public') + data[0].photo
+        // get current photo path (before updating database)
+        const data2 = await getUserField(req.session.user.user_id, 'photo')
+
+
+        // 2. update user in database
+        console.log('2. update user in database')
+        const promise2 = new Promise((resolve, reject) => {
+            const values = [
+                '<anonymous>', 
+                'Deleted', 
+                'Account', 
+                req.session.user.user_id, 
+                '', 
+                process.env.DEFAULT_DELETED_USER_PHOTO_PATH,
+                null, 
+                0, 
+                req.session.user.user_id
+            ]
+        
+            const qDelete = "UPDATE Users SET username=?, first_name=?, last_name=?, email=?, userpass=?, photo=?, bio=?, status=? WHERE user_id = ?";
+    
+            db.query(qDelete, values, (err) => {
+                if (err) {
+                    console.log(err)
+                    reject(err)
+                }
+                resolve()
+            });
+        })
+        
+        await promise2
+        
+        
+        
+        // 3. delete uploaded photo
+        console.log('3. delete uploaded photo')
+        if(data2[0].photo !== process.env.DEFAULT_USER_PHOTO_PATH) {
+            const imgPath = path.join(__dirname, '..', 'public') + data2[0].photo
             fs.unlink(imgPath, (err) => {
                 if(err) {
                     console.log(err)
                     throw err
                 }
-                return
             })
         }
+
+        console.log('all done')
+        req.session.destroy()
+        res.status(200).json('Account deletion completed.')
+
     }catch(err) {
+        console.log(err)
         return res.status(500).json(err)
     }
-
-
-    // 3. update user in database
-    const values = [
-        'anonymous', 
-        'Deleted', 
-        'Account', 
-        req.session.user.user_id, 
-        '', 
-        process.env.DEFAULT_DELETED_USER_PHOTO_PATH,
-        null, 
-        0, 
-        req.session.user.user_id
-    ]
-
-    const qDelete = "UPDATE Users username=?, first_name=?, last_name=?, email=?, userpass=?, bio=?, photo=?, status=? WHERE user_id = ?";
-    
-    db.query(qDelete, values, (err) => {
-        if (err) return res.status(500).json(err);
-        req.session.destroy()
-        return res.status(200).json("Deleted user.");
-    });
 }
 
 
