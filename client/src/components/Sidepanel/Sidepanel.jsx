@@ -97,7 +97,7 @@ function ConnectionsSidepanel() {
     const activeConnectionsEl = activeConnections.map((connection) => {
         return (
             <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem title={connection.userB_username} />
+                <SidepanelItem image={connection.userB_photo} title={connection.userB_username} />
             </Accordion.Body>
         )
     })
@@ -116,6 +116,7 @@ function ConnectionsSidepanel() {
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                         <SidepanelItem
+                            image={connection.userB_photo}
                             indicator={clickedConnection === connection.connection_id 
                                 ? (<Button size="small" variant="contained" color="success" 
                                         onClick={() => handleUpdateConnection(connection.connection_id)}
