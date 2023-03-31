@@ -9,7 +9,6 @@ const dotenv = require('dotenv')
 // For building server with socketio
 const http = require('http')
 const { Server } = require('socket.io')
-const db = require("./db/connection.db").pool
 
 // const session = require('express-session')
 dotenv.config()
@@ -18,6 +17,7 @@ dotenv.config()
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
 const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
+const { getDirectMessages } = require('./controller/direct-messages.controller')
 const { getGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -29,8 +29,10 @@ const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus } = require('./middleware/express-session.middleware');
+const socketController = require('./controller/socket-io.controller')
 const session = require('express-session');
 
+// socket.io to enable bidirectional communication
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
@@ -38,6 +40,7 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 })
+socketController(io)
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
@@ -54,33 +57,6 @@ app.use(cors({
     allowedHeaders: 'Content-Type,Authorization'
 }))
 
-// Socketio Server listens for "connection" event
-io.on("connection", (socket) => {
-    console.log("User connected: ", socket.id)
-
-    // Direct Message
-    socket.on('join-private-room', (connectionId) => {
-        socket.join(connectionId);
-        console.log(`${socket.id} Joined room: ${connectionId}`);
-    });
-
-    socket.on('leave-private-room', (connectionId) => {
-        socket.leave(connectionId);
-        console.log(`${socket.id} Left room: ${connectionId}`);
-    });
-
-    socket.on('send-private-message', (messageData) => {
-        console.log("Data from front end: ", messageData)
-        console.log("Sending to connectionId room: ", messageData.connectionId)
-        io.to(messageData.connectionId).emit("receive-private-message", messageData)
-        // socket.broadcast.emit("receive-private-message", messageData)
-    })
-
-    socket.on("disconnect", () => {
-        console.log("User Disconnect", socket.id)
-    })
-})
-
 app.use(session({
     name: 'synapse-login',
     secret: process.env.SESSION_SECRET_STRING,
@@ -96,9 +72,6 @@ app.use('/', function(req,res,next){
 })
 
 
-
-
-
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
@@ -108,6 +81,8 @@ Routes.route('/connections')
 Routes.route('/connections/:connetionId')
     .get(getActiveConnections)
     .put(updateConnectionStatus) 
+Routes.route('/connections/chat/:sender_id/:receiver_id')
+    .get(getDirectMessages)
 Routes.route('/groups')
     .get(getGroups)
     .post(createGroup)
