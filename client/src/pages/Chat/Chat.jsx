@@ -22,6 +22,7 @@ export default function Chat() {
     const [input, setInput] = useState("")
     const [messageList, setMessageList] = useState([])
     const [userDetails, setUserDetails] = useState({});
+    const timestamp = new Date(Date.now());
 
     function formatTimestamp(date) {
         const year = date.getFullYear()
@@ -60,13 +61,16 @@ export default function Chat() {
                             ? connectionObj.userB_id 
                             : connectionObj.userA_id,
                 message: input,
-                timestamp: formatTimestamp(new Date(Date.now()))
+                timestamp: formatTimestamp(timestamp)
             }
     
             socketRef.current.emit('sendMessage', messageData)
             
             // Update the messageList state with the sent message
-            setMessageList((prevMessages) => [...prevMessages, messageData]);
+            setMessageList((prevMessages) => [...prevMessages, {
+                ...messageData,
+                timestamp: timestamp, // Use the Date object for display
+            }]);
 
             // Clear the input after sent
             setInput("")
@@ -111,7 +115,10 @@ export default function Chat() {
             socketRef.current.emit('joinConnection', currentUserId);
 
             socketRef.current.on("receiveMessage", (message) => {
-                setMessageList((prevMessages) => [...prevMessages, message])
+                setMessageList((prevMessages) => [...prevMessages, {
+                    ...message,
+                    timestamp: timestamp
+                }])
             })
 
             return () => {
