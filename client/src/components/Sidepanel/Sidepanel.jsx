@@ -231,7 +231,7 @@ function ConnectionsSidepanel() {
     );
 }
 
-function GroupsSidepanel() {
+function GroupsSidepanel({ onChatSubtab }) {
 
     const [courseGroups, setCourseGroups] = useState([])
 
@@ -256,8 +256,6 @@ function GroupsSidepanel() {
         getGroupsOfCourses()
     }, [])
 
-    console.log("GROUPS", courseGroups)
-
     const courseGroupsEl = courseGroups.map(group => {
         const moreThanOneMember = (group.num_members > 1) ? "members" : "member"
 
@@ -265,6 +263,7 @@ function GroupsSidepanel() {
             <Link 
                 to={`/groups/${group.group_id}`} 
                 key={group.group_id}
+                onClick={() => onChatSubtab(group.group_id)}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                     <SidepanelItem 
@@ -357,7 +356,7 @@ export default function Sidepanel(props) {
     return (
         <>
             {props.connections && <ConnectionsSidepanel />}
-            {props.groups && <GroupsSidepanel />}
+            {props.groups && <GroupsSidepanel onChatSubtab={props.onChatSubtab} />}
             {props.settings && <SettingsSidepanel />}
         </>
     );
