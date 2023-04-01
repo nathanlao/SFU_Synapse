@@ -24,12 +24,23 @@ export default function Chat() {
     const [userDetails, setUserDetails] = useState({});
 
     function formatTimestamp(date) {
-        const hours24 = date.getHours()
-        const ampm = hours24 < 12 ? "AM" : "PM"
-        const hours12 = hours24 % 12 || 12
-        const minutes = date.getMinutes()
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+        const hours = date.getHours().toString().padStart(2, '0')
+        const minutes = date.getMinutes().toString().padStart(2, '0')
+        const seconds = date.getSeconds().toString().padStart(2, '0')
 
-        const formattedHours = hours12.toString().padStart(2, '0')
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    }
+
+    function formatTimestampForDisplay(timestamp) {
+        const date = new Date(timestamp);
+        const hours24 = date.getHours();
+        const ampm = hours24 < 12 ? "AM" : "PM";
+        const hours12 = hours24 % 12 || 12;
+        const minutes = date.getMinutes();
+        const formattedHours = hours12.toString().padStart(2, '0');
         const formattedMinutes = minutes.toString().padStart(2, '0');
 
         return `${formattedHours}:${formattedMinutes} ${ampm}`;
@@ -129,7 +140,7 @@ export default function Chat() {
                 </div>
                 <div className="chat-time">
                     <Typography variant="body1">
-                        {messageContent.timestamp}
+                        {formatTimestampForDisplay(messageContent.timestamp)}
                     </Typography>
                 </div>
             </div>
