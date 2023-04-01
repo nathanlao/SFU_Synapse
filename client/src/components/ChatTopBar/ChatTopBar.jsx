@@ -4,18 +4,17 @@ import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
 import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";
 
 import settingLogo from "../../images/settings.svg"
-import groupPic from "../../images/group_profile/course_random_default_3.png"
 
 import './ChatTopBar.css'
 
 export default function ChatTopBar() {
 
-    // "from" property (connctionsLayout.jsx) to indicate the current path
-    const { from, groupId } = useOutletContext()
+    // Properties (connctionsLayout.jsx, GroupsLayout.jsx) to indicate the current path and state
+    const { from, groupId, groupName, groupPic } = useOutletContext()
     const isConnectionPage = from.split("/")[1] === "connections"
     const isGroupPage = from.split("/")[1] === "groups"
 
-    // testData from Sidepanel.jsx
+    // receiver_name, groupName, groupPic from Sidepanel.jsx
     const chatNames = useLocation().state?.receiver_name
 
     const activeStyle = {
@@ -43,7 +42,7 @@ export default function ChatTopBar() {
                         <div className="group-header">
                             <Avatar src={groupPic} alt="group icon"/>
                             <Typography variant="h6">
-                                CMPT 372
+                                {groupName}
                             </Typography>
                         </div>
                         

@@ -231,7 +231,7 @@ function ConnectionsSidepanel() {
     );
 }
 
-function GroupsSidepanel({ onChatSubtab }) {
+function GroupsSidepanel({ handleSwitchSubtabs }) {
 
     const [courseGroups, setCourseGroups] = useState([])
 
@@ -263,7 +263,10 @@ function GroupsSidepanel({ onChatSubtab }) {
             <Link 
                 to={`/groups/${group.group_id}`} 
                 key={group.group_id}
-                onClick={() => onChatSubtab(group.group_id)}
+                onClick={() => handleSwitchSubtabs({groupId: group.group_id, groupName: group.group_name, groupPic: group.photo})}
+                state={{ 
+                    courseGroups: courseGroups 
+                }}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                     <SidepanelItem 
@@ -356,7 +359,7 @@ export default function Sidepanel(props) {
     return (
         <>
             {props.connections && <ConnectionsSidepanel />}
-            {props.groups && <GroupsSidepanel onChatSubtab={props.onChatSubtab} />}
+            {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} />}
             {props.settings && <SettingsSidepanel />}
         </>
     );
