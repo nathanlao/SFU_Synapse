@@ -17,12 +17,12 @@ dotenv.config()
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
-const { getCurrentLoginUser } = require('./controller/current-user.controller')
-const { getUserDetails } = require('./controller/user-details.controller')
+const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
+const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
-const { getDirectMessages } = require('./controller/direct-messages.controller')
-const { getGroupMessages } = require('./controller/group-messages.controller')
-const { getLatestMessage } = require('./controller/latest-message.controller')
+const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
+const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
+const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
 const { getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -35,7 +35,7 @@ const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/communities.controller');
-const socketController = require('./controller/socket-io.controller')
+const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 
 // socket.io to enable bidirectional communication

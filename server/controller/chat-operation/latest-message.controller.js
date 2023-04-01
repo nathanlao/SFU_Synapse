@@ -1,4 +1,4 @@
-const db = require("../db/connection.db").pool
+const db = require("../../db/connection.db").pool
 
 const getLatestMessage = (req, res) => {
     const sender_id = req.params.sender_id

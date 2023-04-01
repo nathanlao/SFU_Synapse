@@ -1,4 +1,4 @@
-const db = require("../db/connection.db").pool
+const db = require("../../db/connection.db").pool
 
 const socketController = (io) => {
     // Create a mapping of user IDs to their corresponding socket IDs

@@ -1,4 +1,4 @@
-const db = require('../db/connection.db').pool
+const db = require('../../db/connection.db').pool
 
 const getGroupMessages = (req, res) => {
     const { user_id, group_id } = req.params
