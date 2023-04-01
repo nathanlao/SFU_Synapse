@@ -13,6 +13,7 @@ export default function DevDatabaseManager() {
     const [directMessages, setDirectMessages] = useState([])
     const [groupMessages, setGroupMessages] = useState([])
     const [memberOf, setMemberOf] = useState([])
+    const [authCodes, setAuthCodes] = useState([])
 
     useEffect(() => {
         const tables = [
@@ -24,7 +25,8 @@ export default function DevDatabaseManager() {
             'DirectMessages',
             'GroupMessages',
             'MemberOf',
-            'Communities'
+            'Communities',
+            'AuthCodes'
         ]
 
         const apiBaseUrl = '/api/dev/db/'
@@ -98,6 +100,13 @@ export default function DevDatabaseManager() {
             const data9 = await res9.json()
             console.log(data9)
             setCommunities(data9)
+
+            // get AuthCodes tables
+            const res10 = await fetch(`${apiBaseUrl + tables[9]}`)
+            if(res10.status !== 200) return
+            const data10 = await res10.json()
+            console.log(data10)
+            setAuthCodes(data10)
         }
         getAllData()
     }, [])
@@ -118,6 +127,7 @@ export default function DevDatabaseManager() {
                 <button type="button" className="btn btn-light"><a href="#communities">Communities</a></button>
                 <button type="button" className="btn btn-light"><a href="#directMessages">DirectMessages</a></button>
                 <button type="button" className="btn btn-light"><a href="#groupMessages">GroupMessages</a></button>
+                <button type="button" className="btn btn-light"><a href="#authCodes">AuthCodes</a></button>
             </div>
 
             <button type="button" className="to-top-floating-btn btn btn-dark">
@@ -355,6 +365,30 @@ export default function DevDatabaseManager() {
                         <th scope="row">{index+1}</th>
                         <td>{item.group_id}</td>
                         <td>{item.user_id}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+
+            {/* AuthCodes */}
+            <h2 id="authCodes">AuthCodes</h2>
+            <table class="table table-hover">
+                <thead> 
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">email</th>
+                    <th scope="col">code</th>
+                    <th scope="col">expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {authCodes.map((item, index) => (
+                        <tr>
+                        <th scope="row">{index+1}</th>
+                        <td>{item.email}</td>
+                        <td>{item.code}</td>
+                        <td>{item.expires}</td>
                         </tr>
                     ))}
                 </tbody>

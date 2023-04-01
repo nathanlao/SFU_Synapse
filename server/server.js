@@ -35,6 +35,7 @@ const { checkLoginStatus, logout } = require('./middleware/express-session.middl
 const { createCommunity } = require('./controller/communities.controller');
 const socketController = require('./controller/socket-io.controller')
 const session = require('express-session');
+const { RegisterEmail } = require('./controller/email-authentication.controller')
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -102,6 +103,8 @@ Routes.route('/change-password')
     .put(updatePassoword)
 
 // Route: signup
+Routes.route('/auth')
+    .post(RegisterEmail)
 Routes.route('/signup')
 .post(createUser)
 // Route: account setup
