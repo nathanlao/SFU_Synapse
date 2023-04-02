@@ -12,16 +12,20 @@ export default function Chat() {
     const socketRef = useRef();
 
     const { connectionId } = useParams()
+    const { groupId } = useParams()
+
     // state value from sidepanel.jsx
     const location = useLocation()
-    const currentUserId = location?.state?.sender_id
+    const currentUserId = location?.state?.sender_id || location?.state?.user_id
     const connectionObj = location.state?.pendingConnections?.find(connection => {
         return connection.connection_id === connectionId
     })
     
     const [input, setInput] = useState("")
     const [messageList, setMessageList] = useState([])
-    const [userDetails, setUserDetails] = useState({});
+    const [groupMessageList, setGroupMessageList] = useState([])
+    const [userDetails, setUserDetails] = useState({})
+    const [groupMembers, setGroupMembers] = useState([])
     const timestamp = new Date(Date.now());
 
     function formatTimestamp(date) {
@@ -47,36 +51,6 @@ export default function Chat() {
         return `${formattedHours}:${formattedMinutes} ${ampm}`;
     }
 
-    function handleInputChange(e) {
-        setInput(e.target.value)
-    }
-
-    function sendMessage(e) {
-        e.preventDefault()
-
-        if (input !== "") {
-            const messageData = {
-                sender_id: currentUserId,
-                receiver_id: (currentUserId === connectionObj.userA_id) 
-                            ? connectionObj.userB_id 
-                            : connectionObj.userA_id,
-                message: input,
-                timestamp: formatTimestamp(timestamp)
-            }
-    
-            socketRef.current.emit('sendMessage', messageData)
-            
-            // Update the messageList state with the sent message
-            setMessageList((prevMessages) => [...prevMessages, {
-                ...messageData,
-                timestamp: timestamp, // Use the Date object for display
-            }]);
-
-            // Clear the input after sent
-            setInput("")
-        }
-    }
-
     async function fetchUserDetails(userId) {
         try {
             const res = await fetch(`/api/userDetails/${userId}`);
@@ -90,9 +64,66 @@ export default function Chat() {
         }
     }
 
+    async function fetchGroupMembers() {
+        try {
+            const res = await fetch(`/api/group-members/${groupId}`);
+            const data = await res.json();
+            setGroupMembers(data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function handleInputChange(e) {
+        setInput(e.target.value)
+    }
+
+    function sendMessage(e) {
+        e.preventDefault()
+
+        // Direct message
+        if (connectionId && input !== "") {
+            const messageData = {
+                sender_id: currentUserId,
+                receiver_id: (currentUserId === connectionObj.userA_id) 
+                            ? connectionObj.userB_id 
+                            : connectionObj.userA_id,
+                message: input,
+                timestamp: formatTimestamp(timestamp)
+            }
+    
+            socketRef.current.emit('sendDirectMessage', messageData)
+            
+            // Update the messageList state with the sent message
+            setMessageList((prevMessages) => [...prevMessages, {
+                ...messageData,
+                timestamp: timestamp, // Use the Date object for display
+            }]);
+
+        }
+
+        // Group Message
+        if (groupId && input !== "") {
+            const groupMessageData = {
+                user_id: currentUserId,
+                group_id: groupId,
+                message: input,
+                timestamp: formatTimestamp(timestamp)
+            }
+
+            socketRef.current.emit('sendGroupMessage', groupMessageData)
+        }
+
+        // Clear the input after sent
+        setInput("")
+    }
+
     useEffect(() => {
+        socketRef.current = io.connect('http://localhost:8080')
+
+        // Direct message
         if (connectionId) {
-            async function fetchChatHistory() {
+            async function fetchDMChatHistory() {
                 const sender_id = connectionObj.userA_id;
                 const receiver_id = connectionObj.userB_id;
             
@@ -104,31 +135,98 @@ export default function Chat() {
                     console.error(err);
                 }
             }
-            fetchChatHistory()
+            fetchDMChatHistory()
 
+            // GET details of current user and the other user
             fetchUserDetails(connectionObj.userA_id)
             fetchUserDetails(connectionObj.userB_id)
-
-            socketRef.current = io.connect('http://localhost:8080')
 
              // Join connection with the current user's ID
             socketRef.current.emit('joinConnection', currentUserId);
 
-            socketRef.current.on("receiveMessage", (message) => {
+            socketRef.current.on("receiveDirectMessage", (message) => {
                 setMessageList((prevMessages) => [...prevMessages, {
                     ...message,
                     timestamp: timestamp
                 }])
             })
 
-            return () => {
-                socketRef.current.disconnect()
-            }
         }
-    }, [connectionId])
+
+        // Group message
+        if (groupId) {
+            const user_id = currentUserId
+            const group_id = groupId
+
+            async function fecthGroupChatHistory() {
+                try {
+                    const response = await fetch(`/api/groups/chat/${user_id}/${group_id}`)
+                    const data = await response.json()
+                    setGroupMessageList(data)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+            fecthGroupChatHistory()
+
+            fetchGroupMembers()
+
+            socketRef.current.emit('joinGroup', groupId)
+
+            socketRef.current.on("receiveGroupMessage", (message) => {
+                setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
+                    ...message,
+                    timestamp: timestamp
+                }])
+            })
+
+        }
+
+        return () => {
+            socketRef.current.disconnect()
+        }
+
+    }, [connectionId, groupId])
+
+    useEffect(() => {    
+        // Fetch user details for all group members
+        if (groupMembers.length > 0) {
+            groupMembers.forEach((member) => {
+                fetchUserDetails(member.user_id)
+            })
+        }
+    }, [groupMembers])
 
     const messagesEl = messageList.map((messageContent, index) => {
+        // GET users' name and photo
         const senderUser = userDetails[messageContent.sender_id]
+        const senderUsername = senderUser?.username || ''
+        const senderProfilePic = senderUser?.photo || ''
+
+        return (
+            <div className="chat-content" key={index}>
+                <Avatar src={senderProfilePic} alt="user icon" className="user-icon"/>
+                <div>
+                    <Box sx={{ fontWeight: 'bold' }}>
+                        <Typography variant="body1">
+                            {senderUsername}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body3">
+                        {messageContent.message}
+                    </Typography>
+                </div>
+                <div className="chat-time">
+                    <Typography variant="body1">
+                        {formatTimestampForDisplay(messageContent.timestamp)}
+                    </Typography>
+                </div>
+            </div>
+        )
+    })
+
+    const groupMessagesEl = groupMessageList.map((messageContent, index) => {
+        const senderUser = userDetails[messageContent.user_id]
         const senderUsername = senderUser?.username || ''
         const senderProfilePic = senderUser?.photo || ''
 
@@ -159,7 +257,7 @@ export default function Chat() {
             <ChatTopBar />
 
             <div className="chat-content-container">
-                {messagesEl}
+                {connectionId ? messagesEl : groupMessagesEl}
             </div>
 
             <Divider />

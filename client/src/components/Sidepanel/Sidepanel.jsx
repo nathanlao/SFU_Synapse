@@ -11,34 +11,12 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel() {
+function ConnectionsSidepanel({ currentUserId }) {
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
     const [clickedConnection, setClickedConnection] = useState(null)
-    const [currentUserId, setCurrentUserId] = useState(null);
     const [error, setError] = useState(null)
-
-    useEffect(() => {
-        async function getCurrentLoginUser() {
-            try {
-                const response = await fetch("/api/currentuser")
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch current login user", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data =  await response.json()
-                setCurrentUserId(data[0].user_id)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        getCurrentLoginUser()
-    }, []);
 
     async function fetchLatestMessage(sender_id, receiver_id) {
         try {
@@ -231,7 +209,7 @@ function ConnectionsSidepanel() {
     );
 }
 
-function GroupsSidepanel({ handleSwitchSubtabs }) {
+function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
 
     const [courseGroups, setCourseGroups] = useState([])
 
@@ -264,7 +242,8 @@ function GroupsSidepanel({ handleSwitchSubtabs }) {
                 to={`/groups/${group.group_id}`} 
                 key={group.group_id}
                 onClick={() => handleSwitchSubtabs({groupId: group.group_id, groupName: group.group_name, groupPic: group.photo})}
-                state={{ 
+                state={{
+                    user_id: currentUserId,
                     courseGroups: courseGroups 
                 }}
             >
@@ -356,10 +335,33 @@ function SettingsSidepanel() {
 }
 
 export default function Sidepanel(props) {
+
+    const [currentUserId, setCurrentUserId] = useState(null);
+    useEffect(() => {
+        async function getCurrentLoginUser() {
+            try {
+                const response = await fetch("/api/currentuser")
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch current login user", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
+                setCurrentUserId(data[0].user_id)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCurrentLoginUser()
+    }, [])
+
     return (
         <>
-            {props.connections && <ConnectionsSidepanel />}
-            {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} />}
+            {props.connections && <ConnectionsSidepanel currentUserId={currentUserId} />}
+            {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>
     );
