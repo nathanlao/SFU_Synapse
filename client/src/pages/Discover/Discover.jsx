@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Divider, Paper, InputBase, IconButton } from "@mui/material";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
@@ -9,6 +10,9 @@ import './Discover.css'
 
 export default function Discover() {
 
+    // ProfileCard is selected
+    const [isSelected, setIsSelected] = useState(false)
+
     return (
         <>
             <ChatTopBar />
@@ -16,7 +20,13 @@ export default function Discover() {
             {/* TODO: users' profile cards go here */}
             <div className="profile-cards-layout">
                 <div className="profile-cards-container">
-                    <ProfileCard />
+                    {/* TODO: Link is for isSelected state and enable the use of sending function for now*/}
+                    <Link 
+                        to="/groups/discover"
+                        onClick={() => setIsSelected(true)}
+                    >
+                        <ProfileCard />
+                    </Link>
                     <ProfileCard />
                     <ProfileCard />
                     <ProfileCard />
@@ -24,11 +34,12 @@ export default function Discover() {
             </div>
             <Divider />
             <Paper component="form" className="input-container">
-                <InputBase 
+                <InputBase
                     className="input-field"
+                    disabled={isSelected ? false : true}
                     placeholder="Hi Nima! I'm from CMPT 120 too">
                 </InputBase>
-                <IconButton type="submit">
+                <IconButton type="submit" disabled={isSelected ? false : true}>
                     <GroupAddIcon className="send-button"/>
                 </IconButton>
             </Paper>
