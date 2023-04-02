@@ -252,6 +252,16 @@ export default function Chat() {
         )
     })
 
+    // adjust scrollbar
+    useEffect(() => {
+        const chatList = document.querySelector('div.chat-content-container')
+        const offset = 500
+        console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
+        if(chatList.scrollHeight - chatList.scrollTop < chatList.clientHeight + offset) {
+            chatList.scrollTo(0, chatList.scrollHeight)
+        }
+    }, [groupMessageList])
+
     return (
         <>  
             <ChatTopBar />
