@@ -11,17 +11,19 @@ DROP TABLE IF EXISTS Courses;
 DROP TABLE IF EXISTS Communities;
 DROP TABLE IF EXISTS DirectMessages;
 DROP TABLE IF EXISTS GroupMessages;
+DROP TABLE IF EXISTS AuthCodes;
 
 
 CREATE TABLE Users (
 	user_id VARCHAR(64),
-	username VARCHAR(50) UNIQUE NOT NULL, -- has to be usnique in order to for login function
+	username VARCHAR(50) NOT NULL, -- uniqueness checked before inserting or updating in controllers
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
     userpass VARCHAR(128) NOT NULL,
     photo VARCHAR(1024) DEFAULT '/images/default/default-user-photo.png',
 	bio TINYTEXT,
+	status BOOL NOT NULL DEFAULT 1,
 	PRIMARY KEY (user_id)
 );
 
@@ -36,7 +38,7 @@ CREATE TABLE Connections (
 	connection_id VARCHAR(64),
 	userA_id VARCHAR(64) NOT NULL,
 	userB_id VARCHAR(64) NOT NULL,
-	Status CHAR(10) NOT NULL  DEFAULT 'pending',
+	status CHAR(10) NOT NULL  DEFAULT 'pending',
 	PRIMARY KEY (connection_id),
 	FOREIGN KEY (userA_id) REFERENCES Users (user_id),
 	FOREIGN KEY (userB_id) REFERENCES Users (user_id)
@@ -44,8 +46,8 @@ CREATE TABLE Connections (
 
 CREATE TABLE `Groups` (
 	group_id VARCHAR(64),
-	group_name VARCHAR(50) NOT NULL, -- e.g. if courses "SPRING2023 CMPT372 D100"
-	group_description TINYTEXT, -- e.g. if courses "Web II - Server-side Development"
+	group_name VARCHAR(50) NOT NULL,
+	group_description TINYTEXT,
 	photo VARCHAR(1024) NOT NULL,
 	PRIMARY KEY (group_id)
 );
@@ -78,7 +80,7 @@ CREATE TABLE DirectMessages (
 	sender_id VARCHAR(64) NOT NULL,
     receiver_id VARCHAR(64) NOT NULL,
 	message TEXT NOT NULL,
-    timestamp CHAR(20) NOT NULL,
+    timestamp DATETIME NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (sender_id) REFERENCES Users (user_id),
 	FOREIGN KEY(receiver_id) REFERENCES Users (user_id)
@@ -89,7 +91,7 @@ CREATE TABLE GroupMessages (
 	group_id VARCHAR(64) NOT NULL,
 	user_id VARCHAR(64) NOT NULL,
 	message TEXT NOT NULL,
-	timestamp CHAR(20) NOT NULL,
+	timestamp DATETIME NOT NULL,
 	PRIMARY KEY(id),
 	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
@@ -103,7 +105,13 @@ CREATE TABLE MemberOf (
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
 );
 
+CREATE TABLE AuthCodes (
+	email VARCHAR(64) NOT NULL,
+	code CHAR(8) NOT NULL,
+	expires DATETIME NOT NULL
+);
 
+SET GLOBAL time_zone = 'America/Vancouver';
 INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
 
 -- connect to database using docker for dev

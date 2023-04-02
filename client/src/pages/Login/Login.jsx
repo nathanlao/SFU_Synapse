@@ -30,9 +30,8 @@ export default function Login() {
     }
 
     
-    function validateLogin() {
+    async function validateLogin() {
         console.log('validating login')
-        console.log(`username: ${username}, password: ${userpass}`)
 
         const options = {
             method: 'POST',
@@ -40,14 +39,14 @@ export default function Login() {
             body: JSON.stringify({ username: username, userpass: md5(userpass)})
         }
 
-        fetch('/api/login', options).then(res => {
-            if(res.status === 200) {
-                navigate("/", {replace: true})
-            }else {
-                // show error message in view
-            }
-        })
+        const response = await fetch('/api/login', options)
+        const data = await response.json()
 
+        if(response.status !== 200) {
+            return alert(data)
+        }
+
+        navigate("/", { replace: true })
     }
 
 

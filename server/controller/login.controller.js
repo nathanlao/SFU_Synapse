@@ -12,8 +12,8 @@ const verifyLogin = (req, res) => {
         if(err) {
             res.status(500).json(err)
         }else {
-            if(data.length > 0 && data[0].userpass === userpass) {
-                req.session.user = { username: username, user_id: data[0].user_id }
+            if(data.length > 0 && data[0].status && data[0].userpass === userpass) {
+                req.session.user = { user_id: data[0].user_id }
                 res.status(200).json("Login: success")
             }else {
                 res.status(401).json("Incorrect username or password")
@@ -33,7 +33,7 @@ const verifyAdminLogin = (req, res) => {
             res.status(500).json(err)
         }else {
             if(data.length > 0 && data[0].adminpass === adminpass) {
-                req.session.admin = { adminname: adminname }
+                req.session.admin = { admin_id: data[0].admin_id }
                 res.status(200).json("Admin Login: success")
             }else {
                 res.status(401).json("Incorrect adminname or password")

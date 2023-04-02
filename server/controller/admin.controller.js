@@ -139,7 +139,7 @@ async function addSection_(year, term, dep, num, section, title) {
         return new Promise(function(resolve) {
             const id = uuidv4()
             const photo = process.env.DEFAULT_COURSE_PHOTO_BASEPATH + getRandomInteger(1, 5) + '.png'
-            const groupName = `${term.toUpperCase() + year} ${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
+            const groupName = `${dep.toUpperCase() + num.toUpperCase()} ${section.toUpperCase()}`
             const query1 = 'INSERT INTO `Groups`(group_id, group_name, group_description, photo) VALUES(?, ?, ?, ?);'
             const query2 = 'INSERT INTO Courses(course_id, offered_year, offered_term, dep, num, section, title) VALUES(?, ?, ?, ?, ?, ?, ?);'
             var params = [id, groupName, title, photo, id, year, term, dep, num, section, title]

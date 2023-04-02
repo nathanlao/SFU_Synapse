@@ -7,20 +7,20 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 
-// updates a field in user table with username
-function updateUser(username, field, value) {
+// updates a field in user table with user_id
+function updateUser(user_id, field, value) {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE Users SET ${field}=? WHERE username=?`, [value, username], (err) => {
+        db.query(`UPDATE Users SET ${field}=? WHERE user_id=?`, [value, user_id], (err) => {
             if(err) reject(err)
             resolve(`Field name '${field}' in Users table has been updated to ${value}`)
         })
     })
 }
 
-// gets value of a field in user table with username
-function getUserField(username, field) {
+// gets value of a field in user table with user_id
+function getUserField(user_id, field) {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT ${field} FROM Users WHERE username=?`, [username], (err, data) => {
+        db.query(`SELECT ${field} FROM Users WHERE user_id=?`, [user_id], (err, data) => {
             if(err) reject(err)
             resolve(data)
         })
@@ -37,11 +37,11 @@ const setUserPhoto = async (req, res) => {
     }
 
 
-    const username = req.session.user.username
+    const user_id = req.session.user.user_id
 
     try {
         // delete current image if not default
-        const data = await getUserField(username, 'photo')
+        const data = await getUserField(user_id, 'photo')
         if(data[0].photo !== process.env.DEFAULT_USER_PHOTO_PATH) {
             // delete current photo
             const currentpath = data[0].photo
@@ -64,7 +64,7 @@ const setUserPhoto = async (req, res) => {
             
             // save filename in database
             const filepath = '/images/uploads/' + req.file.filename
-            await updateUser(username, 'photo', filepath)
+            await updateUser(user_id, 'photo', filepath)
 
             // send response
             return res.status(200).json(filepath)
@@ -81,7 +81,7 @@ const getUserPhoto = async (req, res) => {
     }
 
     try {
-        const data = await getUserField(req.session.user.username, 'photo')
+        const data = await getUserField(req.session.user.user_id, 'photo')
         res.status(200).json(data[0].photo)
     }catch(err) {
         res.status(500).json(err)
@@ -95,10 +95,10 @@ const deleteUserPhoto = async (req, res) => {
         return res.sendStatus(401)
     }
 
-    const username = req.session.user.username
+    const user_id = req.session.user.user_id
 
     try {
-        const data = await getUserField(username, 'photo')
+        const data = await getUserField(user_id, 'photo')
         const currentpath = data[0].photo
 
 
@@ -112,7 +112,7 @@ const deleteUserPhoto = async (req, res) => {
                 return
             })
 
-            await updateUser(username, 'photo', process.env.DEFAULT_USER_PHOTO_PATH)
+            await updateUser(user_id, 'photo', process.env.DEFAULT_USER_PHOTO_PATH)
         }
 
         res.status(200).json(process.env.DEFAULT_USER_PHOTO_PATH)
@@ -122,4 +122,4 @@ const deleteUserPhoto = async (req, res) => {
     }
 }
 
-module.exports = { updateUser, setUserPhoto, getUserPhoto, deleteUserPhoto }
+module.exports = { updateUser, setUserPhoto, getUserPhoto, deleteUserPhoto, getUserField }

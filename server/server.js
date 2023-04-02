@@ -2,32 +2,54 @@ const express = require('express')
 // const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const app = express()
-const path = require('path');
+const path = require('path')
 const bodyParser = require('body-parser')
 const Routes = express.Router()
 const dotenv = require('dotenv')
+// For building server with socketio
+const http = require('http')
+const { Server } = require('socket.io')
+const db = require("./db/connection.db").pool
+
+// const session = require('express-session')
 dotenv.config()
 
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
-const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections} = require('./controller/connections.controller')
-const { getGroups, createGroup } = require('./controller/groups.controller')
+const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
+const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
+const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
+const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
+const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
+const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
+const { getGroupMembers } = require('./controller/chat-operation/group-members.controller')
+const { getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
-const { getSettings, updateSettings, deleteUser } = require('./controller/setting.controller')
+const { getSettings, updateSettings, deleteAccount, updatePassoword } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
 const { getDepartments, getCourses, getSections, getEnrolledCourses, addUserToCourse, removeUserFromCourse } = require('./controller/db-operation/db-courses.controller');
 const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
+const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/add-communities.controller');
 const { getCommunities , joinCommunity } = require('./controller/browse-communities.controller');
-const { checkLoginStatus } = require('./middleware/express-session.middleware');
+const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
+const { SendVerificationEmail } = require('./controller/email-authentication.controller')
 
-
+// socket.io to enable bidirectional communication
+const server = http.createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
+socketController(io)
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
@@ -43,6 +65,7 @@ app.use(cors({
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }))
+
 app.use(session({
     name: 'synapse-login',
     secret: process.env.SESSION_SECRET_STRING,
@@ -58,28 +81,42 @@ app.use('/', function(req,res,next){
 })
 
 
-
-
-
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
+
+// Route: connections
 Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
-Routes.route('/connections/:id')
+Routes.route('/connections/:connetionId')
     .get(getActiveConnections)
-    .put(updateConnectionStatus)    
-Routes.route('/groups')
-    .get(getGroups)
+    .put(updateConnectionStatus) 
+Routes.route('/connections/chat/:sender_id/:receiver_id')
+    .get(getDirectMessages)
+Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
+    .get(getLatestMessage)
+
+// Route: groups
+Routes.route('/groups/courses')
+    .get(getCourseGroups)
     .post(createGroup)
+Routes.route('/groups/chat/:user_id/:group_id')
+    .get(getGroupMessages)
+Routes.route('/group-members/:group_id')
+    .get(getGroupMembers)
+
+// Route: settings
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
-    .delete(deleteUser)
-
+    .delete(deleteAccount)
+Routes.route('/change-password')
+    .put(updatePassoword)
 
 // Route: signup
+Routes.route('/auth')
+    .post(SendVerificationEmail)
 Routes.route('/signup')
 .post(createUser)
 // Route: account setup
@@ -102,6 +139,9 @@ Routes.route('/login')
     .post(verifyLogin)
 Routes.route('/checkLoginStatus/:userType')
     .get(checkLoginStatus)
+
+Routes.route('/logout')
+    .post(logout)
 
 
 // Route: admin
@@ -131,6 +171,10 @@ Routes.route('/course/:year/:term')
 Routes.route('/:year/:term/:dep/:num/:section')
     .delete(removeUserFromCourse)
     .post(addUserToCourse)
+Routes.route('/currentuser')
+    .get(getCurrentLoginUser)
+Routes.route('/userDetails/:userId')
+    .get(getUserDetails)
 
 // Development purpose
 Routes.route('/dev/db/:table')
@@ -142,4 +186,4 @@ app.all('*', (req, res) => {
 })
 app.use(express.json());
 
-app.listen(8080, () => console.log(`Server listening on port 8080`))
+server.listen(8080, () => console.log(`Server listening on port 8080`))

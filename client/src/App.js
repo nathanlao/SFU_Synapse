@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Navigate} from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 
 import MainLayout from './components/MainLayout'
 import Home from './pages/Home/Home'
@@ -19,6 +19,8 @@ import Admin from './pages/Admin/Admin'
 import AccountSetup from './pages/Signup/AccountSetup'
 import EditCourseEnrollment from './pages/EditCourseEnrollment/EditCourseEnrollment'
 import DevDatabaseManager from './pages/DEV_DB/DevDatabaseManager'
+import Logout from './pages/Logout/Logout'
+import DeleteAccount from './pages/DeleteAccount/DeleteAccount'
 
 export default function App() {
     return (
@@ -37,7 +39,7 @@ export default function App() {
                         </Route>
                         <Route path='groups' element={<GroupsLayout />} >
                             {/* Nested route relative to "/groups" */}
-                            <Route path='chat' element={<Chat />} />
+                            <Route path=':groupId' element={<Chat />} />
                             <Route path='discover' element={<Discover />} />
                         </Route>
                         <Route path='setting' element={<SettingsLayout />} >
@@ -45,6 +47,8 @@ export default function App() {
                             <Route path='edit-profile' element={<EditProfile />} />
                             <Route path='change-password' element={<ChangePassword />} />
                             <Route path='edit-course-enrollment' element={<EditCourseEnrollment />} />
+                            <Route path='delete-account' element={<DeleteAccount />} />
+                            <Route path='logout' element={<Logout />} />
                         </Route>
                     </Route>
 

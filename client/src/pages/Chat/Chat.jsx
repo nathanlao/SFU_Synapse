@@ -1,87 +1,282 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams, useLocation } from 'react-router-dom';
+import io from 'socket.io-client'
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
 import Avatar from '@mui/joy/Avatar';
 import SendIcon from '@mui/icons-material/Send';
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 
-import tempPic from "../../images/temp.png"
-
 import './Chat.css'
 
 export default function Chat() {
+    const socketRef = useRef();
+
+    const { connectionId } = useParams()
+    const { groupId } = useParams()
+
+    // state value from sidepanel.jsx
+    const location = useLocation()
+    const currentUserId = location?.state?.sender_id || location?.state?.user_id
+    const connectionObj = location.state?.pendingConnections?.find(connection => {
+        return connection.connection_id === connectionId
+    })
+    
+    const [input, setInput] = useState("")
+    const [messageList, setMessageList] = useState([])
+    const [groupMessageList, setGroupMessageList] = useState([])
+    const [userDetails, setUserDetails] = useState({})
+    const [groupMembers, setGroupMembers] = useState([])
+    const timestamp = new Date(Date.now());
+
+    function formatTimestamp(date) {
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+        const hours = date.getHours().toString().padStart(2, '0')
+        const minutes = date.getMinutes().toString().padStart(2, '0')
+        const seconds = date.getSeconds().toString().padStart(2, '0')
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    }
+
+    function formatTimestampForDisplay(timestamp) {
+        const date = new Date(timestamp);
+        const hours24 = date.getHours();
+        const ampm = hours24 < 12 ? "AM" : "PM";
+        const hours12 = hours24 % 12 || 12;
+        const minutes = date.getMinutes();
+        const formattedHours = hours12.toString().padStart(2, '0');
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
+
+    async function fetchUserDetails(userId) {
+        try {
+            const res = await fetch(`/api/userDetails/${userId}`);
+            const data = await res.json();
+            setUserDetails((prevUserDetails) => ({
+                ...prevUserDetails,
+                [userId]: data,
+            }));
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function fetchGroupMembers() {
+        try {
+            const res = await fetch(`/api/group-members/${groupId}`);
+            const data = await res.json();
+            setGroupMembers(data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function handleInputChange(e) {
+        setInput(e.target.value)
+    }
+
+    function sendMessage(e) {
+        e.preventDefault()
+
+        // Direct message
+        if (connectionId && input !== "") {
+            const messageData = {
+                sender_id: currentUserId,
+                receiver_id: (currentUserId === connectionObj.userA_id) 
+                            ? connectionObj.userB_id 
+                            : connectionObj.userA_id,
+                message: input,
+                timestamp: formatTimestamp(timestamp)
+            }
+    
+            socketRef.current.emit('sendDirectMessage', messageData)
+            
+            // Update the messageList state with the sent message
+            setMessageList((prevMessages) => [...prevMessages, {
+                ...messageData,
+                timestamp: timestamp, // Use the Date object for display
+            }]);
+
+        }
+
+        // Group Message
+        if (groupId && input !== "") {
+            const groupMessageData = {
+                user_id: currentUserId,
+                group_id: groupId,
+                message: input,
+                timestamp: formatTimestamp(timestamp)
+            }
+
+            socketRef.current.emit('sendGroupMessage', groupMessageData)
+        }
+
+        // Clear the input after sent
+        setInput("")
+    }
+
+    useEffect(() => {
+        socketRef.current = io.connect('http://localhost:8080')
+
+        // Direct message
+        if (connectionId) {
+            async function fetchDMChatHistory() {
+                const sender_id = connectionObj.userA_id;
+                const receiver_id = connectionObj.userB_id;
+            
+                try {
+                    const res = await fetch(`/api/connections/chat/${sender_id}/${receiver_id}`);
+                    const data = await res.json();
+                    setMessageList(data);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+            fetchDMChatHistory()
+
+            // GET details of current user and the other user
+            fetchUserDetails(connectionObj.userA_id)
+            fetchUserDetails(connectionObj.userB_id)
+
+             // Join connection with the current user's ID
+            socketRef.current.emit('joinConnection', currentUserId);
+
+            socketRef.current.on("receiveDirectMessage", (message) => {
+                setMessageList((prevMessages) => [...prevMessages, {
+                    ...message,
+                    timestamp: timestamp
+                }])
+            })
+
+        }
+
+        // Group message
+        if (groupId) {
+            const user_id = currentUserId
+            const group_id = groupId
+
+            async function fecthGroupChatHistory() {
+                try {
+                    const response = await fetch(`/api/groups/chat/${user_id}/${group_id}`)
+                    const data = await response.json()
+                    setGroupMessageList(data)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+            fecthGroupChatHistory()
+
+            fetchGroupMembers()
+
+            socketRef.current.emit('joinGroup', groupId)
+
+            socketRef.current.on("receiveGroupMessage", (message) => {
+                setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
+                    ...message,
+                    timestamp: timestamp
+                }])
+            })
+
+        }
+
+        return () => {
+            socketRef.current.disconnect()
+        }
+
+    }, [connectionId, groupId])
+
+    useEffect(() => {    
+        // Fetch user details for all group members
+        if (groupMembers.length > 0) {
+            groupMembers.forEach((member) => {
+                fetchUserDetails(member.user_id)
+            })
+        }
+    }, [groupMembers])
+
+    const messagesEl = messageList.map((messageContent, index) => {
+        // GET users' name and photo
+        const senderUser = userDetails[messageContent.sender_id]
+        const senderUsername = senderUser?.username || ''
+        const senderProfilePic = senderUser?.photo || ''
+
+        return (
+            <div className="chat-content" key={index}>
+                <Avatar src={senderProfilePic} alt="user icon" className="user-icon"/>
+                <div>
+                    <Box sx={{ fontWeight: 'bold' }}>
+                        <Typography variant="body1">
+                            {senderUsername}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body3">
+                        {messageContent.message}
+                    </Typography>
+                </div>
+                <div className="chat-time">
+                    <Typography variant="body1">
+                        {formatTimestampForDisplay(messageContent.timestamp)}
+                    </Typography>
+                </div>
+            </div>
+        )
+    })
+
+    const groupMessagesEl = groupMessageList.map((messageContent, index) => {
+        const senderUser = userDetails[messageContent.user_id]
+        const senderUsername = senderUser?.username || ''
+        const senderProfilePic = senderUser?.photo || ''
+
+        return (
+            <div className="chat-content" key={index}>
+                <Avatar src={senderProfilePic} alt="user icon" className="user-icon"/>
+                <div>
+                    <Box sx={{ fontWeight: 'bold' }}>
+                        <Typography variant="body1">
+                            {senderUsername}
+                        </Typography>
+                    </Box>
+                    <Typography variant="body3">
+                        {messageContent.message}
+                    </Typography>
+                </div>
+                <div className="chat-time">
+                    <Typography variant="body1">
+                        {formatTimestampForDisplay(messageContent.timestamp)}
+                    </Typography>
+                </div>
+            </div>
+        )
+    })
+
+    // adjust scrollbar
+    useEffect(() => {
+        const chatList = document.querySelector('div.chat-content-container')
+        const offset = 500
+        console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
+        if(chatList.scrollHeight - chatList.scrollTop < chatList.clientHeight + offset) {
+            chatList.scrollTo(0, chatList.scrollHeight)
+        }
+    }, [groupMessageList])
 
     return (
         <>  
             <ChatTopBar />
 
             <div className="chat-content-container">
-                {/* TODO: display the conversation here, 
-                    now only hard coded chats with styling now */}
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Corey
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            whats up
-                        </Typography>
-                    </div>
-                    <div className="chat-time">
-                        <Typography variant="body1">
-                            2:45pm
-                        </Typography>
-                    </div>
-                </div>
-
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Bryan
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-                            consequat. 
-                        </Typography>
-                    </div>
-                    <Typography variant="body1" className="chat-time">
-                        2:46pm  
-                    </Typography>
-                </div>
-
-                <div className="chat-content">
-                    <Avatar src={tempPic} alt="user icon" className="user-icon"/>
-                    <div>
-                        <Box sx={{ fontWeight: 'bold' }}>
-                            <Typography variant="body1">
-                                Corey
-                            </Typography>
-                        </Box>
-                        <Typography variant="body3">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </Typography>
-                    </div>
-                    <Typography variant="body1" className="chat-time">
-                        2:47pm
-                    </Typography>
-                </div>
-
+                {connectionId ? messagesEl : groupMessagesEl}
             </div>
 
             <Divider />
-            <Paper component="form" className="input-container">
+            <Paper component="form" onSubmit={sendMessage} className="input-container">
                 <InputBase 
                     className="input-field"
-                    placeholder="Type a message">
+                    placeholder="Type a message"
+                    value={input}
+                    onChange={handleInputChange}>
                 </InputBase>
                 <IconButton type="submit">
                     <SendIcon className="send-button"/>
