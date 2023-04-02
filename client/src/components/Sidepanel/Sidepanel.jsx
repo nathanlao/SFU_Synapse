@@ -243,8 +243,7 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
                 key={group.group_id}
                 onClick={() => handleSwitchSubtabs({groupId: group.group_id, groupName: group.group_name, groupPic: group.photo})}
                 state={{
-                    user_id: currentUserId,
-                    courseGroups: courseGroups 
+                    user_id: currentUserId
                 }}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>

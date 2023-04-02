@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom'
 import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
 import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";
@@ -9,7 +9,7 @@ import './ChatTopBar.css'
 
 export default function ChatTopBar() {
 
-    // Properties (connctionsLayout.jsx, GroupsLayout.jsx) to indicate the current path and state
+    // "from" property (connctionsLayout.jsx, GroupsLayout.jsx) to indicate the current path
     const { from, groupId, groupName, groupPic } = useOutletContext()
     const isConnectionPage = from.split("/")[1] === "connections"
     const isGroupPage = from.split("/")[1] === "groups"
