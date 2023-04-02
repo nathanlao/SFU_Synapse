@@ -52,7 +52,7 @@ div.course-selector div.course-list > section ul li button:hover {
     color: #fff;
     transition: .3s;
 }
-div.course-selector section.added-courses {
-    margin-bottom: 12px;
+div.course-selector section.removed-courses {
+    margin-top: 12px;
 }
 

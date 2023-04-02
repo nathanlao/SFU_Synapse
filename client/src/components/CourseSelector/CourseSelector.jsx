@@ -3,7 +3,7 @@ import './CourseSelector.css'
 import Select from 'react-select'
 
 
-export default function CourseSelector({year, term, updateParentList, setup}) {
+export default function CourseSelector({year, term, updateParentList, setup, updateFromParent}) {
     const [deps, setDeps] = useState([]) // list of departments (eg [CHEM, CMPT, ...])
     const [courses, setCourses] = useState([]) // list of courses (eg [372, 200, ...])
     const [sections, setSections] = useState([])
@@ -44,10 +44,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                 const url = `/api/course/${year}/${term}`
                 const result = await fetch(url)
                 if(result.status !== 200) {
-                    console.log('DEBUG: CourseSelector.jsx: 48')
-                    alert('status code NOT 200')
-                    
-                    return
+                    return alert('status code NOT 200')
                 }
 
                 const data = await result.json()
@@ -61,6 +58,20 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
         }
 
     }, [])
+
+    
+    useEffect(() => {
+        if(updateFromParent) {
+            console.log('Theres is an update from parent')
+
+            const updatedList = selectedList.filter((item1) => {
+                return item1.keep
+            }).map((item2) => {
+                return { ...item2, new_item: false }
+            })
+            setSelectedList(updatedList)
+        }
+    }, [updateFromParent])
 
 
     useEffect(() => {
@@ -205,9 +216,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                                 id={index} 
                                 data-dep={item.dep} 
                                 data-num={item.num} 
-                                data-section={item.section} 
-                                // onClick={handleAddNewItem}
-                                >
+                                data-section={item.section} >
                                     {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()}
                                     <button type="button" onClick={handleAddNewItem}>Add</button>
                             </li>
@@ -226,9 +235,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                                     data-dep={item.dep} 
                                     data-num={item.num} 
                                     data-section={item.section} 
-                                    data-new-item={item.new_item}
-                                    // onClick={handleRemoveItem}
-                                    >
+                                    data-new-item={item.new_item} >
                                         {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()} {item.new_item && <strong>New!</strong>}
                                         <button type="button" onClick={handleRemoveItem}>Remove</button>
                                 </li>
