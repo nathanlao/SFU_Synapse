@@ -23,6 +23,7 @@ const { getPendingConnections, createPendingConnection, updateConnectionStatus, 
 const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
+const { getGroupMembers } = require('./controller/chat-operation/group-members.controller')
 const { getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -81,10 +82,8 @@ app.use('/', function(req,res,next){
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-Routes.route('/currentuser')
-    .get(getCurrentLoginUser)
-Routes.route('/userDetails/:userId')
-    .get(getUserDetails)
+
+// Route: connections
 Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
@@ -93,13 +92,19 @@ Routes.route('/connections/:connetionId')
     .put(updateConnectionStatus) 
 Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
-Routes.route('/groups/chat/:user_id/:group_id')
-    .get(getGroupMessages)
 Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
     .get(getLatestMessage)
+
+// Route: groups
 Routes.route('/groups/courses')
     .get(getCourseGroups)
     .post(createGroup)
+Routes.route('/groups/chat/:user_id/:group_id')
+    .get(getGroupMessages)
+Routes.route('/group-members/:group_id')
+    .get(getGroupMembers)
+
+// Route: settings
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
@@ -159,6 +164,10 @@ Routes.route('/course/:year/:term')
 Routes.route('/:year/:term/:dep/:num/:section')
     .delete(removeUserFromCourse)
     .post(addUserToCourse)
+Routes.route('/currentuser')
+    .get(getCurrentLoginUser)
+Routes.route('/userDetails/:userId')
+    .get(getUserDetails)
 
 // Development purpose
 Routes.route('/dev/db/:table')
