@@ -15,6 +15,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
+    const [inactiveConnections, setInactiveConnections] = useState([])
     const [clickedConnection, setClickedConnection] = useState(null)
     const [error, setError] = useState(null)
 
@@ -73,7 +74,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     useEffect(() => {
         async function getActiveConnections() {
             try {
-                const response = await fetch(`/api/connections/${connectionId}`)
+                const response = await fetch(`/api/connections/active-connections/${connectionId}`)
                 if (!response.ok) {
                     // eslint-disable-next-line no-throw-literal
                     throw {
@@ -92,22 +93,55 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         getActiveConnections();
     }, [pendingConnections]) // Re-fetch whenever pendingConnections changed
 
+    // Fetch Inactive connections
+    useEffect(() => {
+        async function getInactiveConnections() {
+            try {
+                const response = await fetch('/api/connections/inactive-connections')
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch inactive connections", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data = await response.json()
+
+                const updatedConnections = [];
+                for (const connection of data) {
+                    const otherUserId = (connection.userA_id === currentUserId) 
+                        ? connection.userB_id 
+                        : connection.userA_id
+                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
+                }
+
+                setInactiveConnections(updatedConnections)
+            } catch (err) {
+                console.log(err)
+                setError(err)
+            }
+        }
+        if (currentUserId) {
+            getInactiveConnections()
+        }
+    },[currentUserId])
+
+
     function renderAddButton(connectionId) {
         setClickedConnection(connectionId)
     }
 
     // Update the pending connection to be active 
     function handleUpdateConnection(connectionId) {
-
-        console.log(`PUT request send from here with connection id: ${connectionId}`)
-
         const options = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ connection_id: connectionId }),
         };
         
-        fetch(`/api/connections/${connectionId}`, options)
+        fetch(`/api/connections/active-connections/${connectionId}`, options)
             .then((res) => res.json())
             .then((data) => {
                 setPendingConnections((prevConnections) =>
@@ -119,15 +153,6 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                 console.log(err);
             });
     }
-
-    // Map over activeConnections data return from backend
-    const activeConnectionsEl = activeConnections.map((connection) => {
-        return (
-            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem image={connection.userB_photo} title={connection.userB_username} />
-            </Accordion.Body>
-        )
-    })
 
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
@@ -168,6 +193,37 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         )
     })
 
+    // Map over activeConnections data return from backend
+    const activeConnectionsEl = activeConnections.map((connection) => {
+        return (
+            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
+                <SidepanelItem image={connection.userB_photo} title={connection.userB_username} />
+            </Accordion.Body>
+        )
+    })
+
+    // Map over inactiveConnections data return from backend
+    const inactiveConnectionsEl = inactiveConnections.map((connection) => {
+        return (
+            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
+                <SidepanelItem 
+                    image={connection.userA_id === currentUserId 
+                        ? connection.userB_photo 
+                        : connection.userA_photo
+                    } 
+                    title={ connection.userA_id === currentUserId
+                        ? connection.userB_username
+                        : connection.userA_username
+                    } 
+                    indicator=""
+                    subtitle={connection.latestMessage}
+                />
+            </Accordion.Body>
+        )
+    })
+
+    console.log(inactiveConnections)
+
     if (error) {
         return <h4>There was an error: {error.message}</h4>
     }
@@ -192,17 +248,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
             <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
                 <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                     <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
-                    </Accordion.Body>
+                        {inactiveConnectionsEl}
                 </Accordion.Item>
             </Accordion>
         </div>

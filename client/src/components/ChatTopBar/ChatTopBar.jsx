@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useLocation } from 'react-router-dom'
 import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
 import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";

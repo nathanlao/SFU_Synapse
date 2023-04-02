@@ -1,7 +1,7 @@
 const db = require('../../db/connection.db').pool
 
 const getGroupMessages = (req, res) => {
-    const { user_id, group_id } = req.params
+    const { group_id } = req.params
 
     const selectGroupMsgQuery = `
         SELECT * FROM GroupMessages

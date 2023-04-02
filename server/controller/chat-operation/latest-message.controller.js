@@ -4,8 +4,6 @@ const getLatestMessage = (req, res) => {
     const sender_id = req.params.sender_id
     const receiver_id = req.params.receiver_id
 
-    console.log("got id here:", sender_id, receiver_id)
-
     const getLatestMsgQuery = `
         SELECT message FROM DirectMessages
         WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
