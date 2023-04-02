@@ -14,6 +14,14 @@ button#signupBtn:hover {
     background-color: #11515D;
     transition: .3s;
 }
+button#signupBtn:disabled:hover {
+    cursor: default;
+    background-color: #5E9697;
+}
+button#sendCodeBtn:disabled:hover {
+    cursor: default;
+    background-color: #5E9697;
+}
 .pass-error-box {
     background-color: rgba(0, 0, 0, 0.2);
     margin-top: 10px;
