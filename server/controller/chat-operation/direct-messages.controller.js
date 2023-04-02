@@ -1,4 +1,4 @@
-const db = require("../db/connection.db").pool
+const db = require("../../db/connection.db").pool
 
 const getDirectMessages = (req, res) => {
     const { sender_id, receiver_id } = req.params

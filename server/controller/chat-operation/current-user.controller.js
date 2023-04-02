@@ -1,4 +1,4 @@
-const db = require("../db/connection.db").pool
+const db = require("../../db/connection.db").pool
 
 const getCurrentLoginUser = (req, res) => {
     if (!req.session || !req.session.user) {

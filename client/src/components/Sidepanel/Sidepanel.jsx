@@ -11,34 +11,27 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel() {
+function ConnectionsSidepanel({ currentUserId }) {
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
     const [clickedConnection, setClickedConnection] = useState(null)
-    const [currentUserId, setCurrentUserId] = useState(null);
     const [error, setError] = useState(null)
 
-    useEffect(() => {
-        async function getCurrentLoginUser() {
-            try {
-                const response = await fetch("/api/currentuser")
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch current login user", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data =  await response.json()
-                setCurrentUserId(data[0].user_id)
-            } catch (err) {
-                console.log(err)
+    async function fetchLatestMessage(sender_id, receiver_id) {
+        try {
+            const res = await fetch(`/api/connections/chat/latest/${sender_id}/${receiver_id}`)
+            const data = await res.json()
+            if (data[0]?.message) {
+                return data[0].message
+            } else {
+                return "No messages yet"
             }
+        } catch (err) {
+            console.error(err)
         }
-        getCurrentLoginUser()
-    }, []);
+        return null
+    }
 
     // Fetching pending connections
     useEffect(() => {
@@ -54,14 +47,26 @@ function ConnectionsSidepanel() {
                     }
                 }
                 const data =  await response.json()
-                setPendingConnections(data)
+
+                const updatedConnections = [];
+                for (const connection of data) {
+                    const otherUserId = (connection.userA_id === currentUserId) 
+                        ? connection.userB_id 
+                        : connection.userA_id
+                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
+                }
+
+                setPendingConnections(updatedConnections)
             } catch (err) {
                 console.log(err)
                 setError(err)
             }
         }
-        getPendingConnections()
-    }, [])
+        if (currentUserId) {
+            getPendingConnections()
+        }
+    }, [currentUserId])
 
     // Fetching active connections
     const { connectionId } = useParams()
@@ -156,6 +161,7 @@ function ConnectionsSidepanel() {
                                         ? connection.userB_username
                                         : connection.userA_username
                                 }
+                                subtitle={connection.latestMessage}
                         />
                 </Accordion.Body>
             </Link>
@@ -203,7 +209,55 @@ function ConnectionsSidepanel() {
     );
 }
 
-function GroupsSidepanel() {
+function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
+
+    const [courseGroups, setCourseGroups] = useState([])
+
+    useEffect(() => {
+        async function getGroupsOfCourses() {
+            try {
+                const response = await fetch('/api/groups/courses')
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch courses in groups", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data = await response.json()
+                setCourseGroups(data)
+            } catch(err) {
+                console.log(err)
+            }
+        }
+        getGroupsOfCourses()
+    }, [])
+
+    const courseGroupsEl = courseGroups.map(group => {
+        const moreThanOneMember = (group.num_members > 1) ? "members" : "member"
+
+        return (
+            <Link 
+                to={`/groups/${group.group_id}`} 
+                key={group.group_id}
+                onClick={() => handleSwitchSubtabs({groupId: group.group_id, groupName: group.group_name, groupPic: group.photo})}
+                state={{
+                    user_id: currentUserId
+                }}
+            >
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={group.photo}
+                        title={group.group_name} 
+                        subtitle={`${group.num_members} ${moreThanOneMember}`} 
+                        indicator=""
+                    />
+                </Accordion.Body>
+            </Link>
+        )
+    })
+
     return (
         <div className="sidepanel-container">
             <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
@@ -212,10 +266,7 @@ function GroupsSidepanel() {
             <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
                 <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                     <Accordion.Header style={{backgroundColor: '#11515c'}}>Courses</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        <SidepanelItem title="CMPT 372" subtitle="67 members" indicator=""/>
-                        <SidepanelItem title="CMPT 371" subtitle="103 members" indicator="" />
-                    </Accordion.Body>
+                        {courseGroupsEl}
                 </Accordion.Item>
             </Accordion>
             <Accordion flush style={{backgroundColor: '#11515c'}}>
@@ -283,10 +334,33 @@ function SettingsSidepanel() {
 }
 
 export default function Sidepanel(props) {
+
+    const [currentUserId, setCurrentUserId] = useState(null);
+    useEffect(() => {
+        async function getCurrentLoginUser() {
+            try {
+                const response = await fetch("/api/currentuser")
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch current login user", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
+                setCurrentUserId(data[0].user_id)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCurrentLoginUser()
+    }, [])
+
     return (
         <>
-            {props.connections && <ConnectionsSidepanel />}
-            {props.groups && <GroupsSidepanel />}
+            {props.connections && <ConnectionsSidepanel currentUserId={currentUserId} />}
+            {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>
     );

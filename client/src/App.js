@@ -39,7 +39,7 @@ export default function App() {
                         </Route>
                         <Route path='groups' element={<GroupsLayout />} >
                             {/* Nested route relative to "/groups" */}
-                            <Route path='chat' element={<Chat />} />
+                            <Route path=':groupId' element={<Chat />} />
                             <Route path='discover' element={<Discover />} />
                         </Route>
                         <Route path='setting' element={<SettingsLayout />} >

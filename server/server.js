@@ -17,11 +17,14 @@ dotenv.config()
 
 // controllers
 const { getHomeContent } = require('./controller/home.controller')
-const { getCurrentLoginUser } = require('./controller/current-user.controller')
-const { getUserDetails } = require('./controller/user-details.controller')
+const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
+const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getPendingConnections, createPendingConnection, updateConnectionStatus, getActiveConnections ,getMessagesForConnection} = require('./controller/connections.controller')
-const { getDirectMessages } = require('./controller/direct-messages.controller')
-const { getGroups, createGroup } = require('./controller/groups.controller')
+const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
+const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
+const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
+const { getGroupMembers } = require('./controller/chat-operation/group-members.controller')
+const { getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
 const { getSettings, updateSettings, deleteAccount, updatePassoword } = require('./controller/setting.controller')
@@ -33,7 +36,7 @@ const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/communities.controller');
-const socketController = require('./controller/socket-io.controller')
+const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { RegisterEmail } = require('./controller/email-authentication.controller')
 
@@ -80,10 +83,8 @@ app.use('/', function(req,res,next){
 // Route: main
 Routes.route('/')
     .get(getHomeContent)
-Routes.route('/currentuser')
-    .get(getCurrentLoginUser)
-Routes.route('/userDetails/:userId')
-    .get(getUserDetails)
+
+// Route: connections
 Routes.route('/connections')
     .get(getPendingConnections)
     .post(createPendingConnection)
@@ -92,9 +93,19 @@ Routes.route('/connections/:connetionId')
     .put(updateConnectionStatus) 
 Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
-Routes.route('/groups')
-    .get(getGroups)
+Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
+    .get(getLatestMessage)
+
+// Route: groups
+Routes.route('/groups/courses')
+    .get(getCourseGroups)
     .post(createGroup)
+Routes.route('/groups/chat/:user_id/:group_id')
+    .get(getGroupMessages)
+Routes.route('/group-members/:group_id')
+    .get(getGroupMembers)
+
+// Route: settings
 Routes.route('/setting')
     .get(getSettings)
     .put(updateSettings)
@@ -156,6 +167,10 @@ Routes.route('/course/:year/:term')
 Routes.route('/:year/:term/:dep/:num/:section')
     .delete(removeUserFromCourse)
     .post(addUserToCourse)
+Routes.route('/currentuser')
+    .get(getCurrentLoginUser)
+Routes.route('/userDetails/:userId')
+    .get(getUserDetails)
 
 // Development purpose
 Routes.route('/dev/db/:table')
