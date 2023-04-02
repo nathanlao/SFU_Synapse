@@ -7,6 +7,9 @@ var md5 = require('md5');
 
 export default function Signup() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState('')
+    const [fname, setFname] = useState('')
+    const [lname, setLname] = useState('')
     const [email, setEmail] = useState('');
     const [isSfuEmail, setIsSfuEmail] = useState(false);
     const [isSamePassword, setIsSamePassword] = useState(true);
@@ -18,9 +21,10 @@ export default function Signup() {
     const [passContainsSymbol, setPassContainsSymbol] = useState(false);
     const [passContainsEightChars, setPassContainsEightChars] = useState(false);
     const [passErrorVisible, setPassErrorVisible] = useState(true);
+    const [code, setCode] = useState('')
 
     useEffect(() => {
-        if (email.endsWith('@sfu.ca')) {
+        if (email.endsWith('@sfu.ca') && email.length > '@sfu.ca'.length && !(email.indexOf(' ') >= 0)) {
             // ends with @sfu.ca display success
             setIsSfuEmail(true);
         } else {
@@ -72,19 +76,44 @@ export default function Signup() {
     
 
     function handleEmailChange(event) {
-        setEmail(event.target.value);
+        setEmail(event.target.value.trim());
     }
 
-    function sendEmailCode() {
-        // TODO: Insert code to send email.
+    async function sendEmailCode() {
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        }
+        const response = await fetch('/api/auth', options)
+        const data = await response.json()
+
+        if(response !== 200) {
+            return alert(data)
+        }
+
+        console.log(data)
     }
 
+    function handleUsernameChange(event) {
+        setUsername(event.target.value)
+    }
+    function handleFnameChange(event) {
+        setFname(event.target.value)
+    }
+    function handleLnameChange(event) {
+        setLname(event.target.value)
+    }
     function handlePasswordChange(event) {
         setPassword(event.target.value);
     }
 
     function handleConfirmPasswordChange(event) {
         setConfirmPassword(event.target.value);
+    }
+
+    function handleCodeChange(event) {
+        setCode(event.target.value)
     }
 
     async function handleSignup() {
@@ -98,12 +127,13 @@ export default function Signup() {
         const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, userpass: md5(password), first_name: firstName, last_name: lastName, email: email})
+            body: JSON.stringify({ username: username, userpass: md5(password), first_name: firstName, last_name: lastName, email: email.trim(), code: code })
         }
 
-        const result = await fetch('/api/signup', options)
-        if(result.status !== 200) {
-            alert('Something went wrong.. Please try again')
+        const response = await fetch('/api/signup', options)
+        const data = await response.json()
+        if(response.status !== 200) {
+            alert(data)
             return
         }
 
@@ -114,7 +144,7 @@ export default function Signup() {
         <>
             <div>
                 <label htmlFor="username">Username</label>
-                <input type="text" id="username"/>
+                <input type="text" id="username" onChange={handleUsernameChange}/>
                 <p className="err-msg"></p>
             </div>
             <div>
@@ -137,12 +167,12 @@ export default function Signup() {
             </div>
             <div>
                 <label htmlFor="fname">First name</label>
-                <input type="text" id="fname"/>
+                <input type="text" id="fname" onChange={handleFnameChange}/>
                 <p className="err-msg"></p>
             </div>
             <div>
                 <label htmlFor="lname">Last name</label>
-                <input type="text" id="lname"/>
+                <input type="text" id="lname" onChange={handleLnameChange}/>
                 <p className="err-msg"></p>
             </div>
             <div>
@@ -155,14 +185,14 @@ export default function Signup() {
                 <p>SFU Synapse is a place for SFU students to build long lasting connections. We require that every user has a valid SFU email. Click on Send code below and enter the code sent to your email address.</p>
                 <div className="input-box">
                     <p className="inline-label">CODE</p>
-                    <input type="number" id="code" />
+                    <input type="number" id="code" onChange={handleCodeChange} />
                 </div>
                 <p className="send-code-btn-wrapper">
-                    <button type="button" id="sendCodeBtn" onClick={sendEmailCode}>Send code</button>
+                    <button type="button" id="sendCodeBtn" onClick={sendEmailCode} disabled={!isSfuEmail}>Send code</button>
                     {isSfuEmail ? <span></span> : <span className="err-msg"><br></br>Invalid email</span>}
                 </p>
             </section>
-            <button type="button" id="signupBtn" onClick={handleSignup}>Sign up</button>
+            <button type="button" id="signupBtn" onClick={handleSignup} disabled={!isSfuEmail || code.length === 0 || username.trim().length === 0 || fname.trim().length === 0 || lname.trim().length === 0 || passErrorVisible || confirmPasssword.length === 0 || !isSamePassword}>Sign up</button>
             <small>Already have an account? <a href="/login">Log in</a></small>
         </>
     )

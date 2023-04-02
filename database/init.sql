@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS AuthCodes;
 
 CREATE TABLE Users (
 	user_id VARCHAR(64),
-	username VARCHAR(50) NOT NULL, -- has to be usnique in order to for login function
+	username VARCHAR(50) NOT NULL, -- uniqueness checked before inserting or updating in controllers
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	email VARCHAR(64) UNIQUE NOT NULL,
@@ -46,8 +46,8 @@ CREATE TABLE Connections (
 
 CREATE TABLE `Groups` (
 	group_id VARCHAR(64),
-	group_name VARCHAR(50) NOT NULL, -- e.g. if courses "SPRING2023 CMPT372 D100"
-	group_description TINYTEXT, -- e.g. if courses "Web II - Server-side Development"
+	group_name VARCHAR(50) NOT NULL,
+	group_description TINYTEXT,
 	photo VARCHAR(1024) NOT NULL,
 	PRIMARY KEY (group_id)
 );
@@ -111,7 +111,7 @@ CREATE TABLE AuthCodes (
 	expires DATETIME NOT NULL
 );
 
-
+SET GLOBAL time_zone = 'America/Vancouver';
 INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
 
 -- connect to database using docker for dev
