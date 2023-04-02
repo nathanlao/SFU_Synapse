@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS Courses;
 DROP TABLE IF EXISTS Communities;
 DROP TABLE IF EXISTS DirectMessages;
 DROP TABLE IF EXISTS GroupMessages;
+DROP TABLE IF EXISTS AuthCodes;
 
 
 CREATE TABLE Users (
@@ -102,6 +103,12 @@ CREATE TABLE MemberOf (
 	PRIMARY KEY (group_id, user_id),
 	FOREIGN KEY (group_id) REFERENCES `Groups` (group_id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES Users (user_id)
+);
+
+CREATE TABLE AuthCodes (
+	email VARCHAR(64) NOT NULL,
+	code CHAR(8) NOT NULL,
+	expires DATETIME NOT NULL
 );
 
 
