@@ -17,13 +17,13 @@ export default function GroupsLayout() {
         setGroupId(groupId)
         setGroupName(groupName)
         setGroupPic(groupPic)
-
-        setOnGroupChat(true)
     }
 
-    // Not on group chats
+    // Check if its is on group chats
     useEffect(() => {
-        if (path !== `/groups/${groupId}`) {
+        if (path === `/groups/${groupId}` || path === `/groups/discover`) {
+            setOnGroupChat(true)
+        } else {
             setOnGroupChat(false)
         }
     }, [path, groupId])
@@ -42,10 +42,10 @@ export default function GroupsLayout() {
                             groupPic: groupPic,
                         }} 
                     />
-                </div> ) : (
-                    <Notification />
-                )
-            }
+                </div> 
+            ) : (
+                <Notification isGroups/>
+            )}
         </>
     )
 }
