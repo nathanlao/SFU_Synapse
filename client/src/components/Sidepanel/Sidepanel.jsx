@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import { Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import Accordion from "react-bootstrap/Accordion";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SidepanelItem from "../SidepanelItem/SidepanelItem";
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
 
@@ -16,17 +15,29 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
     const [inactiveConnections, setInactiveConnections] = useState([])
-    const [clickedConnection, setClickedConnection] = useState(null)
     const [error, setError] = useState(null)
+
+    function formatTimestampForDisplay(timestamp) {
+        const date = new Date(timestamp);
+        const hours24 = date.getHours();
+        const ampm = hours24 < 12 ? "AM" : "PM";
+        const hours12 = hours24 % 12 || 12;
+        const minutes = date.getMinutes();
+        const formattedHours = hours12.toString().padStart(2, '0');
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
 
     async function fetchLatestMessage(sender_id, receiver_id) {
         try {
             const res = await fetch(`/api/connections/chat/latest/${sender_id}/${receiver_id}`)
             const data = await res.json()
-            if (data[0]?.message) {
-                return data[0].message
+
+            if (data[0]) {
+                return data[0]
             } else {
-                return "No messages yet"
+                return null
             }
         } catch (err) {
             console.error(err)
@@ -55,7 +66,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                         ? connection.userB_id 
                         : connection.userA_id
                     const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
+                    updatedConnections.push({ ...connection, latestMessage: latestMessage.message, latestTime: latestMessage.timestamp})
                 }
 
                 setPendingConnections(updatedConnections)
@@ -114,7 +125,11 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                         ? connection.userB_id 
                         : connection.userA_id
                     const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
+                    updatedConnections.push({ 
+                        ...connection, 
+                        latestMessage: latestMessage?.message, 
+                        latestTime: latestMessage?.timestamp
+                    })
                 }
 
                 setInactiveConnections(updatedConnections)
@@ -127,11 +142,6 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
             getInactiveConnections()
         }
     },[currentUserId])
-
-
-    function renderAddButton(connectionId) {
-        setClickedConnection(connectionId)
-    }
 
     // Update the pending connection to be active 
     function handleUpdateConnection(connectionId) {
@@ -174,19 +184,13 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                                     ? connection.userB_photo
                                     : connection.userA_photo
                             }
-                            indicator={clickedConnection === connection.connection_id 
-                                ? (<Button size="small" variant="contained" color="success" 
-                                        onClick={() => handleUpdateConnection(connection.connection_id)}
-                                        >
-                                        <PersonAddIcon />
-                                    </Button>) 
-                                : null}
-                                title={
-                                    connection.userA_id === currentUserId
-                                        ? connection.userB_username
-                                        : connection.userA_username
-                                }
-                                subtitle={connection.latestMessage}
+                            title={
+                                connection.userA_id === currentUserId
+                                ? connection.userB_username
+                                : connection.userA_username
+                            }
+                            subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                            indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
                         />
                 </Accordion.Body>
             </Link>
@@ -215,14 +219,12 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                         ? connection.userB_username
                         : connection.userA_username
                     } 
-                    indicator=""
-                    subtitle={connection.latestMessage}
+                    subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                    indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
                 />
             </Accordion.Body>
         )
     })
-
-    console.log(inactiveConnections)
 
     if (error) {
         return <h4>There was an error: {error.message}</h4>
