@@ -11,7 +11,7 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel({ currentUserId }) {
+function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
@@ -140,7 +140,7 @@ function ConnectionsSidepanel({ currentUserId }) {
                     receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
                     pendingConnections: pendingConnections
                 }}
-                onClick={() => renderAddButton(connection.connection_id)}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                         <SidepanelItem
@@ -359,7 +359,7 @@ export default function Sidepanel(props) {
 
     return (
         <>
-            {props.connections && <ConnectionsSidepanel currentUserId={currentUserId} />}
+            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} />}
             {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>
