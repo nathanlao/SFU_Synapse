@@ -3,16 +3,21 @@ div.account-setup {
 }
 
 
-
-
-
-
-/* Bio textarea */
-div.account-setup section.bio {
-    margin-top: 16px;
-    margin-bottom: 16px;
-
+div.account-setup section.bio,
+div.account-setup section.photo {
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
+
+div.account-setup section.bio h5,
+div.account-setup section.photo h5 {
+    color: #11515D;
+}
+
 div.account-setup #bioTextarea {
     width: 100%;
+}
+
+div.account-setup div.submit-btn button {
+    margin-right: 8px;
 }

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CourseSelector from "../../components/CourseSelector/CourseSelector";
+import "./EditCourseEnrollment.css"
+
 
 export default function EditCourseEnrollment() {
     const [list, setList] = useState([])
@@ -64,6 +66,7 @@ export default function EditCourseEnrollment() {
 
     return (
         <div className="edit-course-enrollment">
+            <h2>Edit Course Enrollment</h2>
             <CourseSelector year={year} term={term} updateParentList={updateList} setup={false} />
             <button type="button" className="btn btn-light" onClick={handleBtnClick}>Confirm changes</button>
             <small>*Refresh after clicking: just for now. haven't implemented it to make component update yet</small>

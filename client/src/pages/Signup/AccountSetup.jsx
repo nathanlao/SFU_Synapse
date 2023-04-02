@@ -172,16 +172,15 @@ export default function AccountSetup() {
             <section className="wrapper">
                 <h1>Account setup</h1>
                 <section className="course-selection">
-                    <h3>Select your enrolled courses</h3>
                     <CourseSelector year={year} term={term} updateParentList={updateList} setup={true} />
                 </section>
                 <section className="photo">
-                    <h3>Profile photo</h3>
+                    <h5>Profile photo</h5>
                     {photo.preview && <img src={photo.preview} width='100' height='100' />}
                     <input type="file" accept="image/*" name="file" id="profilePhoto" className="form-control" onChange={handleFileChange} />
                 </section>
                 <section className="bio">
-                    <h3>Bio</h3>
+                    <h5>Bio</h5>
                     <textarea id="bioTextarea" className="form-control" onChange={checkWordCount} />
                     <small>{bioLen} / {bioMaxLen}</small>
                 </section>
