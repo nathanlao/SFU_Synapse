@@ -7,7 +7,7 @@ const getCommunities = (req,res) => {
     }
     const user_id = req.session.user.user_id
     
-    const query = "SELECT c.community_id, g.group_name, g.group_description, g.photo FROM Communities c INNER JOIN Groups g ON c.community_id = g.group_id LEFT JOIN MemberOf m ON c.community_id = m.group_id AND m.user_id = ? WHERE c.visibility = 'public' AND m.user_id IS NULL"
+    const query = "SELECT c.community_id, g.group_name, g.group_description, g.photo FROM Communities c INNER JOIN `Groups` g ON c.community_id = g.group_id LEFT JOIN MemberOf m ON c.community_id = m.group_id AND m.user_id = ? WHERE c.visibility = 'public' AND m.user_id IS NULL"
     db.query(query, [user_id], (err,result) => {
         if (err) return res.status(500).json(err);
         if (result.length === 0) return res.status(409).json("There are no public communities to join.")
@@ -25,7 +25,7 @@ const getCommunities = (req,res) => {
         if (result1.length === 0) return res.status(409).json("There are no public communities to join.")
         const publicCommunities = result1.rows
 
-        const qGetGroupInfo = "SELECT community_id, group_name, group_description, photo FROM ?? LEFT JOIN Groups ON ?.community_id = Groups.group_id"
+        const qGetGroupInfo = "SELECT community_id, group_name, group_description, photo FROM ?? LEFT JOIN `Groups` ON ?.community_id = `Groups`.group_id"
         db.query(qGetGroupInfo, [publicCommunities, publicCommunities], (err,result2) => {
         if (err) return res.status(500).json(err);
         communities = result2.rows;
