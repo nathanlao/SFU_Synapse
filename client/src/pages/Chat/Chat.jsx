@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useParams, useLocation } from 'react-router-dom';
-import io from 'socket.io-client'
+import React, { useState, useEffect } from 'react'
+import { useParams, useLocation, useOutletContext } from 'react-router-dom';
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
 import Avatar from '@mui/joy/Avatar';
 import SendIcon from '@mui/icons-material/Send';
@@ -9,8 +8,9 @@ import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import './Chat.css'
 
 export default function Chat() {
-    const socketRef = useRef()
-    
+
+    // Data from connectionLayout and groupLayout
+    const { socketForConnectionChat, socketForGroupChat } = useOutletContext()
 
     const { connectionId } = useParams()
     const { groupId } = useParams()
@@ -94,7 +94,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
     
-            socketRef.current.emit('sendDirectMessage', messageData)
+            socketForConnectionChat.emit('sendDirectMessage', messageData)
             
             // Update the messageList state with the sent message
             setMessageList((prevMessages) => [...prevMessages, {
@@ -113,7 +113,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
 
-            socketRef.current.emit('sendGroupMessage', groupMessageData)
+            socketForGroupChat.emit('sendGroupMessage', groupMessageData)
         }
 
         // Clear the input after sent
@@ -121,8 +121,6 @@ export default function Chat() {
     }
 
     useEffect(() => {
-        socketRef.current = io.connect('http://localhost:8080')
-
         // Direct message
         if (connectionId) {
             async function fetchDMChatHistory() {
@@ -145,9 +143,9 @@ export default function Chat() {
             fetchUserDetails(connectionObj.userB_id)
 
              // Join connection with the current user's ID
-            socketRef.current.emit('joinConnection', currentUserId);
+            socketForConnectionChat.emit('joinConnection', currentUserId);
 
-            socketRef.current.on("receiveDirectMessage", (message) => {
+            socketForConnectionChat.on("receiveDirectMessage", (message) => {
                 setMessageList((prevMessages) => [...prevMessages, {
                     ...message,
                     timestamp: timestamp
@@ -175,19 +173,15 @@ export default function Chat() {
 
             fetchGroupMembers()
 
-            socketRef.current.emit('joinGroup', groupId)
+            socketForGroupChat.emit('joinGroup', groupId)
 
-            socketRef.current.on("receiveGroupMessage", (message) => {
+            socketForGroupChat.on("receiveGroupMessage", (message) => {
                 setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
                     ...message,
                     timestamp: timestamp
                 }])
             })
 
-        }
-
-        return () => {
-            socketRef.current.disconnect()
         }
 
     }, [connectionId, groupId])
