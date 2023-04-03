@@ -114,10 +114,9 @@ export default function Discover() {
             if (!hasSentFirstMessage) {
                 await createPendingConnection()
                 setHasSentFirstMessage(true)
-                
-                socketForGroup?.emit('sendDirectMessage', messageData)
             }
-
+            
+            socketForGroup?.emit('sendDirectMessage', messageData)
         }
 
         // Clear the input and set back the selected state

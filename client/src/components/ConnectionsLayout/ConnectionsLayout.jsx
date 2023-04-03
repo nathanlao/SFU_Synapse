@@ -19,7 +19,7 @@ export default function ConnectionsLayout() {
     }
 
     useEffect(() => {
-        if (path === `/connections/${connectionId}`) {
+        if (path === `/connections/${connectionId}` || path === `/connections/${connectionId}/settings`) {
             setOnChatTab(true)
         } else {
             setOnChatTab(false)
