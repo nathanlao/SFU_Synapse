@@ -12,6 +12,18 @@ export default function Discover() {
 
     // ProfileCard is selected
     const [isSelected, setIsSelected] = useState(false)
+    const [input, setInput] = useState("")
+
+    function handleInputChange(e) {
+        const { value } = e.target
+        setInput(value)
+    }
+
+    function createPendingConnection(e) {
+        e.preventDefault()
+
+        
+    }
 
     return (
         <>
@@ -33,10 +45,12 @@ export default function Discover() {
                 </div>
             </div>
             <Divider />
-            <Paper component="form" className="input-container">
+            <Paper component="form" onSubmit={createPendingConnection} className="input-container">
                 <InputBase
                     className="input-field"
                     disabled={isSelected ? false : true}
+                    value={input}
+                    onChange={handleInputChange}
                     placeholder="Hi Nima! I'm from CMPT 120 too">
                 </InputBase>
                 <IconButton type="submit" disabled={isSelected ? false : true}>

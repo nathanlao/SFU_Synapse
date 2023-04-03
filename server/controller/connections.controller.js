@@ -1,6 +1,23 @@
 const db = require("../db/connection.db").pool
 const { v4: uuidv4 } = require('uuid');
 
+// create Pending connetion: Sender sends a msg to a receiver
+const createPendingConnection = (req, res) => {
+
+    const { senderId, receiverId } = req.body
+
+    const insertQuery = "INSERT INTO Connections (connection_id, userA_id, userB_id, Status) VALUES (?, ?, ?, ?)"
+
+    db.query(insertQuery, [uuidv4(), senderId, receiverId, "Pending"], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            res.status(200).json("Connection created successfully")
+        }
+    })
+}
+
 const getPendingConnections = (req, res) => {
 
     if (!req.session || !req.session.user) {
@@ -34,23 +51,6 @@ const getPendingConnections = (req, res) => {
                 console.log("No pending connections found")
                 res.status(404).json("No pending connections found")
             }
-        }
-    })
-}
-
-// create Pending connetion: Sender sends a msg to a receiver
-const createPendingConnection = (req, res) => {
-
-    const { senderId, receiverId } = req.body
-
-    const insertQuery = "INSERT INTO Connections (connection_id, userA_id, userB_id, Status) VALUES (?, ?, ?, ?)"
-
-    db.query(insertQuery, [uuidv4(), senderId, receiverId, "Pending"], (err, data) => {
-        if (err) {
-            console.log(err)
-            res.status(500).json("Internal server error")
-        } else {
-            res.status(200).json("Connection created successfully")
         }
     })
 }
@@ -155,8 +155,8 @@ const updateActiveToInactive = (req, res) => {
 }
 
 module.exports = { 
-    getPendingConnections, 
     createPendingConnection, 
+    getPendingConnections, 
     updatePendingToActive, 
     getActiveConnections, 
     getInactiveConnections,
