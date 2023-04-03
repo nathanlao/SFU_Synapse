@@ -9,11 +9,14 @@ export default function CommunityBrowser({notifyClosure}) {
 
     const [view, setView] = useState(views.browse)
 
+    // community info
+    const [list, setList] = useState([])
+
     // community config
     const [name, setName] = useState('')
     const [desc, setDesc] = useState('') // pass as bio for POST request
     const [photo, setPhoto] = useState(null)
-    const [visibility, setVisibility] = useState(false) // private: false, public: true
+    const [visibility, setVisibility] = useState('public')
 
     useEffect(() => {
         if(view.name === views.browse.name) {
@@ -26,6 +29,7 @@ export default function CommunityBrowser({notifyClosure}) {
                 if(response.status === 200) {
                     console.log('list of communities:')
                     console.log(data)
+                    setList(data)
                 }else if(response.status === 409) {
                     console.log(data)
                     // TODO: display message (no communities have been created! Go ahead and create the first community!)
@@ -62,14 +66,50 @@ export default function CommunityBrowser({notifyClosure}) {
         // createCommunity()
     }
 
+    function handleJoinCommunity(event) {
+        console.log('Join community (id: ' + event.target.id + ')')
+    }
+
     const communityList = () => {
         return (
             <>
-                <ul>
-                    <li>Community 1</li>
-                    <li>Community 2</li>
-                    <li>Community 3</li>
-                    <li>Community 4</li>
+                <ul className="community-list">
+                    {/* {list.map((community) => (
+                        <div className="community" id={community.community_id}>
+                            <img src={community.photo} alt="" />
+                            {community.community_name}
+                            <button type="button" onClick={handleJoinCommunity}>Join</button>
+                        </div>
+                    ))} */}
+                    <li>
+                        <div className="left">
+                            <img src="/images/default/community/default-community-photo1.png" alt="" />
+                            Community 1
+                        </div>
+                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                    </li>
+                    <li>
+                        <div className="left">
+                            <img src="/images/default/community/default-community-photo1.png" alt="" />
+                            Community 2
+                        </div>
+                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                    </li>
+                    <li>
+                        <div className="left">
+                            <img src="/images/default/community/default-community-photo1.png" alt="" />
+                            Community 3
+                        </div>
+                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                    </li>
+                    <li>
+                        <div className="left">
+                            <img src="/images/default/community/default-community-photo1.png" alt="" />
+                            Community 4
+                        </div>
+                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                    </li>
+
                 </ul>
                 <div className="controller">
                     <button type="button" className="btn" onClick={() => {setView(views.create)}}>Create your own</button>

@@ -42,3 +42,28 @@ div.community-browser div.window-body div.controller {
     margin-top: 16px;
     text-align: right;
 }
+
+div.community-browser div.window-body ul.community-list {
+    padding-left: 0;
+}
+
+div.community-browser div.window-body ul.community-list li {
+    list-style-type: none;
+    border-bottom: 1px solid #11515D;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+div.community-browser div.window-body ul.community-list li img {
+    width: 32px;
+    margin-right: 8px;
+}
+div.community-browser div.window-body ul.community-list li button {
+    background-color: #C3D8D1;
+    border-radius: 8px;
+    margin-left: 8px;
+}
+
