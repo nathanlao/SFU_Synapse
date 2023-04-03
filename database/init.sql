@@ -48,7 +48,7 @@ CREATE TABLE `Groups` (
 	group_id VARCHAR(64),
 	group_name VARCHAR(50) NOT NULL,
 	group_description TINYTEXT,
-	photo VARCHAR(1024) NOT NULL,
+	photo VARCHAR(1024) DEFAULT '/images/default/community/default-community-photo1.png',
 	PRIMARY KEY (group_id)
 );
 -- using “Groups” as the table name gives an error. Apparently because groups is a reserved keyword in mysql. Use backticks (`) to refer to this table
