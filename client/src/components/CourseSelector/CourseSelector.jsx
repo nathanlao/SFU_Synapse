@@ -3,7 +3,7 @@ import './CourseSelector.css'
 import Select from 'react-select'
 
 
-export default function CourseSelector({year, term, updateParentList, setup}) {
+export default function CourseSelector({year, term, updateParentList, setup, updateFromParent}) {
     const [deps, setDeps] = useState([]) // list of departments (eg [CHEM, CMPT, ...])
     const [courses, setCourses] = useState([]) // list of courses (eg [372, 200, ...])
     const [sections, setSections] = useState([])
@@ -44,10 +44,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                 const url = `/api/course/${year}/${term}`
                 const result = await fetch(url)
                 if(result.status !== 200) {
-                    console.log('DEBUG: CourseSelector.jsx: 48')
-                    alert('status code NOT 200')
-                    
-                    return
+                    return alert('status code NOT 200')
                 }
 
                 const data = await result.json()
@@ -61,6 +58,20 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
         }
 
     }, [])
+
+    
+    useEffect(() => {
+        if(updateFromParent) {
+            console.log('Theres is an update from parent')
+
+            const updatedList = selectedList.filter((item1) => {
+                return item1.keep
+            }).map((item2) => {
+                return { ...item2, new_item: false }
+            })
+            setSelectedList(updatedList)
+        }
+    }, [updateFromParent])
 
 
     useEffect(() => {
@@ -132,7 +143,8 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
     }
 
     function handleAddNewItem(event) {
-        const metadata = event.target.dataset
+        const selectedItemitem = event.target.parentElement
+        const metadata = selectedItemitem.dataset
         const selectedDep = metadata.dep
         const selectedNum = metadata.num
         const selectedSection = metadata.section
@@ -150,10 +162,10 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
 
     // removes items from list of added sections (if not new item, moves item to removed items)
     function handleRemoveItem(event) {
-        console.log(event.target.id)
-        const targetIndex = event.target.id
+        const selectedItem = event.target.parentElement
+        const targetIndex = selectedItem.id
 
-        if(event.target.dataset.newItem === 'false') {
+        if(selectedItem.dataset.newItem === 'false') {
             const modifiedList = [...selectedList]
             modifiedList[targetIndex].keep = false
             setSelectedList(modifiedList)
@@ -165,10 +177,9 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
 
     // puts item back into list of added sections
     function handleKeepItem(event) {
-        console.log('Put this item back into added list')
-        const targetIndex = event.target.id
+        const selectedItem = event.target.parentElement
         const modifiedList = [...selectedList]
-        modifiedList[targetIndex].keep = true
+        modifiedList[selectedItem.id].keep = true
         setSelectedList(modifiedList)
     }
 
@@ -176,7 +187,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
     return (
         <div className="course-selector">
             <div className="controllers">
-                <p><span>{term}{year}</span></p>
+                <h5>Select your enrolled courses for <span>{term.toUpperCase()} {year}</span></h5>
                 
                 <label htmlFor="depSelect">Department</label>
                 <Select
@@ -197,7 +208,7 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
             </div>
             <div className="course-list">
                 <section className="list available-courses">
-                    <h4>Available sections</h4>
+                    <h5>Available sections</h5>
                     <ul>
                         {sections.map((item, index) => (
                             <li 
@@ -205,16 +216,16 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                                 id={index} 
                                 data-dep={item.dep} 
                                 data-num={item.num} 
-                                data-section={item.section} 
-                                onClick={handleAddNewItem}>
+                                data-section={item.section} >
                                     {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()}
+                                    <button type="button" onClick={handleAddNewItem}>Add</button>
                             </li>
                         ))}
                     </ul>
                 </section>
                 <section className="selected-courses">
                     <section className="list added-courses">
-                        <h4>Added sections</h4>
+                        <h5>Added sections</h5>
                         <ul>
                             {selectedList.map((item, index) => (
                                 item.keep === true && 
@@ -224,16 +235,16 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                                     data-dep={item.dep} 
                                     data-num={item.num} 
                                     data-section={item.section} 
-                                    data-new-item={item.new_item}
-                                    onClick={handleRemoveItem} >
+                                    data-new-item={item.new_item} >
                                         {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()} {item.new_item && <strong>New!</strong>}
+                                        <button type="button" onClick={handleRemoveItem}>Remove</button>
                                 </li>
                             ))}
                         </ul>
                     </section>
                     {!setup && 
                     <section className="list removed-courses">
-                        <h4>Removed courses</h4>
+                        <h5>Removed courses</h5>
                         <ul>
                             {selectedList.map((item, index) => (
                                 item.keep === false && 
@@ -243,9 +254,9 @@ export default function CourseSelector({year, term, updateParentList, setup}) {
                                     data-dep={item.dep} 
                                     data-num={item.num} 
                                     data-section={item.section} 
-                                    data-new-item={item.new_item}
-                                    onClick={handleKeepItem} >
+                                    data-new-item={item.new_item} >
                                         {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()}
+                                        <button type="button" onClick={handleKeepItem}>Keep</button>
                                 </li>
                             ))}
                         </ul>

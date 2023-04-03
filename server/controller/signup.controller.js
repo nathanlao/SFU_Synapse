@@ -75,7 +75,7 @@ const createUser = async (req, res) => {
 
         // 4. remove registered email from AuthCodes table
         const promise4 = new Promise((resolve, reject) => {
-            const query = 'DELETE FROM AuthCodes WHERE email=?'
+            const query = 'DELETE FROM AuthCodes WHERE expires <= NOW();DELETE FROM AuthCodes WHERE email=?;'
 
             db.query(query, [req.body.email], (err) => {
                 if(err) return reject(err)
@@ -92,36 +92,6 @@ const createUser = async (req, res) => {
     }catch(err) {
         res.status(500).json(err)
     }
-
-
-
-    // // 2. create user
-    // const qSelect = "SELECT * FROM Users WHERE username = ?";
-    
-    // db.query(qSelect, [req.body.username], (err,data) => {
-    //     if (err) return res.status(500).json(err);
-        
-    //     if (data.length) return res.status(409).json("User already exists!");
-        
-    //     const qInsert = "INSERT INTO Users (user_id, username, first_name, last_name, userpass, email) VALUE (?,?,?,?,?,?)";
-
-    //     const user_id = uuidv4();
-
-    //     const values = [
-    //         user_id,
-    //         req.body.username,
-    //         req.body.first_name,
-    //         req.body.last_name,
-    //         req.body.userpass,
-    //         req.body.email,
-    //     ];
-
-    //     db.query(qInsert, values, (err,data) => {
-    //         if (err) return res.status(500).json(err);
-    //         req.session.user = { user_id: user_id }
-    //         return res.status(200).json("User has been created.");
-    //     });
-    // });
 };
 
 module.exports = { createUser }

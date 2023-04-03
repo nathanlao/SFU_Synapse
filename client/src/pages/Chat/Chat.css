@@ -16,6 +16,10 @@
     gap: 25px;
 }
 
+.chat-content-container::-webkit-scrollbar {
+    display: none;
+}
+
 .chat-content {
     display: flex;
     align-items: center;
