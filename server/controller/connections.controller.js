@@ -180,6 +180,15 @@ const getInactiveConnections = (req, res) => {
     })
 }
 
+const endConnection = (req,res) => {
+    const connectionId = req.params.connectionId;
+    const qDisconnect = "DELETE FROM Connections WHERE connection_id = ?"
+    db.query(qDisconnect, [connectionId], (err,result) => {
+        if (err) return res.status(500).json(err)
+        return res.status(200).json("Disconnected successfully.")
+    })
+}
+
 const updateActiveToInactive = (req, res) => {
 
 }
@@ -191,5 +200,6 @@ module.exports = {
     updatePendingToActive, 
     getActiveConnections, 
     getInactiveConnections,
-    updateActiveToInactive
+    updateActiveToInactive,
+    endConnection
 }
