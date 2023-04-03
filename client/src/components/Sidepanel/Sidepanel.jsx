@@ -151,13 +151,13 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     useEffect(() => {
         if (currentUserId) {
             fetchAllConnections()
-            const intervalId = setInterval(() => {
-                fetchAllConnections()
-            }, 5000) // Fetch connections every 5 seconds
+            // const intervalId = setInterval(() => {
+            //     fetchAllConnections()
+            // }, 5000) // Fetch connections every 5 seconds
     
-            return () => {
-                clearInterval(intervalId)
-            }
+            // return () => {
+            //     clearInterval(intervalId)
+            // }
         }
     }, [currentUserId])
     
@@ -271,15 +271,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                     <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                         <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
                         <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore
-                            magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation ullamco laboris nisi ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu
-                            fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                            non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.
+                            {inactiveConnectionsEl}
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
