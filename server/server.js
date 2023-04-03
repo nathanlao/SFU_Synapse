@@ -16,7 +16,7 @@ dotenv.config()
 
 
 // controllers
-const { getHomeContent } = require('./controller/home.controller')
+const { getHomeContent, getApp } = require('./controller/home.controller')
 const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
 const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getPendingConnections, createPendingConnection, updatePendingToActive, 
@@ -85,6 +85,8 @@ app.use('/', function(req,res,next){
 
 // Route: main
 Routes.route('/')
+    .get(getApp)
+Routes.route('/home/:year/:term')
     .get(getHomeContent)
 
 // Route: connections
