@@ -20,12 +20,6 @@ export default function ChatTopBar() {
     // receiver_name, groupName, groupPic from Sidepanel.jsx
     const chatNames = useLocation().state?.receiver_name
 
-    const activeStyle = {
-        fontWeight: 'bold',
-        borderBottom: '2px solid #11515D',
-        color: '#11515D',
-    }
-
     const { connectionId } = useParams()
 
     return (

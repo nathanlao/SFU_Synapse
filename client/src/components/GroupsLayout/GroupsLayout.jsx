@@ -44,7 +44,7 @@ export default function GroupsLayout() {
                             groupId: groupId, 
                             groupName: groupName, 
                             groupPic: groupPic,
-                            socketForGroupChat: socket
+                            socketForGroup: socket
                         }} 
                     />
                 </div> 

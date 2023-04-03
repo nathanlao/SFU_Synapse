@@ -66,7 +66,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                         ? connection.userB_id 
                         : connection.userA_id
                     const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ ...connection, latestMessage: latestMessage.message, latestTime: latestMessage.timestamp})
+                    updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
                 }
 
                 setPendingConnections(updatedConnections)

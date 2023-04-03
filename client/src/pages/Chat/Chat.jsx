@@ -10,7 +10,7 @@ import './Chat.css'
 export default function Chat() {
 
     // Data from connectionLayout and groupLayout
-    const { socketForConnectionChat, socketForGroupChat } = useOutletContext()
+    const { socketForConnection, socketForGroup } = useOutletContext()
 
     const { connectionId } = useParams()
     const { groupId } = useParams()
@@ -94,7 +94,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
     
-            socketForConnectionChat?.emit('sendDirectMessage', messageData)
+            socketForConnection?.emit('sendDirectMessage', messageData)
             
             // Update the messageList state with the sent message
             setMessageList((prevMessages) => [...prevMessages, {
@@ -113,7 +113,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
 
-            socketForGroupChat?.emit('sendGroupMessage', groupMessageData)
+            socketForGroup?.emit('sendGroupMessage', groupMessageData)
         }
 
         // Clear the input after sent
@@ -143,9 +143,9 @@ export default function Chat() {
             fetchUserDetails(connectionObj.userB_id)
 
              // Join connection with the current user's ID
-            socketForConnectionChat?.emit('joinConnection', currentUserId);
+            socketForConnection?.emit('joinConnection', currentUserId);
 
-            socketForConnectionChat?.on("receiveDirectMessage", (message) => {
+            socketForConnection?.on("receiveDirectMessage", (message) => {
                 setMessageList((prevMessages) => [...prevMessages, {
                     ...message,
                     timestamp: timestamp
@@ -173,9 +173,9 @@ export default function Chat() {
 
             fetchGroupMembers()
 
-            socketForGroupChat?.emit('joinGroup', groupId)
+            socketForGroup?.emit('joinGroup', groupId)
 
-            socketForGroupChat?.on("receiveGroupMessage", (message) => {
+            socketForGroup?.on("receiveGroupMessage", (message) => {
                 setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
                     ...message,
                     timestamp: timestamp
@@ -184,7 +184,7 @@ export default function Chat() {
 
         }
 
-    }, [connectionId, groupId])
+    }, [connectionId, groupId, socketForConnection])
 
     useEffect(() => {    
         // Fetch user details for all group members
