@@ -179,6 +179,11 @@ export default function Chat() {
                 }])
             })
 
+            // Clean up the event listener
+            return () => {
+                socketForConnection?.off("receiveDirectMessage")
+            }
+
         }
 
         // Group message
@@ -208,6 +213,11 @@ export default function Chat() {
                     timestamp: timestamp
                 }])
             })
+
+            // Clean up the event listener
+            return () => {
+                socketForGroup?.off("receiveGroupMessage")
+            }
 
         }
 
