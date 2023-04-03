@@ -40,6 +40,7 @@ const { getCommunities , joinCommunity } = require('./controller/browse-communit
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
+const { getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -164,6 +165,10 @@ Routes.route('/community/add')
 Routes.route('/community/browse')
     .get(getCommunities)
     .post(joinCommunity)
+Routes.route('/community-photo')
+    .get(getCommunityPhoto)
+    .post(setCommunityPhoto)
+    .delete(deleteCommunityPhoto)
 
 // User specific data
 Routes.route('/course/:year/:term')

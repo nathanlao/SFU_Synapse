@@ -23,10 +23,14 @@ div.course-selector section.list {
 }
 
 div.course-selector div.course-list > section ul {
-    max-height: 200px;
+    height: calc(100% - 40px);
     padding-left: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+    -ms-overflow-style: none;  /* hide scrollbar IE and Edge */
+    scrollbar-width: none;  /* hide scrollbar Firefox */
+}
+div.course-selector div.course-list > section ul::-webkit-scrollbar {
+    display: none;
 }
 
 
@@ -52,7 +56,12 @@ div.course-selector div.course-list > section ul li button:hover {
     color: #fff;
     transition: .3s;
 }
+div.course-selector div.course-list > section.selected-courses {
+    display: flex;
+    flex-direction: column;
+}
 div.course-selector section.removed-courses {
     margin-top: 12px;
+    flex: 1;
 }
 

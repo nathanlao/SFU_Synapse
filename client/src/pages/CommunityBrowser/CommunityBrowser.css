@@ -1,0 +1,44 @@
+div.community-browser {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, .6);
+}
+
+div.community-browser div.window-body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 16px;
+    width: 450px;
+    padding: 28px 32px;
+}
+
+div.community-browser div.window-body h2 {
+    color: #11515D;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+div.community-browser div.window-body #closeBtn {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+}
+div.community-browser div.window-body #closeBtn svg {
+    fill: rgba(49, 49, 49, 0.6);
+}
+div.community-browser div.window-body #closeBtn svg:hover {
+    cursor: pointer;
+    fill: rgba(17, 81, 93, 1);
+    transition: .3s;
+}
+
+div.community-browser div.window-body div.controller {
+    margin-top: 16px;
+    text-align: right;
+}

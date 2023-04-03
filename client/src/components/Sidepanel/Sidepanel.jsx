@@ -8,6 +8,8 @@ import SidepanelItem from "../SidepanelItem/SidepanelItem";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
+import binocularsIcon from "../../images/binoculars.png";
+import CommunityBrowser from "../../pages/CommunityBrowser/CommunityBrowser"
 
 import "./Sidepanel.css";
 
@@ -174,37 +176,40 @@ function ConnectionsSidepanel({ currentUserId }) {
 
     return (
         <div className="sidepanel-container">
-            <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
-                Connections
-            </Typography>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Active connections</Accordion.Header>
-                        {activeConnectionsEl}
-                </Accordion.Item>
-            </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
-                        {pendingConnectionsEl}
-                </Accordion.Item>
-            </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
+            <div className="scroll-content">
+                <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
+                    Connections
+                </Typography>
+                <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                    <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                        <Accordion.Header style={{backgroundColor: '#11515c'}}>Active connections</Accordion.Header>
+                            {activeConnectionsEl}
+                    </Accordion.Item>
+                </Accordion>
+                <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                    <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                        <Accordion.Header style={{backgroundColor: '#11515c'}}>Pending connections</Accordion.Header>
+                            {pendingConnectionsEl}
+                    </Accordion.Item>
+                </Accordion>
+                <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                    <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                        <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
+                        <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore
+                            magna aliqua. Ut enim ad minim veniam, quis nostrud
+                            exercitation ullamco laboris nisi ut aliquip ex ea
+                            commodo consequat. Duis aute irure dolor in
+                            reprehenderit in voluptate velit esse cillum dolore eu
+                            fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                            non proident, sunt in culpa qui officia deserunt mollit
+                            anim id est laborum.
+                        </Accordion.Body>
+                    </Accordion.Item>
+                </Accordion>
+
+            </div>
         </div>
     );
 }
@@ -212,6 +217,7 @@ function ConnectionsSidepanel({ currentUserId }) {
 function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
 
     const [courseGroups, setCourseGroups] = useState([])
+    const [communityBrowser, setCommunityBrowser] = useState(false)
 
     useEffect(() => {
         async function getGroupsOfCourses() {
@@ -258,26 +264,36 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
         )
     })
 
+    async function handleBrowseBtnClick() {
+        setCommunityBrowser(true)
+    }
+
     return (
         <div className="sidepanel-container">
-            <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
-                Groups
-            </Typography>
-            <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Courses</Accordion.Header>
-                        {courseGroupsEl}
-                </Accordion.Item>
-            </Accordion>
-            <Accordion flush style={{backgroundColor: '#11515c'}}>
-                <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
-                    <Accordion.Header style={{backgroundColor: '#11515c'}}>Communities</Accordion.Header>
-                    <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                        <SidepanelItem title="Wildin'" subtitle="9 members" indicator={<FontAwesomeIcon icon={faLock}/>}/>
-                        <SidepanelItem title="Dog Owners" subtitle="78 members" indicator=""/>
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
+            <div className="scroll-content">
+                <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
+                    Groups
+                </Typography>
+                <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
+                    <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                        <Accordion.Header style={{backgroundColor: '#11515c'}}>Courses</Accordion.Header>
+                            {courseGroupsEl}
+                    </Accordion.Item>
+                </Accordion>
+                <Accordion flush style={{backgroundColor: '#11515c'}}>
+                    <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
+                        <Accordion.Header style={{backgroundColor: '#11515c'}}>Communities</Accordion.Header>
+                        <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                            <SidepanelItem title="Wildin'" subtitle="9 members" indicator={<FontAwesomeIcon icon={faLock}/>}/>
+                            <SidepanelItem title="Dog Owners" subtitle="78 members" indicator=""/>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                </Accordion>
+            </div>
+            <div className="nav-buttons">
+                <button type="button" id="exploreBtn" onClick={handleBrowseBtnClick}><img src={binocularsIcon} alt="" /> Explore communities</button>
+            </div>
+            {communityBrowser && <CommunityBrowser notifyClosure={() => setCommunityBrowser(false)} />}
         </div>
     )
 }
@@ -296,39 +312,42 @@ function SettingsSidepanel() {
 
     return (
         <div className="sidepanel-container">
-            <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
-                Settings
-            </Typography>
-            <Link to="/setting/edit-profile">
-                {(path === "/setting/edit-profile") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit profile</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Edit profile</div> 
-                }
-            </Link>
-            <Link to="/setting/change-password">
-                {(path === "/setting/change-password") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Change password</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Change password</div> 
-                }
-            </Link>
-            <Link to="/setting/edit-course-enrollment">
-                {(path === "/setting/edit-course-enrollment") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Edit course enrollment</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Edit course enrollment</div> 
-                }
-            </Link>
-            <Link to="/setting/delete-account">
-                {(path === "/setting/delete-account") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Delete account</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Delete account</div> 
-                }
-            </Link>
-            <Link to="/setting/logout">
-                {(path === "/setting/logout") ? 
-                <div className="setting-item-div active" onClick={handleSettingsClick} >Logout</div> : 
-                <div className="setting-item-div" onClick={handleSettingsClick} >Logout</div> 
-                }
-            </Link>
+            <div className="scroll-content">
+                <Typography className="sidepanel-header" variant="h4" color="common.white" gutterBottom>
+                    Settings
+                </Typography>
+                <Link to="/setting/edit-profile">
+                    {(path === "/setting/edit-profile") ? 
+                    <div className="setting-item-div active" onClick={handleSettingsClick} >Edit profile</div> : 
+                    <div className="setting-item-div" onClick={handleSettingsClick} >Edit profile</div> 
+                    }
+                </Link>
+                <Link to="/setting/change-password">
+                    {(path === "/setting/change-password") ? 
+                    <div className="setting-item-div active" onClick={handleSettingsClick} >Change password</div> : 
+                    <div className="setting-item-div" onClick={handleSettingsClick} >Change password</div> 
+                    }
+                </Link>
+                <Link to="/setting/edit-course-enrollment">
+                    {(path === "/setting/edit-course-enrollment") ? 
+                    <div className="setting-item-div active" onClick={handleSettingsClick} >Edit course enrollment</div> : 
+                    <div className="setting-item-div" onClick={handleSettingsClick} >Edit course enrollment</div> 
+                    }
+                </Link>
+                <Link to="/setting/delete-account">
+                    {(path === "/setting/delete-account") ? 
+                    <div className="setting-item-div active" onClick={handleSettingsClick} >Delete account</div> : 
+                    <div className="setting-item-div" onClick={handleSettingsClick} >Delete account</div> 
+                    }
+                </Link>
+                <Link to="/setting/logout">
+                    {(path === "/setting/logout") ? 
+                    <div className="setting-item-div active" onClick={handleSettingsClick} >Logout</div> : 
+                    <div className="setting-item-div" onClick={handleSettingsClick} >Logout</div> 
+                    }
+                </Link>
+                
+            </div>
         </div>
     )
 }
