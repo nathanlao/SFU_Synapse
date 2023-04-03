@@ -22,7 +22,7 @@ div.home div.dashboard {
         "top-left right"
         "bottom-left right"
     ;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 4fr 5fr;
     grid-template-rows: max-content 1fr;
     height: 80vh;
 }
@@ -44,19 +44,30 @@ div.home div.dashboard .pannel {
     
 }
 
+
+
+
 /* profile pannel */
+div.home div.dashboard section.user-info {
+    padding: 32px;
+}
+div.home div.dashboard section.user-info p {
+    margin-bottom: 0;
+}
+div.home div.dashboard section.user-info > div {
+    font-size: .8em;
+}
+
+
 div.home div.dashboard section.profile {
     grid-area: top-left;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding-top: 24px;
     padding-bottom: 24px;
 }
-div.home div.dashboard section.profile p {
-    margin-bottom: 0;
-}
+
 div.home div.dashboard section.profile p#name {
     font-weight: bold;
 }
@@ -66,6 +77,7 @@ div.home div.dashboard section.profile p#username {
 div.home div.dashboard section.profile img {
     width: 48px;
     height: 48px;
+    border-radius: 50%;
 }
 div.home div.dashboard section.profile div.profile-summary {
     display: flex;
@@ -120,6 +132,7 @@ div.home div.dashboard section.pannel ul li div.summary p {
 }
 div.home div.dashboard section.pannel ul li div.summary p.name {
     font-weight: bold;
+    vertical-align: middle;
 }
 div.home div.dashboard section.pannel ul li div.summary img {
     width: 34px;
@@ -127,7 +140,22 @@ div.home div.dashboard section.pannel ul li div.summary img {
 }
 
 
+
 /* groups pannel */
 div.home div.dashboard section.groups {
     grid-area: right;
+}
+
+div.home div.dashboard section.community-groups div.icon-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+div.home div.dashboard section.community-groups div.icon-buttons img.status-icon-img {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+div.home div.dashboard section.community-groups div.icon-buttons button {
+    margin-left: 16px;
 }
