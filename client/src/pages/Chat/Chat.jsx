@@ -94,7 +94,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
     
-            socketForConnectionChat.emit('sendDirectMessage', messageData)
+            socketForConnectionChat?.emit('sendDirectMessage', messageData)
             
             // Update the messageList state with the sent message
             setMessageList((prevMessages) => [...prevMessages, {
@@ -113,7 +113,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
 
-            socketForGroupChat.emit('sendGroupMessage', groupMessageData)
+            socketForGroupChat?.emit('sendGroupMessage', groupMessageData)
         }
 
         // Clear the input after sent
@@ -143,9 +143,9 @@ export default function Chat() {
             fetchUserDetails(connectionObj.userB_id)
 
              // Join connection with the current user's ID
-            socketForConnectionChat.emit('joinConnection', currentUserId);
+            socketForConnectionChat?.emit('joinConnection', currentUserId);
 
-            socketForConnectionChat.on("receiveDirectMessage", (message) => {
+            socketForConnectionChat?.on("receiveDirectMessage", (message) => {
                 setMessageList((prevMessages) => [...prevMessages, {
                     ...message,
                     timestamp: timestamp
@@ -173,9 +173,9 @@ export default function Chat() {
 
             fetchGroupMembers()
 
-            socketForGroupChat.emit('joinGroup', groupId)
+            socketForGroupChat?.emit('joinGroup', groupId)
 
-            socketForGroupChat.on("receiveGroupMessage", (message) => {
+            socketForGroupChat?.on("receiveGroupMessage", (message) => {
                 setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
                     ...message,
                     timestamp: timestamp

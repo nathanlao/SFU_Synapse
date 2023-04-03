@@ -32,3 +32,9 @@
     color: #11515D;
     padding: 15px 0px 8px;
 }
+
+.active-subtab {
+    font-weight: bold;
+    border-bottom: 2px solid #11515D;
+    color: #11515D;
+}

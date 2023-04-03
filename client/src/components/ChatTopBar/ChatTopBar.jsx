@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from 'react-router-dom'
+import { useLocation, useMatch } from 'react-router-dom'
 import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
 import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";
 
@@ -13,6 +13,9 @@ export default function ChatTopBar() {
     const { from, groupId, groupName, groupPic } = useOutletContext()
     const isConnectionPage = from.split("/")[1] === "connections"
     const isGroupPage = from.split("/")[1] === "groups"
+
+    const chatSubtab = useMatch(`/groups/${groupId}`)
+    const discoverSubtab = useMatch(`/groups/${groupId}/discover`)
 
     // receiver_name, groupName, groupPic from Sidepanel.jsx
     const chatNames = useLocation().state?.receiver_name
@@ -52,14 +55,14 @@ export default function ChatTopBar() {
                     isGroupPage ? (
                         <div className="subtabs">
                             <NavLink
-                                to="/groups/discover"
-                                style={({isActive}) => isActive ? activeStyle : null}
+                                to={`/groups/${groupId}/discover`}
+                                className={discoverSubtab ? "active-subtab" : ""}
                             >
                                 DISCOVER
                             </NavLink>
                             <NavLink 
                                 to={`/groups/${groupId}`}
-                                style={({isActive}) => isActive ? activeStyle : null}
+                                className={chatSubtab ? "active-subtab" : ""}
                             >
                                 CHAT
                             </NavLink>
