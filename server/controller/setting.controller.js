@@ -28,7 +28,7 @@ const updateSettings = async (req, res) => {
 
     // check if username is unique
     const promise = new Promise((resolve, reject) => {
-        db.query('SELECT COUNT(*) AS count FROM Users WHERE username=?', [req.body.username], (err, data) => {
+        db.query('SELECT COUNT(*) AS count FROM Users WHERE username=? AND user_id!=?', [req.body.username], (err, data) => {
             if(err) reject(err)
             resolve(data[0].count)
         })

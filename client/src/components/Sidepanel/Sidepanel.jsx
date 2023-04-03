@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import { Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import Accordion from "react-bootstrap/Accordion";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SidepanelItem from "../SidepanelItem/SidepanelItem";
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
 import binocularsIcon from "../../images/binoculars.png";
@@ -13,21 +12,36 @@ import CommunityBrowser from "../../pages/CommunityBrowser/CommunityBrowser"
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel({ currentUserId }) {
+function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
+
+    const { connectionId } = useParams()
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
-    const [clickedConnection, setClickedConnection] = useState(null)
+    const [inactiveConnections, setInactiveConnections] = useState([])
     const [error, setError] = useState(null)
+
+    function formatTimestampForDisplay(timestamp) {
+        const date = new Date(timestamp);
+        const hours24 = date.getHours();
+        const ampm = hours24 < 12 ? "AM" : "PM";
+        const hours12 = hours24 % 12 || 12;
+        const minutes = date.getMinutes();
+        const formattedHours = hours12.toString().padStart(2, '0');
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
 
     async function fetchLatestMessage(sender_id, receiver_id) {
         try {
             const res = await fetch(`/api/connections/chat/latest/${sender_id}/${receiver_id}`)
             const data = await res.json()
-            if (data[0]?.message) {
-                return data[0].message
+
+            if (data[0]) {
+                return data[0]
             } else {
-                return "No messages yet"
+                return null
             }
         } catch (err) {
             console.error(err)
@@ -35,102 +49,118 @@ function ConnectionsSidepanel({ currentUserId }) {
         return null
     }
 
-    // Fetching pending connections
-    useEffect(() => {
-        async function getPendingConnections() {
-            try {
-                const response = await fetch(`/api/connections`)
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch pending connections", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
+    async function getPendingConnections() {
+        try {
+            const response = await fetch(`/api/connections`)
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch pending connections", 
+                    statusText: response.statusText,
+                    status: response.status
                 }
-                const data =  await response.json()
-
-                const updatedConnections = [];
-                for (const connection of data) {
-                    const otherUserId = (connection.userA_id === currentUserId) 
-                        ? connection.userB_id 
-                        : connection.userA_id
-                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ ...connection, latestMessage: latestMessage })
-                }
-
-                setPendingConnections(updatedConnections)
-            } catch (err) {
-                console.log(err)
-                setError(err)
             }
+            const data =  await response.json()
+            
+            // New array for message and timestamp
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
+            }
+
+            setPendingConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
         }
+    }
+
+    async function getActiveConnections() {
+        try {
+            const response = await fetch(`/api/connections/active-connections/${connectionId}`)
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch active connections", 
+                    statusText: response.statusText,
+                    status: response.status
+                }
+            }
+            const data =  await response.json()
+
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
+            }
+
+            setActiveConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
+        }
+    }
+
+    async function getInactiveConnections() {
+        try {
+            const response = await fetch('/api/connections/inactive-connections')
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch inactive connections", 
+                    statusText: response.statusText,
+                    status: response.status
+                }
+            }
+            const data = await response.json()
+
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ 
+                    ...connection, 
+                    latestMessage: latestMessage?.message, 
+                    latestTime: latestMessage?.timestamp
+                })
+            }
+
+            setInactiveConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
+        }
+    }
+
+    async function fetchAllConnections() {
+        await getPendingConnections()
+        await getActiveConnections()
+        await getInactiveConnections()
+    }
+
+    // Fetching pending/active/inactive connections
+    useEffect(() => {
         if (currentUserId) {
-            getPendingConnections()
+            fetchAllConnections()
+            // const intervalId = setInterval(() => {
+            //     fetchAllConnections()
+            // }, 5000) // Fetch connections every 5 seconds
+    
+            // return () => {
+            //     clearInterval(intervalId)
+            // }
         }
     }, [currentUserId])
-
-    // Fetching active connections
-    const { connectionId } = useParams()
-    useEffect(() => {
-        async function getActiveConnections() {
-            try {
-                const response = await fetch(`/api/connections/${connectionId}`)
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch active connections", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data =  await response.json()
-                setActiveConnections(data)
-            } catch (err) {
-                console.log(err)
-                setError(err)
-            }
-        }
-        getActiveConnections();
-    }, [pendingConnections]) // Re-fetch whenever pendingConnections changed
-
-    function renderAddButton(connectionId) {
-        setClickedConnection(connectionId)
-    }
-
-    // Update the pending connection to be active 
-    function handleUpdateConnection(connectionId) {
-
-        console.log(`PUT request send from here with connection id: ${connectionId}`)
-
-        const options = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ connection_id: connectionId }),
-        };
-        
-        fetch(`/api/connections/${connectionId}`, options)
-            .then((res) => res.json())
-            .then((data) => {
-                setPendingConnections((prevConnections) =>
-                prevConnections.filter((connection) => 
-                    connection.connection_id !== connectionId
-                ));
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
-
-    // Map over activeConnections data return from backend
-    const activeConnectionsEl = activeConnections.map((connection) => {
-        return (
-            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem image={connection.userB_photo} title={connection.userB_username} />
-            </Accordion.Body>
-        )
-    })
-
+    
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
         return (
@@ -142,7 +172,7 @@ function ConnectionsSidepanel({ currentUserId }) {
                     receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
                     pendingConnections: pendingConnections
                 }}
-                onClick={() => renderAddButton(connection.connection_id)}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
             >
                 <Accordion.Body style={{backgroundColor: '#11515c'}}>
                         <SidepanelItem
@@ -151,22 +181,67 @@ function ConnectionsSidepanel({ currentUserId }) {
                                     ? connection.userB_photo
                                     : connection.userA_photo
                             }
-                            indicator={clickedConnection === connection.connection_id 
-                                ? (<Button size="small" variant="contained" color="success" 
-                                        onClick={() => handleUpdateConnection(connection.connection_id)}
-                                        >
-                                        <PersonAddIcon />
-                                    </Button>) 
-                                : null}
-                                title={
-                                    connection.userA_id === currentUserId
-                                        ? connection.userB_username
-                                        : connection.userA_username
-                                }
-                                subtitle={connection.latestMessage}
+                            title={
+                                connection.userA_id === currentUserId
+                                ? connection.userB_username
+                                : connection.userA_username
+                            }
+                            subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                            indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
                         />
                 </Accordion.Body>
             </Link>
+        )
+    })
+
+    // Map over activeConnections data return from backend
+    const activeConnectionsEl = activeConnections.map((connection) => {
+        return (
+            <Link
+                to={`/connections/${connection.connection_id}`}
+                key={connection.connection_id}
+                state={{ 
+                    sender_id: currentUserId,
+                    receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
+                    pendingConnections: activeConnections
+                }}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
+            >
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={connection.userA_id === currentUserId 
+                            ? connection.userB_photo 
+                            : connection.userA_photo
+                        } 
+                        title={ connection.userA_id === currentUserId
+                            ? connection.userB_username
+                            : connection.userA_username
+                        } 
+                        subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                        indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
+                    />
+                </Accordion.Body>
+            </Link>
+        )
+    })
+
+    // Map over inactiveConnections data return from backend
+    const inactiveConnectionsEl = inactiveConnections.map((connection) => {
+        return (
+            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
+                <SidepanelItem 
+                    image={connection.userA_id === currentUserId 
+                        ? connection.userB_photo 
+                        : connection.userA_photo
+                    } 
+                    title={ connection.userA_id === currentUserId
+                        ? connection.userB_username
+                        : connection.userA_username
+                    } 
+                    subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                    indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
+                />
+            </Accordion.Body>
         )
     })
 
@@ -196,15 +271,7 @@ function ConnectionsSidepanel({ currentUserId }) {
                     <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                         <Accordion.Header style={{backgroundColor: '#11515c'}}>Inactive connections</Accordion.Header>
                         <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore
-                            magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation ullamco laboris nisi ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu
-                            fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                            non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.
+                            {inactiveConnectionsEl}
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
@@ -220,7 +287,6 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
     const [communityBrowser, setCommunityBrowser] = useState(false)
 
     useEffect(() => {
-        /*
         async function getGroupsOfCourses() {
             try {
                 const response = await fetch('/api/groups/courses')
@@ -237,24 +303,6 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             } catch(err) {
                 console.log(err)
             }
-        }
-        */
-        function getGroupsOfCourses() {
-            const data = [
-                {
-                    num_members: 2, 
-                    group_id: 1,
-                    group_name: "test",
-                    photo: faLock
-                },
-                {
-                    num_members: 3, 
-                    group_id: 2,
-                    group_name: "test 2",
-                    photo: faLock
-                }
-            ]
-            setCourseGroups(data)
         }
         getGroupsOfCourses()
     }, [])
@@ -397,7 +445,7 @@ export default function Sidepanel(props) {
 
     return (
         <>
-            {props.connections && <ConnectionsSidepanel currentUserId={currentUserId} />}
+            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} />}
             {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>

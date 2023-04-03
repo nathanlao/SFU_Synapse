@@ -159,9 +159,11 @@ const getCourseGroups = (req, res) => {
 
     // Separate query to get number of members
     const countMembersQuery = `SELECT M.group_id, COUNT(DISTINCT M.user_id) AS num_members
-                            FROM MemberOf M, \`Groups\` G, Courses C
+                            FROM MemberOf M, \`Groups\` G, Courses C, Users U
                             WHERE M.group_id = G.group_id
                             AND G.group_id = C.course_id
+                            AND M.user_id = U.user_id
+							AND U.status = 1
                             GROUP BY M.group_id`
 
     db.query(selectQuery, [userId], (err, groupData) => {
