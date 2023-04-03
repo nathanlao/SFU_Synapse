@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useParams, useLocation } from 'react-router-dom';
-import io from 'socket.io-client'
+import React, { useState, useEffect } from 'react'
+import { useParams, useLocation, useOutletContext } from 'react-router-dom';
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
 import Avatar from '@mui/joy/Avatar';
 import SendIcon from '@mui/icons-material/Send';
@@ -9,8 +8,9 @@ import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import './Chat.css'
 
 export default function Chat() {
-    const socketRef = useRef()
-    
+
+    // Data from connectionLayout and groupLayout
+    const { socketForConnection, socketForGroup } = useOutletContext()
 
     const { connectionId } = useParams()
     const { groupId } = useParams()
@@ -76,6 +76,22 @@ export default function Chat() {
         }
     }
 
+    // Update the pending connection to be active 
+    async function handleUpdateConnection(connectionId) {
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ connection_id: connectionId }),
+        }
+        
+        try {
+            const response = await fetch(`/api/connections/active-connections/${connectionId}`, options)
+            return response
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     function handleInputChange(e) {
         setInput(e.target.value)
     }
@@ -94,7 +110,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
     
-            socketRef.current.emit('sendDirectMessage', messageData)
+            socketForConnection?.emit('sendDirectMessage', messageData)
             
             // Update the messageList state with the sent message
             setMessageList((prevMessages) => [...prevMessages, {
@@ -113,7 +129,7 @@ export default function Chat() {
                 timestamp: formatTimestamp(timestamp)
             }
 
-            socketRef.current.emit('sendGroupMessage', groupMessageData)
+            socketForGroup?.emit('sendGroupMessage', groupMessageData)
         }
 
         // Clear the input after sent
@@ -121,8 +137,6 @@ export default function Chat() {
     }
 
     useEffect(() => {
-        socketRef.current = io.connect('http://localhost:8080')
-
         // Direct message
         if (connectionId) {
             async function fetchDMChatHistory() {
@@ -134,6 +148,17 @@ export default function Chat() {
                     const res = await fetch(`/api/connections/chat/${sender_id}/${receiver_id}`);
                     const data = await res.json();
                     setMessageList(data);
+    
+                    // Check if there is at least one message from the receiver
+                    const messagesFromReceiver = data.filter((message) => message.sender_id === receiver_id)
+                    if (messagesFromReceiver.length > 0 && connectionObj.status === "pending") {
+                        const response = await handleUpdateConnection(connectionObj.connection_id)
+                        if (response.ok) {
+                            console.log("Connection status updated to Active")
+                        } else {
+                            console.log("Error updating connection status")
+                        }
+                    }
                 } catch (err) {
                     console.error(err);
                 }
@@ -145,9 +170,9 @@ export default function Chat() {
             fetchUserDetails(connectionObj.userB_id)
 
              // Join connection with the current user's ID
-            socketRef.current.emit('joinConnection', currentUserId);
+            socketForConnection?.emit('joinConnection', currentUserId);
 
-            socketRef.current.on("receiveDirectMessage", (message) => {
+            socketForConnection?.on("receiveDirectMessage", (message) => {
                 setMessageList((prevMessages) => [...prevMessages, {
                     ...message,
                     timestamp: timestamp
@@ -175,9 +200,9 @@ export default function Chat() {
 
             fetchGroupMembers()
 
-            socketRef.current.emit('joinGroup', groupId)
+            socketForGroup?.emit('joinGroup', groupId)
 
-            socketRef.current.on("receiveGroupMessage", (message) => {
+            socketForGroup?.on("receiveGroupMessage", (message) => {
                 setGroupMessageList((prevGroupMessages) => [...prevGroupMessages, {
                     ...message,
                     timestamp: timestamp
@@ -186,11 +211,7 @@ export default function Chat() {
 
         }
 
-        return () => {
-            socketRef.current.disconnect()
-        }
-
-    }, [connectionId, groupId])
+    }, [connectionId, groupId, socketForConnection, socketForGroup])
 
     useEffect(() => {    
         // Fetch user details for all group members
@@ -260,7 +281,7 @@ export default function Chat() {
     useEffect(() => {
         const chatList = document.querySelector('div.chat-content-container')
         const offset = 500
-        console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
+        // console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
 
         if(init || chatList.scrollHeight - chatList.scrollTop < chatList.clientHeight + offset) {
             chatList.scrollTo(0, chatList.scrollHeight)

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import io from 'socket.io-client';
 import { Outlet } from "react-router-dom";
 import { requiresLogin } from "../services/authentication.service"
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,16 @@ import Sidepanel from "./Sidepanel/Sidepanel";
 
 export default function Layouts() {
     const navigate = useNavigate()
+    
+    const socketRef = useRef()
+
+    useEffect(() => {
+        socketRef.current = io.connect('http://localhost:8080')
+
+        return () => {
+            socketRef.current.disconnect()
+        }
+    }, [])
     
     useEffect(() => {
         async function init() {
@@ -23,7 +34,7 @@ export default function Layouts() {
         <div className="app-layout">
             <Navbar />
             <Sidepanel />
-            <Outlet />
+            <Outlet context={{socket: socketRef.current}}/>
         </div>
     )
 }

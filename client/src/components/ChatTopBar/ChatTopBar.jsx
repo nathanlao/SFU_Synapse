@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom'
+import React from "react";
+import { useLocation, useMatch } from 'react-router-dom'
 import { AppBar, Toolbar, Typography, Avatar } from "@mui/material";
 import { Link, NavLink, useOutletContext, useParams } from "react-router-dom";
 
@@ -15,14 +15,11 @@ export default function ChatTopBar(props) {
     const isInvitePage = from.split("/")[1] === "invite"
     const isGroupPage = from.split("/")[1] === "groups"
 
+    const chatSubtab = useMatch(`/groups/${groupId}`)
+    const discoverSubtab = useMatch(`/groups/${groupId}/discover`)
+
     // receiver_name, groupName, groupPic from Sidepanel.jsx
     const chatNames = useLocation().state?.receiver_name
-
-    const activeStyle = {
-        fontWeight: 'bold',
-        borderBottom: '2px solid #11515D',
-        color: '#11515D',
-    }
 
     const { connectionId } = useParams()
 
@@ -69,22 +66,20 @@ export default function ChatTopBar(props) {
                         <>
                         <div className="subtabs">
                             <NavLink
-                                to="/groups/discover"
-                                style={({isActive}) => isActive ? activeStyle : null}
+                                to={`/groups/${groupId}/discover`}
+                                className={discoverSubtab ? "active-subtab" : ""}
                             >
                                 DISCOVER
                             </NavLink>
                             <NavLink 
                                 to={`/groups/${groupId}`}
-                                end
-                                style={({isActive}) => isActive ? activeStyle : null}
+                                className={chatSubtab ? "active-subtab" : ""}
                             >
                                 CHAT
                             </NavLink>
                         </div>
                         <NavLink 
                             to={`/groups/${groupId}/settings`}
-                            style={({isActive}) => isActive ? activeStyle : null}
                         >
                             <img className="groups-settings-logo" src={settingLogo} alt="setting logo"/>
                         </NavLink>

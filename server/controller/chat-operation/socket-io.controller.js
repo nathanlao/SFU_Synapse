@@ -14,7 +14,7 @@ const socketController = (io) => {
             userIdToSocketId.set(userId, socket.id);
         })
 
-        // Listen for "sendMessage" event from client
+        // Listen for "sendDirectMessage" event from client
         socket.on('sendDirectMessage', ( { sender_id, receiver_id, message, timestamp} ) => {
             const newMessage = {
                 sender_id,
