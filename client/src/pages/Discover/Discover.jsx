@@ -4,6 +4,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import settingLogo from "../../images/settings.svg"
 
 import './Discover.css'
 

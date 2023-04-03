@@ -214,6 +214,7 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
     const [courseGroups, setCourseGroups] = useState([])
 
     useEffect(() => {
+        /*
         async function getGroupsOfCourses() {
             try {
                 const response = await fetch('/api/groups/courses')
@@ -230,6 +231,24 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             } catch(err) {
                 console.log(err)
             }
+        }
+        */
+        function getGroupsOfCourses() {
+            const data = [
+                {
+                    num_members: 2, 
+                    group_id: 1,
+                    group_name: "test",
+                    photo: faLock
+                },
+                {
+                    num_members: 3, 
+                    group_id: 2,
+                    group_name: "test 2",
+                    photo: faLock
+                }
+            ]
+            setCourseGroups(data)
         }
         getGroupsOfCourses()
     }, [])
