@@ -26,7 +26,7 @@ export default function Home() {
                         <h5 className="active"><img src={activeIcon} className="colored-connection-icon" alt="" /> Active</h5>
                         <ul>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -36,7 +36,7 @@ export default function Home() {
                                 <button type="button" className="btn">view</button>
                             </li>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -46,7 +46,7 @@ export default function Home() {
                                 <button type="button" className="btn">view</button>
                             </li>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -56,7 +56,7 @@ export default function Home() {
                                 <button type="button" className="btn">view</button>
                             </li>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -73,7 +73,7 @@ export default function Home() {
                         <h5 className="pending"><img src={pendingIcon} className="colored-connection-icon" alt="" />Pending</h5>
                         <ul>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -83,7 +83,7 @@ export default function Home() {
                                 <button type="button" className="btn">view</button>
                             </li>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -99,7 +99,7 @@ export default function Home() {
                         <h5 className="inactive"><img src={inactiveIcon} className="colored-connection-icon" alt="" />Inactive</h5>
                         <ul>
                             <li>
-                                <div className="profile-info">
+                                <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
                                         <p className="name">Lincoln Pholips</p>
@@ -108,7 +108,6 @@ export default function Home() {
                                 </div>
                                 <button type="button" className="btn">view</button>
                             </li>
-
                         </ul>
                     </section>
                 </section>
@@ -116,9 +115,63 @@ export default function Home() {
                     <h3>Groups</h3>
                     <section className="course-groups">
                         <h5>Course</h5>
+                        <ul>
+                            <li>
+                                <div className="summary">
+                                    <img src="/images/default/course/default-course-photo1.png" alt="" />
+                                    <div>
+                                        <p className="name">CMPT372 D100</p>
+                                        <p>Web II - Server-side Development</p>
+                                    </div>
+                                </div>
+                                <button type="button" className="btn">view</button>
+                            </li>
+                            <li>
+                                <div className="summary">
+                                    <img src="/images/default/course/default-course-photo2.png" alt="" />
+                                    <div>
+                                        <p className="name">CMPT372 D100</p>
+                                        <p>Web II - Server-side Development</p>
+                                    </div>
+                                </div>
+                                <button type="button" className="btn">view</button>
+                            </li>
+                            <li>
+                                <div className="summary">
+                                    <img src="/images/default/course/default-course-photo3.png" alt="" />
+                                    <div>
+                                        <p className="name">CMPT372 D100</p>
+                                        <p>Web II - Server-side Development</p>
+                                    </div>
+                                </div>
+                                <button type="button" className="btn">view</button>
+                            </li>
+                        </ul>
                     </section>
                     <section className="community-groups">
                         <h5>Community</h5>
+                        <ul>
+                            <li>
+                                <div className="summary">
+                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
+                                    <div>
+                                        <p className="name">CMPT372 D100</p>
+                                        <p>Web II - Server-side Development</p>
+                                    </div>
+                                </div>
+                                <button type="button" className="btn">view</button>
+                            </li>
+                            <li>
+                                <div className="summary">
+                                    <img src="/images/default/community/default-community-photo3.png" alt="" />
+                                    <div>
+                                        <p className="name">CMPT372 D100</p>
+                                        <p>Web II - Server-side Development</p>
+                                    </div>
+                                </div>
+                                <button type="button" className="btn">view</button>
+                            </li>
+                        </ul>
                     </section>
                 </section>
             </div>

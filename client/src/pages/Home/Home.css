@@ -96,10 +96,10 @@ div.home div.dashboard section.connections h5.inactive {
 div.home div.dashboard img.colored-connection-icon {
     width: 40px;
 }
-div.home div.dashboard section.connections ul {
+div.home div.dashboard section.pannel ul {
     padding-left: 0;
 }
-div.home div.dashboard section.connections ul li {
+div.home div.dashboard section.pannel ul li {
     list-style-type: none;
     display: flex;
     flex-direction: row;
@@ -108,20 +108,20 @@ div.home div.dashboard section.connections ul li {
     padding-top: 8px;
     padding-bottom: 8px;
 }
-div.home div.dashboard section.connections ul li div.profile-info {
+div.home div.dashboard section.pannel ul li div.summary {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 12px;
 }
-div.home div.dashboard section.connections ul li div.profile-info p {
+div.home div.dashboard section.pannel ul li div.summary p {
     margin-bottom: 0;
     font-size: 12px;
 }
-div.home div.dashboard section.connections ul li div.profile-info p.name {
+div.home div.dashboard section.pannel ul li div.summary p.name {
     font-weight: bold;
 }
-div.home div.dashboard section.connections ul li div.profile-info img {
+div.home div.dashboard section.pannel ul li div.summary img {
     width: 34px;
     height: 34px;
 }
