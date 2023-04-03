@@ -73,11 +73,10 @@ function getCommunityField(community_id, field) {
 // entry point (/community-photo).post()
 const setCommunityPhoto = async (req, res) => {
     console.log('Received request: setCommunityPhoto')
-    
     try {
         // delete current image if not default
         const data = await getCommunityField(community_id, 'photo')
-        if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_BASEPATH) {
+        if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
             // delete current photo
             const currentpath = data[0].photo
             const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
@@ -121,7 +120,7 @@ const deleteCommunityPhoto = async (req, res) => {
     try {
         const data = await getCommunityField(req.body.community_id, 'photo')
         const currentpath = data[0].photo
-        if(currentpath !== process.env.DEFAULT_COMMUNITY_PHOTO_BASEPATH) {
+        if(currentpath !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
             const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
             fs.unlink(imgPath, (err) => {
                 if(err) {
@@ -130,9 +129,9 @@ const deleteCommunityPhoto = async (req, res) => {
                 }
                 return
             })
-            await updateCommunity(community_id, 'photo', process.env.DEFAULT_COMMUNITY_PHOTO_BASEPATH)
+            await updateCommunity(community_id, 'photo', process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
         }
-        res.status(200).json(process.env.DEFAULT_COMMUNITY_PHOTO_BASEPATH)
+        res.status(200).json(process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
     }catch(err) {
         res.status(500).json(err)
     }

@@ -11,7 +11,7 @@ const createCommunity = (req, res) => {
     const user_id = req.session.user.user_id
 
     //check uniqueness of the name of the community being created
-    const qSelect = "SELECT * FROM `Groups` WHERE group_name = ?";
+    const qSelect = "SELECT * FROM \`Groups\` WHERE group_name = ?";
     db.query(qSelect, [req.body.community_name], (err,data) => {    
         if (err) return res.status(500).json(err);
         if (data.length) return res.status(409).json("Community name is already used by another group. Please choose a different name.");
@@ -19,7 +19,7 @@ const createCommunity = (req, res) => {
     
     //add a group entry to db
     const group_id = uuidv4();
-    const qInsertGroup = "INSERT INTO `Groups` (group_id, group_name, group_description) VALUE (?,?,?)";
+    const qInsertGroup = "INSERT INTO \`Groups\` (group_id, group_name, group_description) VALUE (?,?,?)";
 
     db.query(qInsertGroup, [group_id, req.body.community_name, req.body.bio], (err,data) => {
         if (err) return res.status(500).json(err);
