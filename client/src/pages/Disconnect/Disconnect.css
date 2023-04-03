@@ -30,13 +30,13 @@
 }
 
 .inactive-arrow img {
-    filter: invert(48%) sepia(20%) saturate(2918%) hue-rotate(12deg) brightness(96%) contrast(104%);
+    filter: invert(30%) sepia(45%) saturate(2918%) hue-rotate(12deg) brightness(96%) contrast(104%);
     width: 60px;
     margin-top: 10px;
 }
 
 .inactive {
-    color: #bf860a;
+    color: #C3560D;
     margin-top: -15px !important;
 }
 
