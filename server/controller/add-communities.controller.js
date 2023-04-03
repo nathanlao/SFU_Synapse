@@ -19,9 +19,9 @@ const createCommunity = (req, res) => {
     
     //add a group entry to db
     const group_id = uuidv4();
-    const qInsertGroup = "INSERT INTO `Groups` (group_id, group_name, group_description, photo) VALUE (?,?,?,?)";
+    const qInsertGroup = "INSERT INTO `Groups` (group_id, group_name, group_description) VALUE (?,?,?)";
 
-    db.query(qInsertGroup, [group_id, req.body.community_name, req.body.bio, req.body.photo], (err,data) => {
+    db.query(qInsertGroup, [group_id, req.body.community_name, req.body.bio], (err,data) => {
         if (err) return res.status(500).json(err);
         const qInsertCommunity = "INSERT INTO Communities (community_id, created_by, visibility) VALUE (?, ?, ?)";
         
