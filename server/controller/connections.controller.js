@@ -4,11 +4,11 @@ const { v4: uuidv4 } = require('uuid');
 // create Pending connetion: Sender sends a msg to a receiver
 const createPendingConnection = (req, res) => {
 
-    const { senderId, receiverId } = req.body
+    const { sender_id, receiver_id } = req.body
 
     const insertQuery = "INSERT INTO Connections (connection_id, userA_id, userB_id, Status) VALUES (?, ?, ?, ?)"
 
-    db.query(insertQuery, [uuidv4(), senderId, receiverId, "Pending"], (err, data) => {
+    db.query(insertQuery, [uuidv4(), sender_id, receiver_id, "Pending"], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
