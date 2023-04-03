@@ -76,6 +76,22 @@ export default function Chat() {
         }
     }
 
+    // Update the pending connection to be active 
+    async function handleUpdateConnection(connectionId) {
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ connection_id: connectionId }),
+        }
+        
+        try {
+            const response = await fetch(`/api/connections/active-connections/${connectionId}`, options)
+            return response
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     function handleInputChange(e) {
         setInput(e.target.value)
     }
@@ -132,6 +148,17 @@ export default function Chat() {
                     const res = await fetch(`/api/connections/chat/${sender_id}/${receiver_id}`);
                     const data = await res.json();
                     setMessageList(data);
+    
+                    // Check if there is at least one message from the receiver
+                    const messagesFromReceiver = data.filter((message) => message.sender_id === receiver_id)
+                    if (messagesFromReceiver.length > 0 && connectionObj.status === "pending") {
+                        const response = await handleUpdateConnection(connectionObj.connection_id)
+                        if (response.ok) {
+                            console.log("Connection status updated to Active")
+                        } else {
+                            console.log("Error updating connection status")
+                        }
+                    }
                 } catch (err) {
                     console.error(err);
                 }
@@ -184,7 +211,7 @@ export default function Chat() {
 
         }
 
-    }, [connectionId, groupId, socketForConnection])
+    }, [connectionId, groupId, socketForConnection, socketForGroup])
 
     useEffect(() => {    
         // Fetch user details for all group members
@@ -254,7 +281,7 @@ export default function Chat() {
     useEffect(() => {
         const chatList = document.querySelector('div.chat-content-container')
         const offset = 500
-        console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
+        // console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
 
         if(init || chatList.scrollHeight - chatList.scrollTop < chatList.clientHeight + offset) {
             chatList.scrollTo(0, chatList.scrollHeight)

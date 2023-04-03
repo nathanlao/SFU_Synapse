@@ -29,10 +29,11 @@ const getPendingConnections = (req, res) => {
     // GET data with the login user 
     // JOIN Connections table with Users table
     const query = `SELECT c.connection_id, c.status, 
+                        c.userA_id, c.userB_id,
                         ua.username AS userA_username, 
                         ub.username AS userB_username, 
-                        c.userA_id, c.userB_id,
-                        ua.photo AS userA_photo, ub.photo AS userB_photo
+                        ua.photo AS userA_photo, 
+                        ub.photo AS userB_photo
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
@@ -82,7 +83,7 @@ const updatePendingToActive = (req, res) => {
     const { connection_id } = req.body
 
     // Check if the conection exists and the status is Pending
-    const selectQuery = "SELECT * FROM Connections WHERE connection_id = ? AND Status = 'pending'"
+    const selectQuery = "SELECT * FROM Connections WHERE connection_id = ? AND status = 'pending'"
 
     db.query(selectQuery, [connection_id], (err, data) => {
         if (err) {
@@ -94,7 +95,7 @@ const updatePendingToActive = (req, res) => {
             } else {
                 
                 // Pending conection exists and update it to be Active
-                const updateQuery = "UPDATE Connections SET Status = ? WHERE connection_id = ?"
+                const updateQuery = "UPDATE Connections SET status = ? WHERE connection_id = ?"
                 db.query(updateQuery, ["active", connection_id], (err, data) => {
                     if (err) {
                         console.log(err)
@@ -110,7 +111,14 @@ const updatePendingToActive = (req, res) => {
 
 const getActiveConnections = (req, res) => {
 
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const userId = req.session.user.user_id
+
     const query = `SELECT c.connection_id, c.status, 
+                        c.userA_id, c.userB_id,
                         ua.username AS userA_username, 
                         ub.username AS userB_username,
                         ua.photo AS userA_photo, 
@@ -118,9 +126,10 @@ const getActiveConnections = (req, res) => {
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
-                    WHERE c.status = 'active'`
+                    WHERE c.status = 'active'
+                    AND (c.userA_id = ? OR c.userB_id = ?)`
 
-    db.query(query, (err, data) => {
+    db.query(query, [userId, userId], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
@@ -162,7 +171,6 @@ const getInactiveConnections = (req, res) => {
             res.status(500).json("Internal server error")
         } else {
             if (data || data.length > 0){
-                console.log("wew have data fro you")
                 res.status(200).json(data)
             } else {
                 console.log("No inactive connections found")

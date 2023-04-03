@@ -10,7 +10,7 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel({ handleClickChat, currentUserId, socket }) {
+function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
     const { connectionId } = useParams()
 
@@ -46,7 +46,6 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId, socket }) {
         }
         return null
     }
-
 
     async function getPendingConnections() {
         try {
@@ -150,16 +149,16 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId, socket }) {
     useEffect(() => {
         if (currentUserId) {
             fetchAllConnections()
-        }
-    }, [currentUserId, socket, pendingConnections])
+            const intervalId = setInterval(() => {
+                fetchAllConnections()
+            }, 5000) // Fetch connections every 5 seconds
     
-    // Listen for socket event and re render based on it
-    useEffect(() => {
-        if (socket) {
-            socket.on("receiveDirectMessage", fetchAllConnections)
+            return () => {
+                clearInterval(intervalId)
+            }
         }
-    }, [socket])
-
+    }, [currentUserId])
+    
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
         return (
@@ -425,7 +424,7 @@ export default function Sidepanel(props) {
 
     return (
         <>
-            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} socket={props.socket}/>}
+            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} />}
             {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>
