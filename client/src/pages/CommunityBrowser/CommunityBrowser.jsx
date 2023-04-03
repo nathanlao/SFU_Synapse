@@ -128,9 +128,9 @@ export default function CommunityBrowser({notifyClosure}) {
                     <input type="text" className="form-control" />
                     <div className="visibility-config">
                         <label htmlFor="">Private</label>
-                        <label class="switch">
+                        <label className="switch">
                             <input type="checkbox" />
-                            <span class="slider round"></span>
+                            <span className="slider round"></span>
                         </label>
                     </div>
                     
