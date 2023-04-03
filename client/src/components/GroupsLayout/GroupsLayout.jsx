@@ -25,7 +25,7 @@ export default function GroupsLayout() {
 
     // Check if its is on group chats
     useEffect(() => {
-        if (path === `/groups/${groupId}` || path === `/groups/${groupId}/discover`) {
+        if (path === `/groups/${groupId}` || path === `/groups/${groupId}/discover` || path === `/groups/${groupId}/settings`) {
             setOnGroupChat(true)
         } else {
             setOnGroupChat(false)
