@@ -15,7 +15,7 @@ export default function CommunityBrowser({notifyClosure}) {
     // community config
     const [name, setName] = useState('')
     const [desc, setDesc] = useState('') // pass as bio for POST request
-    const [photo, setPhoto] = useState(null)
+    const [photo, setPhoto] = useState({})
     const [visibility, setVisibility] = useState('public')
 
     useEffect(() => {
@@ -126,6 +126,16 @@ export default function CommunityBrowser({notifyClosure}) {
                     <input type="text" className="form-control" />
                     <label htmlFor="">Community description</label>
                     <input type="text" className="form-control" />
+                    <div className="visibility-config">
+                        <label htmlFor="">Private</label>
+                        <label class="switch">
+                            <input type="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <p><label htmlFor="">Profile photo</label></p>
+                    {selectPhoto()}
                 </form>
                 <div className="controller">
                     <button type="button" className="btn" onClick={() => {setView(views.browse)}}>Browse</button>
@@ -133,6 +143,45 @@ export default function CommunityBrowser({notifyClosure}) {
                 </div>
             </>
         )
+    }
+
+    function handleFileChange(event) {
+        if(event.target.files && event.target.files[0]) {
+            const file = event.target.files[0]
+
+            if(sizeInKB(file.size) <= 200) {
+                const img = {
+                    preview: URL.createObjectURL(file),
+                    data: file
+                }
+                setPhoto(img)
+                console.log(photo)
+            }else {
+                setPhoto({})
+                event.target.value = ''
+                alert('[File size: ' + sizeInKB(file.size) + ' KB] The maximum file size allowed is 200KB.')
+            }
+        }else {
+            setPhoto({})
+        }
+    }
+
+    const selectPhoto = () => {
+        return (
+            <div className="select-photo">
+                <div className="preview-area">
+                    <p>Preview</p>
+                    <img src={photo.preview} alt="" />
+                </div>
+                <input type="file" className="form-control" accept="images/*" onChange={handleFileChange} />
+            </div>
+        )
+    }
+
+    function sizeInKB(bytes, decimals = 2) {
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        return parseFloat((bytes / k).toFixed(dm))
     }
 
 
