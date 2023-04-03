@@ -29,8 +29,6 @@ export default function AccountSetup() {
         init()
     }, [])
 
-    const username = 'testuser' // DEV: replace when login session implemented
-
 
     async function handleBtnClick() {
                
@@ -72,7 +70,6 @@ export default function AccountSetup() {
                 console.log('Profile bio saved')
             }
         }
-            
 
         // 4 update user's profile
         if(photo.data) {
