@@ -83,6 +83,10 @@ export default function GroupsSettings() {
     }
     const handleLeaveModelClose = () => setLeaveModalOpen(false);
     
+    function handleDeleteCommunity() {
+        // TODO: Implement backend to delete community
+        console.log("Delete community clicked");
+    }
 
     const style = {
         position: 'absolute',
@@ -101,7 +105,9 @@ export default function GroupsSettings() {
             <ChatTopBar />
             <div className='groups-settings-container'>
                 <Button sx={{ml: 4, mt: 4, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>
-                {!isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button>}
+                {!isCommunityCreator ? <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button> :
+                <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleDeleteCommunity}>Delete Community</Button> 
+                }
             </div>
             <Modal
                 open={linkModalOpen}
