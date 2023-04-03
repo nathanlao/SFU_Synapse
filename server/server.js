@@ -20,7 +20,7 @@ const { getHomeContent } = require('./controller/home.controller')
 const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
 const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getPendingConnections, createPendingConnection, updatePendingToActive, 
-    checkExistingPending, getActiveConnections, getInactiveConnections} = require('./controller/connections.controller')
+    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection} = require('./controller/connections.controller')
 const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
@@ -102,6 +102,8 @@ Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
 Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
     .get(getLatestMessage)
+Routes.route('/connections/:connectionId/settings')
+    .delete(endConnection)
 
 // Route: groups
 Routes.route('/groups/courses')
