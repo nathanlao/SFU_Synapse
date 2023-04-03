@@ -4,6 +4,7 @@
     background-color: #11515c;
     display: grid;
     grid-template-rows: 1fr max-content;
+    width: 360px;
 }
 
 .sidepanel-header {
@@ -58,8 +59,8 @@
 
 .accordion-body {
     color: #ffffff;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
     padding-top: 4px;
     padding-bottom: 4px;
 }

@@ -1,0 +1,133 @@
+
+div.home {
+    padding: 40px 56px;
+    height: 100vh;
+    overflow-y: scroll;
+    width: calc(100vw - 200px);
+}
+
+div.home h2{
+    color: #11515D;
+}
+div.home::-webkit-scrollbar {
+    display: none;
+}
+
+
+div.home div.dashboard {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+    grid-template-areas: 
+        "top-left right"
+        "bottom-left right"
+    ;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: max-content 1fr;
+    height: 80vh;
+}
+div.home div.dashboard button {
+    background-color: #fff;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+div.home div.dashboard button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 2px 2px 4px;
+}
+
+
+div.home div.dashboard .pannel {
+    background-color: rgb(241, 241, 241);
+    border-radius: 8px;
+    padding: 16px;
+    
+}
+
+/* profile pannel */
+div.home div.dashboard section.profile {
+    grid-area: top-left;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+div.home div.dashboard section.profile p {
+    margin-bottom: 0;
+}
+div.home div.dashboard section.profile p#name {
+    font-weight: bold;
+}
+div.home div.dashboard section.profile p#username {
+    font-size: .8em;
+}
+div.home div.dashboard section.profile img {
+    width: 48px;
+    height: 48px;
+}
+div.home div.dashboard section.profile div.profile-summary {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* connections pannel */
+div.home div.dashboard section.connections {
+    grid-area: bottom-left;
+}
+div.home div.dashboard section.connections h5 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+div.home div.dashboard section.connections h5.active {
+    color: #4E8C24;
+}
+div.home div.dashboard section.connections h5.pending {
+    color: #DB9B00;
+}
+div.home div.dashboard section.connections h5.inactive {
+    color: #C3560D;
+}
+div.home div.dashboard img.colored-connection-icon {
+    width: 40px;
+}
+div.home div.dashboard section.connections ul {
+    padding-left: 0;
+}
+div.home div.dashboard section.connections ul li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+div.home div.dashboard section.connections ul li div.profile-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+div.home div.dashboard section.connections ul li div.profile-info p {
+    margin-bottom: 0;
+    font-size: 12px;
+}
+div.home div.dashboard section.connections ul li div.profile-info p.name {
+    font-weight: bold;
+}
+div.home div.dashboard section.connections ul li div.profile-info img {
+    width: 34px;
+    height: 34px;
+}
+
+
+/* groups pannel */
+div.home div.dashboard section.groups {
+    grid-area: right;
+}
