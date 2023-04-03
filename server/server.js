@@ -24,7 +24,7 @@ const { getDirectMessages } = require('./controller/chat-operation/direct-messag
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
 const { getGroupMembers } = require('./controller/chat-operation/group-members.controller')
-const { userLeaveGroup, joinInviteLink, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup } = require('./controller/groups.controller')
+const { userLeaveGroup, joinInviteLink, getGroupDescriptionFromID, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
 const { getSettings, updateSettings, deleteAccount, updatePassoword } = require('./controller/setting.controller')
@@ -35,7 +35,7 @@ const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
-const { checkUserIsCommunityCreator, createCommunity } = require('./controller/communities.controller');
+const { getCommunityVisibilityFromID, checkUserIsCommunityCreator, createCommunity } = require('./controller/communities.controller');
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
@@ -112,6 +112,10 @@ Routes.route('/join/:group_id')
     .post(joinInviteLink)
 Routes.route('/groups/name/:group_id')
     .get(getGroupNameFromID)
+Routes.route('/groups/description/:group_id')
+    .get(getGroupDescriptionFromID)
+Routes.route('/community/visibility/:group_id')
+    .get(getCommunityVisibilityFromID)
 
 // Route: settings
 Routes.route('/setting')
@@ -170,6 +174,8 @@ Routes.route('/community/add')
     .post(createCommunity)
 Routes.route('/community/creator/:group_id')
     .get(checkUserIsCommunityCreator)
+Routes.route('/community/visibility/:group_id')
+    .get(getCommunityVisibilityFromID)
 
 // User specific data
 Routes.route('/course/:year/:term')

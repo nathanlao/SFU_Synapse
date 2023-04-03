@@ -68,6 +68,31 @@ const joinInviteLink = async (req, res) => {
     })
 }
 
+const getGroupDescriptionFromID = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    const groupId = req.params.group_id
+
+    const selectQuery = `SELECT group_description from \`Groups\` WHERE group_id =?`
+
+    db.query(selectQuery, [groupId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                res.status(200).json(data)
+            } else { 
+                console.log("No group or no permission")
+                res.status(404).json("No group or no permission")
+            }
+        }
+    })
+}
+
+
 const getGroupNameFromID = (req, res) => {
     if (!req.session || !req.session.user) {
         return res.sendStatus(401)
@@ -174,4 +199,4 @@ const createGroup = (req, res) => {
     res.send(`Received ${req.method} request to /groups`)
 }
 
-module.exports = { userLeaveGroup, joinInviteLink, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup }
+module.exports = { userLeaveGroup, joinInviteLink, getGroupDescriptionFromID, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup }
