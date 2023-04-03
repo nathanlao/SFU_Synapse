@@ -8,7 +8,7 @@ const createPendingConnection = (req, res) => {
 
     const insertQuery = "INSERT INTO Connections (connection_id, userA_id, userB_id, Status) VALUES (?, ?, ?, ?)"
 
-    db.query(insertQuery, [uuidv4(), sender_id, receiver_id, "Pending"], (err, data) => {
+    db.query(insertQuery, [uuidv4(), sender_id, receiver_id, "pending"], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")
@@ -36,7 +36,7 @@ const getPendingConnections = (req, res) => {
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
-                    WHERE c.status = 'Pending'
+                    WHERE c.status = 'pending'
                     AND (c.userA_id = ? OR c.userB_id = ?)`
 
     db.query(query, [userId, userId], (err, data) => {
@@ -55,12 +55,34 @@ const getPendingConnections = (req, res) => {
     })
 }
 
+const checkExistingPending = (req, res) => {
+    const { sender_id, receiver_id } = req.params
+
+    const query = ` SELECT * FROM Connections
+                WHERE (userA_id = ? AND userB_id = ?)
+                OR (userA_id = ? AND userB_id = ?)
+                AND status = 'pending'`
+
+    db.query(query, [sender_id, receiver_id, receiver_id, sender_id], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                res.status(200).json(data)
+            } else { 
+                res.status(404).json("No exist pending connections found")
+            }
+        }
+    })
+}
+
 // update Pending connection to be Active: Receiver replies to the sender
 const updatePendingToActive = (req, res) => {
     const { connection_id } = req.body
 
     // Check if the conection exists and the status is Pending
-    const selectQuery = "SELECT * FROM Connections WHERE connection_id = ? AND Status = 'Pending'"
+    const selectQuery = "SELECT * FROM Connections WHERE connection_id = ? AND Status = 'pending'"
 
     db.query(selectQuery, [connection_id], (err, data) => {
         if (err) {
@@ -73,7 +95,7 @@ const updatePendingToActive = (req, res) => {
                 
                 // Pending conection exists and update it to be Active
                 const updateQuery = "UPDATE Connections SET Status = ? WHERE connection_id = ?"
-                db.query(updateQuery, ["Active", connection_id], (err, data) => {
+                db.query(updateQuery, ["active", connection_id], (err, data) => {
                     if (err) {
                         console.log(err)
                         res.status(500).json("Internal server error")
@@ -96,7 +118,7 @@ const getActiveConnections = (req, res) => {
                     FROM Connections c 
                     JOIN Users ua ON c.userA_id = ua.user_id 
                     JOIN Users ub ON c.userB_id = ub.user_id
-                    WHERE c.status = 'Active'`
+                    WHERE c.status = 'active'`
 
     db.query(query, (err, data) => {
         if (err) {
@@ -157,6 +179,7 @@ const updateActiveToInactive = (req, res) => {
 module.exports = { 
     createPendingConnection, 
     getPendingConnections, 
+    checkExistingPending,
     updatePendingToActive, 
     getActiveConnections, 
     getInactiveConnections,

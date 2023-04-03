@@ -8,6 +8,7 @@ import ProfileCard from "../../components/ProfileCard/ProfileCard";
 
 import './Discover.css'
 
+// TODO: NEED TO REPLACE RECEIVER_ID!!
 export default function Discover() {
 
     // Data from groupLayout
@@ -93,7 +94,7 @@ export default function Discover() {
                 }
 
             const data = await response.json()
-            console.log("Pending connection created:", data)
+            
         } catch (err) {
             console.log(err)
         }
@@ -112,10 +113,17 @@ export default function Discover() {
             }
 
             if (!hasSentFirstMessage) {
-                await createPendingConnection()
+                const response = await fetch(`/api/connections/check-pending/${currentUserId}/4`)
+                const data = await response.json()
+
+                // Create pending connections if nonw exists
+                if (data.length === 0) {
+                    await createPendingConnection()
+                }
+
                 setHasSentFirstMessage(true)
             }
-            
+
             socketForGroup?.emit('sendDirectMessage', messageData)
         }
 
