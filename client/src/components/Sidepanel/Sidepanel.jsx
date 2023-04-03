@@ -10,7 +10,9 @@ import { faLock } from '@fortawesome/free-solid-svg-icons'
 
 import "./Sidepanel.css";
 
-function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
+function ConnectionsSidepanel({ handleClickChat, currentUserId, socket }) {
+
+    const { connectionId } = useParams()
 
     const [pendingConnections, setPendingConnections] = useState([])
     const [activeConnections, setActiveConnections] = useState([])
@@ -45,124 +47,118 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         return null
     }
 
-    // Fetching pending connections
-    useEffect(() => {
-        async function getPendingConnections() {
-            try {
-                const response = await fetch(`/api/connections`)
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch pending connections", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data =  await response.json()
 
-                const updatedConnections = [];
-                for (const connection of data) {
-                    const otherUserId = (connection.userA_id === currentUserId) 
-                        ? connection.userB_id 
-                        : connection.userA_id
-                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
+    async function getPendingConnections() {
+        try {
+            const response = await fetch(`/api/connections`)
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch pending connections", 
+                    statusText: response.statusText,
+                    status: response.status
                 }
-
-                setPendingConnections(updatedConnections)
-            } catch (err) {
-                console.log(err)
-                setError(err)
             }
-        }
-        if (currentUserId) {
-            getPendingConnections()
-        }
-    }, [currentUserId])
-
-    // Fetching active connections
-    const { connectionId } = useParams()
-    useEffect(() => {
-        async function getActiveConnections() {
-            try {
-                const response = await fetch(`/api/connections/active-connections/${connectionId}`)
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch active connections", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data =  await response.json()
-                setActiveConnections(data)
-            } catch (err) {
-                console.log(err)
-                setError(err)
+            const data =  await response.json()
+            
+            // New array for message and timestamp
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
             }
+
+            setPendingConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
         }
-        getActiveConnections();
-    }, [pendingConnections]) // Re-fetch whenever pendingConnections changed
-
-    // Fetch Inactive connections
-    useEffect(() => {
-        async function getInactiveConnections() {
-            try {
-                const response = await fetch('/api/connections/inactive-connections')
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch inactive connections", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
-                }
-                const data = await response.json()
-
-                const updatedConnections = [];
-                for (const connection of data) {
-                    const otherUserId = (connection.userA_id === currentUserId) 
-                        ? connection.userB_id 
-                        : connection.userA_id
-                    const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
-                    updatedConnections.push({ 
-                        ...connection, 
-                        latestMessage: latestMessage?.message, 
-                        latestTime: latestMessage?.timestamp
-                    })
-                }
-
-                setInactiveConnections(updatedConnections)
-            } catch (err) {
-                console.log(err)
-                setError(err)
-            }
-        }
-        if (currentUserId) {
-            getInactiveConnections()
-        }
-    },[currentUserId])
-
-    // Update the pending connection to be active 
-    function handleUpdateConnection(connectionId) {
-        const options = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ connection_id: connectionId }),
-        };
-        
-        fetch(`/api/connections/active-connections/${connectionId}`, options)
-            .then((res) => res.json())
-            .then((data) => {
-                setPendingConnections((prevConnections) =>
-                prevConnections.filter((connection) => 
-                    connection.connection_id !== connectionId
-                ));
-            })
-            .catch((err) => {
-                console.log(err);
-            });
     }
+
+    async function getActiveConnections() {
+        try {
+            const response = await fetch(`/api/connections/active-connections/${connectionId}`)
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch active connections", 
+                    statusText: response.statusText,
+                    status: response.status
+                }
+            }
+            const data =  await response.json()
+
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ ...connection, latestMessage: latestMessage?.message, latestTime: latestMessage?.timestamp})
+            }
+
+            setActiveConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
+        }
+    }
+
+    async function getInactiveConnections() {
+        try {
+            const response = await fetch('/api/connections/inactive-connections')
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch inactive connections", 
+                    statusText: response.statusText,
+                    status: response.status
+                }
+            }
+            const data = await response.json()
+
+            const updatedConnections = [];
+            for (const connection of data) {
+                const otherUserId = (connection.userA_id === currentUserId) 
+                    ? connection.userB_id 
+                    : connection.userA_id
+                const latestMessage = await fetchLatestMessage(currentUserId, otherUserId)
+                updatedConnections.push({ 
+                    ...connection, 
+                    latestMessage: latestMessage?.message, 
+                    latestTime: latestMessage?.timestamp
+                })
+            }
+
+            setInactiveConnections(updatedConnections)
+        } catch (err) {
+            console.log(err)
+            setError(err)
+        }
+    }
+
+    async function fetchAllConnections() {
+        await getPendingConnections()
+        await getActiveConnections()
+        await getInactiveConnections()
+    }
+
+    // Fetching pending/active/inactive connections
+    useEffect(() => {
+        if (currentUserId) {
+            fetchAllConnections()
+        }
+    }, [currentUserId, socket, pendingConnections])
+    
+    // Listen for socket event and re render based on it
+    useEffect(() => {
+        if (socket) {
+            socket.on("receiveDirectMessage", fetchAllConnections)
+        }
+    }, [socket])
 
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
@@ -200,9 +196,31 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     // Map over activeConnections data return from backend
     const activeConnectionsEl = activeConnections.map((connection) => {
         return (
-            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem image={connection.userB_photo} title={connection.userB_username} />
-            </Accordion.Body>
+            <Link
+                to={`/connections/${connection.connection_id}`}
+                key={connection.connection_id}
+                state={{ 
+                    sender_id: currentUserId,
+                    receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
+                    pendingConnections: activeConnections
+                }}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
+            >
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={connection.userA_id === currentUserId 
+                            ? connection.userB_photo 
+                            : connection.userA_photo
+                        } 
+                        title={ connection.userA_id === currentUserId
+                            ? connection.userB_username
+                            : connection.userA_username
+                        } 
+                        subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                        indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
+                    />
+                </Accordion.Body>
+            </Link>
         )
     })
 
@@ -407,7 +425,7 @@ export default function Sidepanel(props) {
 
     return (
         <>
-            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} />}
+            {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} socket={props.socket}/>}
             {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>

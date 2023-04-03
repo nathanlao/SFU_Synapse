@@ -28,7 +28,7 @@ export default function ConnectionsLayout() {
 
     return (
         <>
-            <Sidepanel connections handleClickChat={handleClickChat}/>
+            <Sidepanel connections handleClickChat={handleClickChat} socket={socket}/>
             {onChatTab ? (
                 <div className="connection-container">
                     <Outlet context={{from: path, socketForConnection: socket }}/>
