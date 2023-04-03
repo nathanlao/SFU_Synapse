@@ -48,6 +48,7 @@ export default function Join() {
             }
         })
     }
+    
     const handleModalOpen = () => {
         joinGroupViaLink();
         setModalOpen(true);

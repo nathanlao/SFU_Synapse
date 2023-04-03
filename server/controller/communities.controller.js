@@ -2,6 +2,30 @@ const { v4: uuidv4 } = require('uuid');
 
 const db = require('../db/connection.db').pool
 
+const checkUserIsCommunityCreator = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    const groupId = req.params.group_id
+
+    const selectQuery = `SELECT created_by from Communities WHERE community_id =? AND created_by =?`
+
+    db.query(selectQuery, [groupId, userId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                res.status(200).json(data)
+            } else { 
+                console.log("Not community owner or no permission")
+                res.status(404).json("Not community owner or no permission")
+            }
+        }
+    })
+}
+
 const createCommunity = (req, res) => {
     
     //get user_id of the community creator
@@ -32,4 +56,4 @@ const createCommunity = (req, res) => {
     });
 }
 
-module.exports = { createCommunity }
+module.exports = { checkUserIsCommunityCreator, createCommunity }

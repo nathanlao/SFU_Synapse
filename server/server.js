@@ -35,7 +35,7 @@ const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
-const { createCommunity } = require('./controller/communities.controller');
+const { checkUserIsCommunityCreator, createCommunity } = require('./controller/communities.controller');
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
@@ -168,6 +168,8 @@ Routes.route('/admin/delete-course')
 //Route: community
 Routes.route('/community/add')
     .post(createCommunity)
+Routes.route('/community/creator/:group_id')
+    .get(checkUserIsCommunityCreator)
 
 // User specific data
 Routes.route('/course/:year/:term')

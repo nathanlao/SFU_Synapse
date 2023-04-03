@@ -7,9 +7,9 @@ const userLeaveGroup = async (req, res) => {
     const userId = req.session.user.user_id
     const groupId = req.params.group_id
 
-    const insertQuery = `DELETE FROM MemberOf WHERE group_id = ? AND user_id = ?`
+    const deleteQuery = `DELETE FROM MemberOf WHERE group_id = ? AND user_id = ?`
 
-    db.query(insertQuery, [groupId, userId], (err, data) => {
+    db.query(deleteQuery, [groupId, userId], (err, data) => {
         if (err) {
             console.log(err)
             res.status(500).json("Internal server error")

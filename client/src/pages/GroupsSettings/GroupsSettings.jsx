@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography, Box } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
@@ -11,9 +11,31 @@ import './GroupsSettings.css'
 export default function GroupsSettings() {
     const [linkModalOpen, setLinkModalOpen] = useState(false);
     const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+    const [isCommunityCreator, setIsCommunityCreator] = useState(false);
     const [inviteID, setInviteID] = useState("LOADING...");
     const [leaveSuccess, setLeaveSuccess] = useState("");
     const { groupId } = useParams();
+
+    function checkIfCommunityCreator() {
+        const options = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }
+
+        fetch(`/api/community/creator/${groupId}`, options).then(res => {
+            if(res.status === 200) {
+                res.json().then(data => {
+                    (data.length === 0) ? setIsCommunityCreator(false) : setIsCommunityCreator(true)
+                })
+            } else {
+                setIsCommunityCreator(false)
+            }
+        })
+    }
+
+    useEffect(() => {
+        checkIfCommunityCreator();
+    })
 
     function handleLeaveGroup() {
         const options = {
@@ -24,7 +46,7 @@ export default function GroupsSettings() {
         fetch(`/api/groups/leave/${groupId}`, options).then(res => {
             if(res.status === 200) {
                 res.json().then(data => {
-                    setLeaveSuccess("Success")
+                    data.affectedRows >= 1 ? setLeaveSuccess("Success") : setLeaveSuccess("Fail")
                 })
             } else {
                 setLeaveSuccess("Fail")
@@ -79,7 +101,7 @@ export default function GroupsSettings() {
             <ChatTopBar />
             <div className='groups-settings-container'>
                 <Button sx={{ml: 4, mt: 4, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>
-                <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button>
+                {!isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button>}
             </div>
             <Modal
                 open={linkModalOpen}
@@ -107,9 +129,10 @@ export default function GroupsSettings() {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Leave Group
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        You have left the group.
-                    </Typography>
+                    {leaveSuccess === "Success" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>You have left the group.</Typography> :
+                    leaveSuccess === "Fail" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>Unable to leave group. You may not be a member of this group.</Typography> :
+                    null
+                    }
                 </Box>
             </Modal>
         </>
