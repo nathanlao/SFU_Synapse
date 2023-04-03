@@ -9,7 +9,8 @@ import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import './Chat.css'
 
 export default function Chat() {
-    const socketRef = useRef();
+    const socketRef = useRef()
+    
 
     const { connectionId } = useParams()
     const { groupId } = useParams()
@@ -27,6 +28,7 @@ export default function Chat() {
     const [userDetails, setUserDetails] = useState({})
     const [groupMembers, setGroupMembers] = useState([])
     const timestamp = new Date(Date.now());
+    const [init, setInit] = useState(0) // used for scroll position control
 
     function formatTimestamp(date) {
         const year = date.getFullYear()
@@ -128,6 +130,7 @@ export default function Chat() {
                 const receiver_id = connectionObj.userB_id;
             
                 try {
+                    setInit(true)
                     const res = await fetch(`/api/connections/chat/${sender_id}/${receiver_id}`);
                     const data = await res.json();
                     setMessageList(data);
@@ -160,6 +163,7 @@ export default function Chat() {
 
             async function fecthGroupChatHistory() {
                 try {
+                    setInit(true)
                     const response = await fetch(`/api/groups/chat/${user_id}/${group_id}`)
                     const data = await response.json()
                     setGroupMessageList(data)
@@ -251,6 +255,19 @@ export default function Chat() {
             </div>
         )
     })
+
+    // adjust scrollbar
+    useEffect(() => {
+        const chatList = document.querySelector('div.chat-content-container')
+        const offset = 500
+        console.log(chatList.scrollHeight - chatList.scrollTop, chatList.clientHeight + offset)
+
+        if(init || chatList.scrollHeight - chatList.scrollTop < chatList.clientHeight + offset) {
+            chatList.scrollTo(0, chatList.scrollHeight)
+            setInit(false)
+        }
+    }, [groupMessageList, messageList])
+
 
     return (
         <>  

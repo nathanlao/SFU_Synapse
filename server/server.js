@@ -35,10 +35,12 @@ const { getTableData } = require('./controller/dev.controller');
 const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
-const { getCommunityVisibilityFromID, checkUserIsCommunityCreator, createCommunity } = require('./controller/communities.controller');
+const { createCommunity } = require('./controller/add-communities.controller');
+const { getCommunities , joinCommunity } = require('./controller/browse-communities.controller');
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
+const { getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -176,6 +178,13 @@ Routes.route('/community/creator/:group_id')
     .get(checkUserIsCommunityCreator)
 Routes.route('/community/visibility/:group_id')
     .get(getCommunityVisibilityFromID)
+Routes.route('/community/browse')
+    .get(getCommunities)
+    .post(joinCommunity)
+Routes.route('/community-photo')
+    .get(getCommunityPhoto)
+    .post(setCommunityPhoto)
+    .delete(deleteCommunityPhoto)
 
 // User specific data
 Routes.route('/course/:year/:term')

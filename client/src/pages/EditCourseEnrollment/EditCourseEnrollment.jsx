@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CourseSelector from "../../components/CourseSelector/CourseSelector";
+import "./EditCourseEnrollment.css"
+
 
 export default function EditCourseEnrollment() {
     const [list, setList] = useState([])
+    const [update, setUpdate] = useState(false)
     const [year] = useState(() => {
         return getYearAndTerm().year
     })
@@ -12,14 +15,12 @@ export default function EditCourseEnrollment() {
     })
 
     const updateList = (list) => {
-        console.log(list)
         setList(list)
     }
 
     useEffect(() => {
         console.log('received update from child component')
-        console.log(list)
-
+        setUpdate(false)
     }, [list])
 
     // helper function
@@ -35,6 +36,10 @@ export default function EditCourseEnrollment() {
         }else {
             return { year: year, term: 'fall'}
         }
+    }
+
+    function notifyChild() {
+        setUpdate(true)
     }
 
     async function handleBtnClick() {
@@ -59,14 +64,16 @@ export default function EditCourseEnrollment() {
         await Promise.all(promises2)
         console.log('Added new courses')
 
+        
         console.log('Edited course enrollment!!')
+        notifyChild()
     }
 
     return (
         <div className="edit-course-enrollment">
-            <CourseSelector year={year} term={term} updateParentList={updateList} setup={false} />
+            <h2>Edit Course Enrollment</h2>
+            <CourseSelector year={year} term={term} updateParentList={updateList} setup={false} updateFromParent={update} />
             <button type="button" className="btn btn-light" onClick={handleBtnClick}>Confirm changes</button>
-            <small>*Refresh after clicking: just for now. haven't implemented it to make component update yet</small>
         </div>
     )
 }
