@@ -7,11 +7,12 @@ import settingLogo from "../../images/settings.svg"
 
 import './ChatTopBar.css'
 
-export default function ChatTopBar() {
+export default function ChatTopBar(props) {
 
     // "from" property (connctionsLayout.jsx, GroupsLayout.jsx) to indicate the current path
     const { from, groupId, groupName, groupPic } = useOutletContext()
     const isConnectionPage = from.split("/")[1] === "connections"
+    const isInvitePage = from.split("/")[1] === "invite"
     const isGroupPage = from.split("/")[1] === "groups"
 
     // receiver_name, groupName, groupPic from Sidepanel.jsx
@@ -38,7 +39,8 @@ export default function ChatTopBar() {
                                 <img className="logo" src={settingLogo} alt="setting logo"/>
                             </Link>
                         </>
-                    ) : (
+                    ) :
+                    isGroupPage ? (
                         <div className="group-header">
                             <Avatar src={groupPic} alt="group icon"/>
                             <Typography variant="h6">
@@ -46,10 +48,25 @@ export default function ChatTopBar() {
                             </Typography>
                         </div>
                         
-                    )
+                    ) :
+                    isInvitePage ? (
+                        <div className="group-header">
+                            <Avatar src={groupPic} alt="group icon"/>
+                            <Typography variant="h6">
+                                {props.inviteGroupName}
+                            </Typography>
+                        </div>
+                    ) : 
+                        <div className="group-header">
+                        <Avatar src={groupPic} alt="group icon"/>
+                        <Typography variant="h6">
+                            
+                        </Typography>
+                </div>
                 }
                 {
                     isGroupPage ? (
+                        <>
                         <div className="subtabs">
                             <NavLink
                                 to="/groups/discover"
@@ -59,11 +76,19 @@ export default function ChatTopBar() {
                             </NavLink>
                             <NavLink 
                                 to={`/groups/${groupId}`}
+                                end
                                 style={({isActive}) => isActive ? activeStyle : null}
                             >
                                 CHAT
                             </NavLink>
                         </div>
+                        <NavLink 
+                            to={`/groups/${groupId}/settings`}
+                            style={({isActive}) => isActive ? activeStyle : null}
+                        >
+                            <img className="groups-settings-logo" src={settingLogo} alt="setting logo"/>
+                        </NavLink>
+                        </>
                     ) : null
                 }
             </Toolbar>
