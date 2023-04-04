@@ -48,7 +48,7 @@ export default function ChatTopBar(props) {
                     ) :
                     isInvitePage ? (
                         <div className="group-header">
-                            <Avatar src={groupPic} alt="group icon"/>
+                            <Avatar src={props.inviteGroupPic} alt="group icon"/>
                             <Typography variant="h6">
                                 {props.inviteGroupName}
                             </Typography>

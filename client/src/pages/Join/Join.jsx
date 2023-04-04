@@ -1,20 +1,40 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { Typography, Box } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 
 import './Join.css'
 
 export default function Join() {
+    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
-    const [groupName, setGroupName] = useState("Test")
+    const [groupName, setGroupName] = useState("")
+    const [communityPhoto, setCommunityPhoto] = useState("");
     const [joinSuccess, setJoinSuccess] = useState("Pending")
     const { groupId } = useParams();
+    const { notifyModalClosure } = useOutletContext();
 
-    useEffect(()=>{
+    function fetchCommunityPhoto() {
+        const options = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }
+
+        fetch(`/api/community-photo/${groupId}`, options).then(res => {
+            if(res.status === 200) {
+                res.json().then(data => {
+                    setCommunityPhoto(data[0].photo)
+                })
+            } else {
+                setCommunityPhoto("Error getting group photo")
+            }
+        })
+    }
+
+    function fetchGroupName() {
         const options = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -23,13 +43,17 @@ export default function Join() {
         fetch(`/api/groups/name/${groupId}`, options).then(res => {
             if(res.status === 200) {
                 res.json().then(data => {
-                    console.log(data)
                     setGroupName(data[0].group_name)
                 })
             } else {
                 setGroupName("Error getting group name")
             }
         })
+    }
+
+    useEffect(()=>{
+        fetchGroupName();
+        fetchCommunityPhoto();
     })
 
     function joinGroupViaLink() {
@@ -53,7 +77,11 @@ export default function Join() {
         joinGroupViaLink();
         setModalOpen(true);
     }
-    const handleModelClose = () => setModalOpen(false);
+    const handleModelClose = () => {
+        setModalOpen(false);
+        notifyModalClosure();
+        navigate("/groups", { replace: true });
+    }
     
 
     const style = {
@@ -71,9 +99,9 @@ export default function Join() {
 
     return (
         <>
-            <ChatTopBar inviteGroupName={groupName}/>
+            <ChatTopBar inviteGroupName={groupName} inviteGroupPic={communityPhoto}/>
             <div className='groups-settings-container'>
-                <Button sx={{ml: 4, mt: 4}} variant="contained" onClick={handleModalOpen}>Join Group</Button>
+                <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }}} variant="contained" onClick={handleModalOpen}>Join Group</Button>
             </div>
             <Modal
                 open={modalOpen}

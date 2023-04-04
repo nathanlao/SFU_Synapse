@@ -280,7 +280,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     );
 }
 
-function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
+function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
 
     const [courseGroups, setCourseGroups] = useState([])
     const [communities, setCommunities] = useState([])
@@ -307,7 +307,7 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             }
         }
         getGroupsOfCourses()
-    }, [])
+    }, [shouldUpdate])
 
     async function fetchCommunityInfo() {
         try {
@@ -466,6 +466,7 @@ function SettingsSidepanel() {
 export default function Sidepanel(props) {
 
     const [currentUserId, setCurrentUserId] = useState(null);
+    
     useEffect(() => {
         async function getCurrentLoginUser() {
             try {
@@ -490,7 +491,7 @@ export default function Sidepanel(props) {
     return (
         <>
             {props.connections && <ConnectionsSidepanel handleClickChat={props.handleClickChat} currentUserId={currentUserId} />}
-            {props.groups && <GroupsSidepanel handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
+            {props.groups && <GroupsSidepanel shouldUpdate={props.shouldUpdate} handleSwitchSubtabs={props.handleSwitchSubtabs} currentUserId={currentUserId} />}
             {props.settings && <SettingsSidepanel />}
         </>
     );

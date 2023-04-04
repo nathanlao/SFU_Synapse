@@ -16,26 +16,38 @@ export default function GroupsLayout() {
     const [groupName, setGroupName] = useState("")
     const [groupPic, setGroupPic] = useState("")
     const [onGroupChat, setOnGroupChat] = useState(false)
+    const [onInvitePage, setOnInvitePage] = useState(false)
+    const [shouldUpdate, setShouldUpdate] = useState(false)
 
     const handleSwitchSubtabs = ({ groupId, groupName, groupPic }) => {
         setGroupId(groupId)
         setGroupName(groupName)
         setGroupPic(groupPic)
     }
+    
+    function notifyClose() {
+        setShouldUpdate(!shouldUpdate);
+    }
 
     // Check if its is on group chats
     useEffect(() => {
         if (path === `/groups/${groupId}` || path === `/groups/${groupId}/discover` || path === `/groups/${groupId}/settings`) {
+            setOnInvitePage(false)
             setOnGroupChat(true)
-        } else {
+        } else if (window.location.href.split("/")[3] === 'invite') {
             setOnGroupChat(false)
+            setOnInvitePage(true)
+        }
+        else {
+            setOnGroupChat(false)
+            setOnInvitePage(false)
         }
     }, [path, groupId])
 
     return (
         <>
-            <Sidepanel groups handleSwitchSubtabs={handleSwitchSubtabs} />
-            {onGroupChat ? (
+            <Sidepanel shouldUpdate={shouldUpdate} groups handleSwitchSubtabs={handleSwitchSubtabs} />
+            {(onGroupChat || onInvitePage) ? (
                 <div className="groups-container">
                     {/* "from" property to indicate the current path 
                         (used this in chat component) */}
@@ -44,7 +56,8 @@ export default function GroupsLayout() {
                             groupId: groupId, 
                             groupName: groupName, 
                             groupPic: groupPic,
-                            socketForGroup: socket
+                            socketForGroup: socket,
+                            notifyModalClosure: notifyClose
                         }} 
                     />
                 </div> 
