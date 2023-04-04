@@ -5,7 +5,7 @@ import profileIcon from "../../images/default_profile_picture.png"
 import './ProfileCard.css'
 import { useParams } from "react-router-dom";
 
-export default function ProfileCard() {
+export default function ProfileCard({ onSelectUser }) {
 
     const { groupId } = useParams()
     const [unconnectedMembers, setUnconnectedMembers] = useState([])
@@ -32,8 +32,16 @@ export default function ProfileCard() {
     }, [])
 
     const profileCardEl = unconnectedMembers.map(unconnectedMember => {
+
+        const handleCardClick = () => {
+            onSelectUser(unconnectedMember.user.user_id, unconnectedMember.user.first_name)
+        }
+
         return (
-            <Card className="profile-card" key={unconnectedMember.user.user_id}>
+            <Card 
+                className="profile-card" 
+                key={unconnectedMember.user.user_id}
+                onClick={handleCardClick}>
                 <CardHeader
                     avatar={
                         <Avatar 
