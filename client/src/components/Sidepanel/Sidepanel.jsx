@@ -367,14 +367,23 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
         const moreThanOneMember = (community.member_count > 1) ? "members" : "member"
 
         return (
-            <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem 
-                    image={community.photo}
-                    title={community.group_name}
-                    subtitle={`${community.member_count} ${moreThanOneMember}`}
-                    indicator=""
-                    />
-            </Accordion.Body>
+            <Link 
+                to={`/groups/${community.group_id}`} 
+                key={community.group_id}
+                onClick={() => handleSwitchSubtabs({groupId: community.group_id, groupName: community.group_name, groupPic: community.photo})}
+                state={{
+                    user_id: currentUserId
+                }}
+            >
+                <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={community.photo}
+                        title={community.group_name}
+                        subtitle={`${community.member_count} ${moreThanOneMember}`}
+                        indicator=""
+                        />
+                </Accordion.Body>
+            </Link>
         )
     })
 
