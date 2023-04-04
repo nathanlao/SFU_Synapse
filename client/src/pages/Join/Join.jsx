@@ -1,19 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { Typography, Box } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 
 import './Join.css'
 
 export default function Join() {
+    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [groupName, setGroupName] = useState("")
     const [communityPhoto, setCommunityPhoto] = useState("");
     const [joinSuccess, setJoinSuccess] = useState("Pending")
     const { groupId } = useParams();
+    const { notifyModalClosure } = useOutletContext();
 
     function fetchCommunityPhoto() {
         const options = {
@@ -75,7 +77,11 @@ export default function Join() {
         joinGroupViaLink();
         setModalOpen(true);
     }
-    const handleModelClose = () => setModalOpen(false);
+    const handleModelClose = () => {
+        setModalOpen(false);
+        notifyModalClosure();
+        navigate("/groups", { replace: true });
+    }
     
 
     const style = {

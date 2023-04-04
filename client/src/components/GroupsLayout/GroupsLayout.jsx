@@ -17,11 +17,16 @@ export default function GroupsLayout() {
     const [groupPic, setGroupPic] = useState("")
     const [onGroupChat, setOnGroupChat] = useState(false)
     const [onInvitePage, setOnInvitePage] = useState(false)
+    const [shouldUpdate, setShouldUpdate] = useState(false)
 
     const handleSwitchSubtabs = ({ groupId, groupName, groupPic }) => {
         setGroupId(groupId)
         setGroupName(groupName)
         setGroupPic(groupPic)
+    }
+    
+    function notifyClose() {
+        setShouldUpdate(!shouldUpdate);
     }
 
     // Check if its is on group chats
@@ -41,7 +46,7 @@ export default function GroupsLayout() {
 
     return (
         <>
-            <Sidepanel groups handleSwitchSubtabs={handleSwitchSubtabs} />
+            <Sidepanel shouldUpdate={shouldUpdate} groups handleSwitchSubtabs={handleSwitchSubtabs} />
             {(onGroupChat || onInvitePage) ? (
                 <div className="groups-container">
                     {/* "from" property to indicate the current path 
@@ -51,7 +56,8 @@ export default function GroupsLayout() {
                             groupId: groupId, 
                             groupName: groupName, 
                             groupPic: groupPic,
-                            socketForGroup: socket
+                            socketForGroup: socket,
+                            notifyModalClosure: notifyClose
                         }} 
                     />
                 </div> 

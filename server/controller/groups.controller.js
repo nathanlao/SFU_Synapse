@@ -33,7 +33,7 @@ const joinInviteLink = async (req, res) => {
     const groupId = req.params.group_id
 
     // check if user already in group
-    const promise2 = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
         const qSelect = "SELECT * FROM MemberOf WHERE user_id = ? AND group_id = ?";
         db.query(qSelect, [userId, groupId], (err, data) => {
             if(err) return reject(err)
@@ -45,7 +45,7 @@ const joinInviteLink = async (req, res) => {
         })
     })
 
-    const unique = await promise2
+    const unique = await promise
     if(!unique) {
         return res.status(400).json("User is already in group.")
     }

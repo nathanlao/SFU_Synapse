@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Typography, Box } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
@@ -10,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import PopupWindow from '../../components/PopupWindow/PopupWindow';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext} from "react-router-dom";
 
 import './GroupsSettings.css'
 
@@ -24,6 +23,7 @@ export default function GroupsSettings() {
     const [inviteID, setInviteID] = useState("LOADING...");
     const [leaveSuccess, setLeaveSuccess] = useState("");
     const [deleteSuccess, setDeleteSuccess] = useState("");
+    const [saveSuccess, setSaveSuccess] = useState("");
     const [groupName, setGroupName] = useState("");
     const [isGroupInfoObtained, setIsGroupInfoObtained] = useState(false);
     const { groupId } = useParams();
@@ -32,6 +32,7 @@ export default function GroupsSettings() {
     const [isCommunity, setIsCommunity] = useState(false);
     const [popupWindowState, setPopupWindowState] = useState(false);
     const [communityPhoto, setCommunityPhoto] = useState('/images/group_profile/community_random_default_1.png');
+    const { notifyModalClosure } = useOutletContext();
 
     function showPopupWindow() {
         setPopupWindowState(true)
@@ -167,7 +168,7 @@ export default function GroupsSettings() {
         getGroupInviteID();
         setLinkModalOpen(true);
     }
-    const handleLinkModelClose = () => setLinkModalOpen(false);
+    const handleLinkModalClose = () => setLinkModalOpen(false);
 
     const handleEditModalOpen = () => {
         setEditModalOpen(true);
@@ -179,18 +180,19 @@ export default function GroupsSettings() {
         handleLeaveGroup();
         setLeaveModalOpen(true);
     }
-    const handleLeaveModelClose = () => {
+    const handleLeaveModalClose = () => {
         setLeaveModalOpen(false);
-        navigate("/groups", { replace: true });
+        notifyModalClosure()
+        navigate("/", { replace: true });
     }
 
     const handleDeleteModalOpen = () => {
         handleDeleteCommunity();
         setDeleteModalOpen(true);
     }
-    const handleDeleteModelClose = () => {
+    const handleDeleteModalClose = () => {
         setDeleteModalOpen(false);
-        navigate("/groups", { replace: true });
+        navigate("/", { replace: true });
     }
     
     function handleDeleteCommunity() {
@@ -213,12 +215,27 @@ export default function GroupsSettings() {
     }
 
     const handleSwitchChange = (event) => {
-        setCommunityVisibile(event.target.checked)
+        setCommunityVisibile(event.target.checked);
+        setSaveSuccess("");
     }
 
     function handleSaveButton() {
-        // TODO: query to make all the changes
-        console.log("TODO: Save button clicked. Query needs to be ran")
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_id: groupId, group_name: groupName, group_description: groupDescription, visibility: communityVisibile })
+        }
+
+        fetch(`/api/community`, options).then(res => {
+            if(res.status === 200) {
+                res.json().then(data => {
+                    // success
+                    data.affectedRows >= 1 ? setSaveSuccess("Success") : setSaveSuccess("Fail");
+                })
+            } else {
+                setSaveSuccess("Fail");
+            }
+        })
     }
 
     const style = {
@@ -289,7 +306,7 @@ export default function GroupsSettings() {
             </div>
             <Modal
                 open={linkModalOpen}
-                onClose={handleLinkModelClose}
+                onClose={handleLinkModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -324,6 +341,7 @@ export default function GroupsSettings() {
                         value={groupName}
                         onChange={(event) => {
                             setGroupName(event.target.value);
+                            setSaveSuccess("");
                         }}
                         sx={{width: 530, mt: 3}}
                     />
@@ -333,6 +351,7 @@ export default function GroupsSettings() {
                         value={groupDescription}
                         onChange={(event) => {
                             setGroupDescription(event.target.value);
+                            setSaveSuccess("");
                         }}
                         sx={{width: 530, mt: 3, mb: 3}}
                     />
@@ -343,11 +362,14 @@ export default function GroupsSettings() {
                         <Typography>Public</Typography>
                     </Stack>
                     <Button sx={{mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleSaveButton}>Save</Button>
+                    {saveSuccess === "Success" ? <Typography variant="body2" sx={{mt: 1, color: "#11515D"}}>Changes saved.</Typography> : 
+                    saveSuccess === "Fail" ? <Typography variant="body2" sx={{mt: 1, color: "#B30000"}}>Changes failed to save or no new changes.</Typography> :
+                    null}
                 </Box>
             </Modal>
             <Modal
                 open={leaveModalOpen}
-                onClose={handleLeaveModelClose}
+                onClose={handleLeaveModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -363,7 +385,7 @@ export default function GroupsSettings() {
             </Modal>
             <Modal
                 open={deleteModalOpen}
-                onClose={handleDeleteModelClose}
+                onClose={handleDeleteModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >

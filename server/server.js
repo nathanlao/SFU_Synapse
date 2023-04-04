@@ -42,7 +42,7 @@ const { getCommunities , joinCommunity } = require('./controller/browse-communit
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
-const { deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+const { updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)

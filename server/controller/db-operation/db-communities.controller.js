@@ -6,6 +6,47 @@ const db = require('../../db/connection.db').pool
 const dotenv = require('dotenv')
 dotenv.config()
 
+const updateCommunity = async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    const groupId = req.body.group_id
+    const groupName = req.body.group_name
+    const groupDescription = req.body.group_description
+    const visibility = req.body.visibility
+
+    // check if user is creator
+    const promise = new Promise((resolve, reject) => {
+        const qSelect = "SELECT community_id FROM Communities WHERE community_id=? AND created_by=?";
+        db.query(qSelect, [groupId, userId], (err, data) => {
+            if(err) return reject(err)
+            if(data.length) {
+                return resolve(true) // user is creator
+            }else {
+                return resolve(false)
+            }
+        })
+    })
+
+    const creator = await promise
+    if(!creator) {
+        return res.status(400).json("User is not the community creator")
+    }
+
+    const updateQuery = `UPDATE Communites SET visibility=? WHERE community_id=?`
+
+    db.query(updateCommunityQuery, [visibility, groupId], (err,data) => {
+        if (err) return res.status(500).json(err);
+        const qInsertCommunity = "UPDATE \`Groups\` SET group_name=?, group_description=? WHERE group_id=?";
+        
+        db.query(updateGroupQuery, [groupName, groupDescription, groupId], (err,data) => {
+            if (err) return res.status(500).json(err);
+            return res.status(200).json(data);
+        })
+    });
+}
+
 const deleteCommunity = (req, res) => {
     if (!req.session || !req.session.user) {
         return res.sendStatus(401)
@@ -198,4 +239,4 @@ const deleteCommunityPhoto = async (req, res) => {
 }
 
 
-module.exports = { deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
+module.exports = { updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
