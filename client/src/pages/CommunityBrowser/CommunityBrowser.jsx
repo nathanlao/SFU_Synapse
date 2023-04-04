@@ -4,7 +4,8 @@ import "./CommunityBrowser.css"
 export default function CommunityBrowser({notifyClosure}) {
     const views = {
         browse: { name: 'browse', heading: 'Browse communities' },
-        create: { name: 'create', heading: 'Create your own community' }
+        create: { name: 'create', heading: 'Create your own community' },
+        community_info: { name: 'info', heading: 'Browse community details'}
     }
 
     const [view, setView] = useState(views.browse)
@@ -17,6 +18,8 @@ export default function CommunityBrowser({notifyClosure}) {
     const [desc, setDesc] = useState('') // pass as bio for POST request
     const [photo, setPhoto] = useState({})
     const [visibility, setVisibility] = useState('public')
+    const [selectedCommunityId, setSelectedCommunityId] = useState(null)
+    const [communityDetails, setCommunityDetails] = useState([])
     const [close, setClose] = useState(false) // state to track modal close
 
     useEffect(() => {
@@ -28,8 +31,8 @@ export default function CommunityBrowser({notifyClosure}) {
                 const data = await response.json()
 
                 if(response.status === 200) {
-                    console.log('list of communities:')
-                    console.log(data)
+                    // console.log('list of communities:')
+                    // console.log(data)
                     setList(data)
                 }else if(response.status === 409) {
                     // TODO: display message (no communities have been created! Go ahead and create the first community!)
@@ -89,7 +92,7 @@ export default function CommunityBrowser({notifyClosure}) {
                 alert(result)
                 return
             }
-            console.log('Profile photo saved')
+            // console.log('Profile photo saved')
 
             setClose(true)
         }
@@ -100,8 +103,52 @@ export default function CommunityBrowser({notifyClosure}) {
         }
     }
 
-    function handleJoinCommunity(event) {
-        console.log('Join community (id: ' + event.target.id + ')')
+    function handleJoinCommunity(community_id) {
+        console.log('Join community (id: ' + community_id + ')')
+
+        async function joinCommunity() {
+
+            try {
+                const options = {
+                    method: 'POST',
+                    headers: {'Content-type': 'application/json'},
+                    body: JSON.stringify({community_id: community_id })
+                }
+                const response = await fetch(`/api/community/browse`, options)
+                if(response.status !== 200) {
+                    alert("Unable to join the community")
+                    return
+                } 
+
+                const data = await response.json()
+                if (data) {
+                    alert(data)
+                    notifyClosure()
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        } 
+        joinCommunity()
+    }
+
+    function handleCommunityDetails(e, community_id) {
+        e.preventDefault()
+
+        setView(views.community_info)
+        setSelectedCommunityId(community_id)
+
+        async function getCommunityDetails() {
+            try {
+                const response = await fetch(`/api/community/browse/${community_id}`)
+                const data = await response.json()
+                setCommunityDetails(data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCommunityDetails()
+    
     }
 
     const communityList = () => {
@@ -112,9 +159,15 @@ export default function CommunityBrowser({notifyClosure}) {
                         <li key={community.community_id}>
                             <div className="community" >
                                 <img src={community.photo} alt="" />
-                                    {community.group_name}
+                                    <button 
+                                        type="button" 
+                                        className="community-name"
+                                        onClick={(e) => handleCommunityDetails(e, community.community_id)}
+                                    >
+                                        {community.group_name}
+                                    </button>
                             </div>
-                            <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                            <button type="button" className="btn" onClick={() => handleJoinCommunity(community.community_id)}>Join</button>
                         </li>
                     ))}
                 </ul>
@@ -162,6 +215,25 @@ export default function CommunityBrowser({notifyClosure}) {
                     <button type="button" className="btn" onClick={handleCreateCommunity}>Submit</button>
                 </div>
             </>
+        )
+    }
+
+    const browseCommunityInfo = (community_id) => {
+
+        return (
+            <div key={communityDetails[0]?.group_id}>  
+                <h6>Profile photo</h6>
+                <div className="preview-area">
+                    <img src={communityDetails[0]?.photo} alt="" />
+                </div>
+                <h6>Community name</h6>
+                <p>{communityDetails[0]?.group_name}</p>
+                <h6>Community description</h6>
+                <p>{communityDetails[0]?.group_description}</p>
+                <div className="controller">
+                    <button type="button" className="btn" onClick={() => {setView(views.browse)}}>Browse</button>
+                </div>
+            </div>
         )
     }
 
@@ -219,6 +291,7 @@ export default function CommunityBrowser({notifyClosure}) {
                     <div>
                         {view.name === views.browse.name && communityList()}
                         {view.name === views.create.name && createCommunityForm()}
+                        {view.name === views.community_info.name && browseCommunityInfo(selectedCommunityId)}
                     </div>
                 </section>
             </div>

@@ -70,6 +70,13 @@ div.community-browser div.window-body ul.community-list li button {
     margin-left: 8px;
 }
 
+div.community-browser div.window-body ul.community-list li button.community-name {
+    border: none;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
 
 div.community-browser div.window-body label {
     margin-bottom: 8px;

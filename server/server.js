@@ -38,7 +38,7 @@ const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/add-communities.controller');
-const { getCommunities , joinCommunity } = require('./controller/browse-communities.controller');
+const { getCommunities , joinCommunity, getCommunityDetails } = require('./controller/browse-communities.controller');
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
@@ -193,6 +193,8 @@ Routes.route('/community/visibility/:group_id')
 Routes.route('/community/browse')
     .get(getCommunities)
     .post(joinCommunity)
+Routes.route('/community/browse/:group_id')
+    .get(getCommunityDetails)
 Routes.route('/community-photo')
     .get(getCommunityPhoto)
     .post(setCommunityPhoto)

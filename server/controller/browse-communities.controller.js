@@ -78,5 +78,26 @@ const joinCommunity = (req,res) => {
     })
 }
 
+const getCommunityDetails = (req, res) => {
+    const group_id = req.params.group_id
+    const query = `
+        SELECT *
+        FROM \`Groups\` 
+        WHERE group_id = ?`
 
-module.exports = { getCommunities , joinCommunity }
+    db.query(query, [group_id], (err, data) => {
+        if (err) {
+            console.error(err)
+            return res.status(500).json('Internal server error')
+        }
+
+        if (data.length === 0) {
+            return res.status(404).json('Community not found')
+        }
+
+        res.status(200).json(data)
+    })
+}
+
+
+module.exports = { getCommunities , joinCommunity, getCommunityDetails }
