@@ -169,7 +169,17 @@ const deleteAccount = async (req, res) => {
             })
         }
 
-        // 4. TBD -- do we want to remove records from the MemberOf and Connections table too? (user_id)
+        // 4. set status to of any connection involving deleted user to 'inactive'
+        console.log('deactivating connections')
+        const promise3 = await new Promise((resolve, reject) => {
+            const status = 'inactive'
+            const query = 'UPDATE Connections SET status=? WHERE connection_id IN (SELECT C1.connection_id AS connection_id FROM Connections C1 WHERE C1.userA_id=? UNION SELECT C2.connection_id AS connection_id FROM Connections C2 WHERE C2.userB_id=?)'
+            db.query(query, [status, user_id, user_id], (err) => {
+                if(err) return reject(err)
+                return resolve()
+            })
+        })
+        await promise3
 
         console.log('all done')
         req.session.destroy()

@@ -140,6 +140,7 @@ div.home div.dashboard section.pannel ul li div.summary p.name {
 div.home div.dashboard section.pannel ul li div.summary img {
     width: 34px;
     height: 34px;
+    border-radius: 50%;
 }
 
 

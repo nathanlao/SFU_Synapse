@@ -89,7 +89,7 @@ export default function Home() {
     }
 
     function handleViewGroup(event) {
-        setTarget({ id: event.target.parentElement.id, type: 'group' })
+        setTarget({ id: event.target.parentElement.parentElement.id, type: 'group' })
     }
     
     function handleViewUser(event) {
@@ -319,7 +319,9 @@ export default function Home() {
                                             <p>{course.group_description}</p>
                                         </div>
                                     </div>
-                                    <button type="button" className="btn" onClick={handleViewGroup}>view</button>
+                                    <div>
+                                        <button type="button" className="btn" onClick={handleViewGroup}>view</button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -343,45 +345,6 @@ export default function Home() {
                                     </div>
                                 </li>
                             ))}
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <img className="status-icon-img" src={crownIcon} alt="" />
-                                    <img className="status-icon-img" src={privateIcon} alt="" />
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <img className="status-icon-img" src={privateIcon} alt="" />
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
 
                         </ul>
                     </section>

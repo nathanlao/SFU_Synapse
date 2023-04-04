@@ -42,7 +42,12 @@ const createCommunity = async (req, res) => {
             //add a community entry, referencing the group entry above, to db
             db.query(qInsertCommunity, communityValues, (err, data) => {
                 if (err) return res.status(500).json(err)
-                return res.status(200).json(group_id)
+
+                const qInsertCreator = "INSERT INTO MemberOf (group_id, user_id) VALUE (?, ?)"
+                db.query(qInsertCreator, [group_id, user_id], (err) => {
+                    if(err) return res.status(500).json(err)
+                    return res.status(200).json(group_id)
+                })
             })
         })
     } catch (err) {
