@@ -286,6 +286,8 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
     const [courseGroups, setCourseGroups] = useState([])
     const [communities, setCommunities] = useState([])
     const [communityBrowser, setCommunityBrowser] = useState(false)
+    const [communityUpdates, setCommunityUpdates] = useState(false) // true --> fetch latest data and rerender
+
 
     useEffect(() => {
         async function getGroupsOfCourses() {
@@ -308,26 +310,35 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
         getGroupsOfCourses()
     }, [])
 
-    useEffect(() => {
-        async function fetchCommunityInfo() {
-            try {
-                const response = await fetch('/api/community/joined')
-                if (!response.ok) {
-                    // eslint-disable-next-line no-throw-literal
-                    throw {
-                        message: "Failed to fetch community info", 
-                        statusText: response.statusText,
-                        status: response.status
-                    }
+    async function fetchCommunityInfo() {
+        try {
+            const response = await fetch('/api/community/joined')
+            if (!response.ok) {
+                // eslint-disable-next-line no-throw-literal
+                throw {
+                    message: "Failed to fetch community info", 
+                    statusText: response.statusText,
+                    status: response.status
                 }
-                const data = await response.json()
-                setCommunities(data)
-            } catch (err) {
-                console.log(err)
             }
+            const data = await response.json()
+            setCommunities(data)
+            setCommunityUpdates(false)
+        } catch (err) {
+            console.log(err)
         }
+    }
+
+    useEffect(() => {
         fetchCommunityInfo()
     }, [])
+
+    useEffect(() => {
+        console.log('updates: ' + communityUpdates)
+        if(communityUpdates) {
+            fetchCommunityInfo()
+        }
+    }, [communityUpdates])
 
     const courseGroupsEl = courseGroups.map(group => {
         const moreThanOneMember = (group.num_members > 1) ? "members" : "member"
@@ -394,7 +405,7 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             <div className="nav-buttons">
                 <button type="button" id="exploreBtn" onClick={handleBrowseBtnClick}><img src={binocularsIcon} alt="" /> Explore communities</button>
             </div>
-            {communityBrowser && <CommunityBrowser notifyClosure={() => setCommunityBrowser(false)} />}
+            {communityBrowser && <CommunityBrowser notifyClosure={() => setCommunityBrowser(false)} notifyCommunityUpdate={() => setCommunityUpdates(true)} />}
         </div>
     )
 }
