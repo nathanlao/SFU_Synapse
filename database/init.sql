@@ -111,7 +111,7 @@ CREATE TABLE AuthCodes (
 	expires DATETIME NOT NULL
 );
 
-SET GLOBAL time_zone = 'America/Vancouver';
+-- SET GLOBAL time_zone = 'America/Vancouver';
 INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
 
 -- connect to database using docker for dev
@@ -130,5 +130,4 @@ INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin
 -- select * from `Groups`;
 -- select G.group_id, G.group_name, G.group_description, C.created_by, C.visibility from `Groups` G, Communities C WHERE G.group_id=C.community_id;
 
---ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'root@synapse';
 flush privileges;
