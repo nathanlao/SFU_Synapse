@@ -11,11 +11,25 @@ import privateIcon from "../../images/lock-color.png"
 export default function Home() {
     const navigate = useNavigate()
 
+    // views
+    // const views = {
+    //     inactive: { name: 'inactive', heading: ''},
+    //     user: { name: 'user', heading: 'User profile'},
+    //     course: { name: 'course', heading: 'Course profile'},
+    //     community: { name: 'community', heading: 'Community profile'}
+    // }
+    // const [view, setView] = useState(views.inactive)
+    
     // data
     const [user, setUser] = useState({})
     const [connections, setConnections] = useState([])
     const [courses, setCourses] = useState([])
     const [communities, setCommunities] = useState([])
+
+    // viewer
+    const [viewerState, setViewerState] = useState(false)
+    const [target, setTarget] = useState(null)
+    const [info, setInfo] = useState(null)
 
     useEffect(() => {
         async function init() {
@@ -44,26 +58,134 @@ export default function Home() {
 
     }, [])
 
+    useEffect(() => {
+        console.log('target changed!')
+        if(target === null) return
+
+        // get data adn store in info state
+        async function fetchInfo() {
+            console.log('fetching info')
+            const response = await fetch(`/api/home/info/${target.type}/${target.id}`)
+            const data = await response.json()
+    
+            if(response.status !== 200) {
+                alert(data)
+                setTarget(null)
+                return
+            }
+            console.log(data)
+            setInfo(data)
+        }
+        fetchInfo()
+    }, [target])
+
+    useEffect(() => {
+        console.log(info)
+        if(info) setViewerState(true)
+    }, [info])
+
     function navigateToSettings() {
         navigate('/setting/edit-profile')
     }
 
-    // const userViewer = () => {
-    //     async function fetchUserDetails() {
-    //         console.log('fetchUserDetails')
-    //     }
-    //     return (
-    //         <div className="user-viewer">
-    //             <div className="flex">
-    //                 <img src="/images/default/default-user-photo.png" alt="" />
-    //                 <div>
-    //                     <p>Lincoln Pholips</p>
-    //                     <p>lincolnP312</p>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     )
-    // }
+    function handleViewGroup(event) {
+        setTarget({ id: event.target.parentElement.id, type: 'group' })
+    }
+    
+    function handleViewUser(event) {
+        setTarget({ id: event.target.parentElement.id, type: 'user' })
+    }
+
+    const ViewerWindow = () => {
+        return (
+            <div className="viewer">
+                {cardTemplate()}
+            </div>
+        )
+    }
+
+
+    // templates
+    const renderGroup = (list, heading) => {
+        return (
+            <>
+                <h5>{heading}</h5>
+                <ul className="listing">
+                    {list.map(group => (
+                        <li>
+                            <img src={group.photo} alt="" />
+                            <div>
+                                <p className="name">{group.group_name}</p>
+                                <p>{group.group_description}</p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </>
+        )
+    }
+    
+    const renderMembers = (list) => {
+        return (
+            <>
+                <h5>Members</h5>
+                <ul className="listing">
+                    {list.map(member => (
+                        <li>
+                            <img src={member.photo} alt="" />
+                            <div>
+                                <p className="name">{member.first_name} {member.last_name}</p>
+                                <p>{member.username}</p>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </>
+        )
+
+    }
+
+
+    const cardTemplate = () => {
+        return (
+            <div className="card">
+                <div id="closeBtn" onClick={() => setViewerState(false)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </div>
+                <div className={`banner ${'random-bg' + (Math.floor(Math.random() * 10) + 1)}`}>
+                    <img src={info.fullProfile.photo} alt="" />
+                </div>
+                <h2 className="name">
+                    {target.type === 'user' && (info.fullProfile.first_name + ' ' + info.fullProfile.last_name)}
+                    {target.type === 'group' && info.fullProfile.group_name}
+                </h2>
+                <div className="title">
+                    {target.type === 'user' && info.fullProfile.username}
+                    {target.type === 'group' && (info.memberCount + ' members')}
+                </div>
+                <div className="desc">
+                    {target.type === 'user' && info.fullProfile.bio}
+                    {target.type === 'group' && info.fullProfile.group_description}
+                </div>
+                {target.type === 'user' && 
+                    <div className="desc">
+                        {info.courseHistory.length > 0 && renderGroup(info.courseHistory, 'Courses')}
+                        {info.communities.length > 0 && renderGroup(info.communities, 'Communities')}
+                    </div>
+                }
+                {target.type === 'group' && 
+                    <div className="desc">
+                        {info.memberList.length > 0 && renderMembers(info.memberList)}
+                    </div>
+                }
+            </div>
+        )
+    }
+
+
 
     return (
         <div className="home">
@@ -80,9 +202,7 @@ export default function Home() {
                         </div>
                         <button type="button" className="btn" onClick={navigateToSettings}>Edit profile</button>
                     </section>
-                    <div>
-                        <p id="bio">{user.bio}</p>
-                    </div>
+                    {user.bio && <p id="bio">{user.bio}</p>}
                 </section>
                 <section className="connections pannel">
                     <h3>Connections</h3>
@@ -92,7 +212,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'active'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.user_id} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -100,50 +220,19 @@ export default function Home() {
                                             <p>{item.username}</p>
                                         </div>
                                     </div>
+                                    <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
-                            <li>
+                            <li id="65b6bb93-6d94-4120-8404-669ec6809c47">
                                 <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
+                                        <p className="name">Nathan Test</p>
+                                        <p>nathan</p>
                                     </div>
                                 </div>
-                                <button type="button" className="btn">view</button>
+                                <button type="button" className="btn" onClick={handleViewUser}>view</button>
                             </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
-
-
                         </ul>
                     </section>
                     <section className="pending-connections">
@@ -152,7 +241,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'pending'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.username} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -160,6 +249,7 @@ export default function Home() {
                                             <p>{item.username}</p>
                                         </div>
                                     </div>
+                                    <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
                             <li>
@@ -191,7 +281,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'inactive'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.username} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -199,6 +289,7 @@ export default function Home() {
                                             <p>{item.username}</p>
                                         </div>
                                     </div>
+                                    <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
                             <li>
@@ -219,8 +310,8 @@ export default function Home() {
                     <section className="course-groups">
                         <h5>Course</h5>
                         <ul>
-                            {courses.map((course) => (
-                                <li>
+                            {courses.map((course, index) => (
+                                <li id={course.course_id}  key={course.course_id} data-index={index} data-group-type="course">
                                     <div className="summary">
                                         <img src={course.photo} alt="" />
                                         <div>
@@ -228,7 +319,7 @@ export default function Home() {
                                             <p>{course.group_description}</p>
                                         </div>
                                     </div>
-                                    <button type="button" className="btn">view</button>
+                                    <button type="button" className="btn" onClick={handleViewGroup}>view</button>
                                 </li>
                             ))}
                         </ul>
@@ -236,8 +327,8 @@ export default function Home() {
                     <section className="community-groups">
                         <h5>Community</h5>
                         <ul>
-                            {communities.map((community) => (
-                                <li>
+                            {communities.map((community, index) => (
+                                <li id={community.community_id} key={community.community_id} data-index={index} data-group-type="community">
                                     <div className="summary">
                                         <img src={community.photo} alt="" />
                                         <div>
@@ -248,7 +339,7 @@ export default function Home() {
                                     <div className="icon-buttons">
                                         {community.created_by === user.user_id && <img className="status-icon-img" src={crownIcon} alt="" />}
                                         {community.visibility === 'private' && <img className="status-icon-img" src={privateIcon} alt="" />}
-                                        <button type="button" className="btn">view</button>
+                                        <button type="button" className="btn" onClick={handleViewGroup}>view</button>
                                     </div>
                                 </li>
                             ))}
@@ -296,6 +387,7 @@ export default function Home() {
                     </section>
                 </section>
             </div>
+            {viewerState && ViewerWindow()}
         </div>
     )
 }
