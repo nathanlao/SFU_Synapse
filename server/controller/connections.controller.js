@@ -162,7 +162,7 @@ const getInactiveConnections = (req, res) => {
                         FROM Connections c 
                         JOIN Users ua ON c.userA_id = ua.user_id 
                         JOIN Users ub ON c.userB_id = ub.user_id
-                        WHERE c.status = 'Inactive'
+                        WHERE c.status = 'inactive'
                         AND (c.userA_id = ? OR c.userB_id = ?)`
 
     db.query(selectQuery, [userId, userId], (err, data) => {
@@ -175,6 +175,42 @@ const getInactiveConnections = (req, res) => {
             } else {
                 console.log("No inactive connections found")
                 res.status(404).json("No inactive connections found")
+            }
+        }
+    })
+}
+
+const getExistingConnection = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const userId = req.session.user.user_id
+    const connectionId = req.params.connectionId
+
+    const selectQuery = `SELECT c.connection_id, c.status, 
+                            c.userA_id, c.userB_id,
+                            ua.username AS userA_username, 
+                            ub.username AS userB_username, 
+                            ua.photo AS userA_photo, 
+                            ub.photo AS userB_photo
+                        FROM Connections c 
+                        JOIN Users ua ON c.userA_id = ua.user_id 
+                        JOIN Users ub ON c.userB_id = ub.user_id
+                        WHERE c.status = 'active' OR c.status = 'pending' OR c.status = 'inactive'
+                        AND (c.userA_id = ? OR c.userB_id = ?)
+                        AND c.connection_id = ?`
+
+    db.query(selectQuery, [userId, userId, connectionId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0){
+                res.status(200).json(data)
+            } else {
+                console.log("No existing connections found")
+                res.status(404).json("No existing connections found")
             }
         }
     })
@@ -275,7 +311,8 @@ const updateActiveToInactive = async (req, res) => {
 
 
 
-module.exports = { 
+module.exports = {
+    getExistingConnection,
     createPendingConnection, 
     getPendingConnections, 
     checkExistingPending,

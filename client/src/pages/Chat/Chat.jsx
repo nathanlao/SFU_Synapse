@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useLocation, useOutletContext } from 'react-router-dom';
 import { Typography, Box, Divider, Paper, InputBase, IconButton } from "@mui/material";
 import Avatar from '@mui/joy/Avatar';
 import SendIcon from '@mui/icons-material/Send';
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
+import ConnectionUpdatesContext from "../../context/ConnectionUpdatesContext";
 
 import './Chat.css'
 
 export default function Chat() {
+    const { updateConnections, setUpdateConnections } = useContext(ConnectionUpdatesContext)
 
     // Data from connectionLayout and groupLayout
     const { socketForConnection, socketForGroup } = useOutletContext()
@@ -86,6 +88,9 @@ export default function Chat() {
         
         try {
             const response = await fetch(`/api/connections/active-connections/${connectionId}`, options)
+            if (response.status === 200) {
+                setUpdateConnections(true)
+            }
             return response
         } catch (err) {
             console.log(err)
@@ -134,6 +139,9 @@ export default function Chat() {
 
         // Clear the input after sent
         setInput("")
+
+        // update the state in sidepanel.jsx
+        setUpdateConnections(true)
     }
 
     useEffect(() => {
@@ -177,6 +185,7 @@ export default function Chat() {
                     ...message,
                     timestamp: timestamp
                 }])
+                setUpdateConnections(true)
             })
 
             // Clean up the event listener
@@ -212,6 +221,7 @@ export default function Chat() {
                     ...message,
                     timestamp: timestamp
                 }])
+                setUpdateConnections(true)
             })
 
             // Clean up the event listener

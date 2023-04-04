@@ -22,7 +22,6 @@ export default function Discover() {
     const [isSelected, setIsSelected] = useState(false)
     const [currentUserId, setCurrentUserId] = useState(null)
     const [currentReceiverId, setCurrentReceiverId] = useState(null)
-    console.log("🚀 ~ file: Discover.jsx:25 ~ Discover ~ currentReceiverId:", currentReceiverId)
     const [currentReceiverFirstName, setCurrentReceiverFirstName] = useState(null)
     const [input, setInput] = useState("")
     const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false)
