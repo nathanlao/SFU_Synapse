@@ -11,14 +11,6 @@ import privateIcon from "../../images/lock-color.png"
 export default function Home() {
     const navigate = useNavigate()
 
-    // views
-    // const views = {
-    //     inactive: { name: 'inactive', heading: ''},
-    //     user: { name: 'user', heading: 'User profile'},
-    //     course: { name: 'course', heading: 'Course profile'},
-    //     community: { name: 'community', heading: 'Community profile'}
-    // }
-    // const [view, setView] = useState(views.inactive)
     
     // data
     const [user, setUser] = useState({})
@@ -29,24 +21,23 @@ export default function Home() {
     // viewer
     const [viewerState, setViewerState] = useState(false)
     const [target, setTarget] = useState(null)
+    const [idx, setIdx] = useState(-1)
     const [info, setInfo] = useState(null)
 
     useEffect(() => {
         async function init() {
-            console.log('initialization: Home')
-            const year = 2023
-            const term = 'spring'
-            const response = await fetch(`/api/home/${year}/${term}`)
+            const semester = getYearAndTerm()
+            const response = await fetch(`/api/home/${semester.year}/${semester.term}`)
             const data = await response.json()
 
             if(response.status !== 200) {
                 return alert(data)
             }
 
-            console.log(data.user)
-            console.log(data.connections)
-            console.log(data.courses)
-            console.log(data.communities)
+            // console.log(data.user)
+            // console.log(data.connections)
+            // console.log(data.courses)
+            // console.log(data.communities)
 
             setUser(data.user)
             setConnections(data.connections)
@@ -59,43 +50,72 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        console.log('target changed!')
         if(target === null) return
 
         // get data adn store in info state
         async function fetchInfo() {
-            console.log('fetching info')
             const response = await fetch(`/api/home/info/${target.type}/${target.id}`)
             const data = await response.json()
     
             if(response.status !== 200) {
                 alert(data)
                 setTarget(null)
+                setIdx(-1)
                 return
             }
-            console.log(data)
+            // console.log(data)
             setInfo(data)
         }
         fetchInfo()
     }, [target])
 
     useEffect(() => {
-        console.log(info)
+        // console.log(info)
         if(info) setViewerState(true)
     }, [info])
+
+    useEffect(() => {
+        if(!viewerState) {
+            setTarget(null)
+            setInfo(null)
+            setIdx(-1)
+        }
+    }, [viewerState])
 
     function navigateToSettings() {
         navigate('/setting/edit-profile')
     }
 
     function handleViewGroup(event) {
-        setTarget({ id: event.target.parentElement.id, type: 'group' })
+        const elm = event.target.parentElement.parentElement
+        if(elm.dataset.groupType === 'community') {
+            setIdx(elm.dataset.index)
+        }
+        setTarget({ id: elm.id, type: 'group' })
     }
     
     function handleViewUser(event) {
         setTarget({ id: event.target.parentElement.id, type: 'user' })
     }
 
+    function getYearAndTerm() {
+        const time = new Date()
+        const year = time.getFullYear()
+        const month = time.getMonth() + 1
+
+        if(month < 5) {
+            return { year: year, term: 'spring'}
+        }else if(month < 9) {
+            return { year: year, term: 'summer'}
+        }else {
+            return { year: year, term: 'fall'}
+        }
+    }
+
+
+
+
+    // templates
     const ViewerWindow = () => {
         return (
             <div className="viewer">
@@ -104,8 +124,6 @@ export default function Home() {
         )
     }
 
-
-    // templates
     const renderGroup = (list, heading) => {
         return (
             <>
@@ -142,13 +160,12 @@ export default function Home() {
                 </ul>
             </>
         )
-
     }
 
 
     const cardTemplate = () => {
         return (
-            <div className="card">
+            <div className={`card ${idx !== -1 && (communities[idx].created_by === user.user_id || communities[idx].visibility === 'private') ? 'display-status-icon': ''}`}>
                 <div id="closeBtn" onClick={() => setViewerState(false)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -157,6 +174,10 @@ export default function Home() {
                 </div>
                 <div className={`banner ${'random-bg' + (Math.floor(Math.random() * 10) + 1)}`}>
                     <img src={info.fullProfile.photo} alt="" />
+                </div>
+                <div className="status-icon-area">
+                    {target.type === 'group' && idx !== -1 && communities[idx].created_by === user.user_id && <img className="status-icon-img" src={crownIcon} alt="" />}
+                    {target.type === 'group' && idx !== -1 && communities[idx].visibility === 'private' && <img className="status-icon-img" src={privateIcon} alt="" />}
                 </div>
                 <h2 className="name">
                     {target.type === 'user' && (info.fullProfile.first_name + ' ' + info.fullProfile.last_name)}
@@ -319,7 +340,9 @@ export default function Home() {
                                             <p>{course.group_description}</p>
                                         </div>
                                     </div>
-                                    <button type="button" className="btn" onClick={handleViewGroup}>view</button>
+                                    <div>
+                                        <button type="button" className="btn" onClick={handleViewGroup}>view</button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -343,45 +366,6 @@ export default function Home() {
                                     </div>
                                 </li>
                             ))}
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <img className="status-icon-img" src={crownIcon} alt="" />
-                                    <img className="status-icon-img" src={privateIcon} alt="" />
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <img className="status-icon-img" src={privateIcon} alt="" />
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/community/default-community-photo2.png" alt="" />
-                                    <div>
-                                        <p className="name">CMPT372 D100</p>
-                                        <p>Web II - Server-side Development</p>
-                                    </div>
-                                </div>
-                                <div className="icon-buttons">
-                                    <button type="button" className="btn">view</button>
-                                </div>
-                            </li>
 
                         </ul>
                     </section>
