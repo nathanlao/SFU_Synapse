@@ -72,10 +72,10 @@ function getCommunityField(community_id, field) {
 
 // entry point (/community-photo).post()
 const setCommunityPhoto = async (req, res) => {
-    console.log('Received request: setCommunityPhoto')
+    console.log('Received request: setCommunityPhoto') 
     try {
         // delete current image if not default
-        const data = await getCommunityField(community_id, 'photo')
+        const data = await getCommunityField(req.body.community_id, 'photo')
         if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
             // delete current photo
             const currentpath = data[0].photo
@@ -96,7 +96,7 @@ const setCommunityPhoto = async (req, res) => {
             }
             // save filename in database
             const filepath = '/images/uploads/' + req.file.filename
-            await updateCommunity(community_id, 'photo', filepath)
+            await updateCommunity(req.body.community_id, 'photo', filepath)
             // send response
             return res.status(200).json(filepath)
         })
@@ -129,7 +129,7 @@ const deleteCommunityPhoto = async (req, res) => {
                 }
                 return
             })
-            await updateCommunity(community_id, 'photo', process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
+            await updateCommunity(req.body.community_id, 'photo', process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
         }
         res.status(200).json(process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
     }catch(err) {

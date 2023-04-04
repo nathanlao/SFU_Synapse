@@ -39,31 +39,55 @@ export default function CommunityBrowser({notifyClosure}) {
                 }
             }
 
-            fetchCommunityInfo()
+            // fetchCommunityInfo()
 
         }
     }, [view])
 
-    function handleCreateCommunity() {
+    async function handleCreateCommunity() {
         console.log('creating your community')
 
         async function createCommunity() {
+            try {
+                const options = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ community_name: name, bio: desc, photo: photo, visibility: visibility })
+                }
+                const resposne = await fetch('/api/community/add', options)
+                const data = await resposne.json() // return a group_id
+
+                console.log(data)
+                if(resposne.status !== 200) {
+                    return alert(data)
+                }
+    
+                return data // success
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        const group_id = await createCommunity()
+        console.log("🚀 ~ file: CommunityBrowser.jsx:88 ~ handleCreateCommunity ~ group_id:", group_id)
+
+        if(photo.data) {
+            console.log("🚀 ~ file: CommunityBrowser.jsx:74 ~ handleCreateCommunity ~ photo.data:", photo.data)
+            const data = new FormData()
+            data.append('file', photo.data)
+    
             const options = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ community_name: name, bio: desc, photo: photo, visibility: visibility })
+                body: JSON.stringify({ community_id: group_id, data: data })
             }
-            const resposne = await fetch('/api/community/add', options)
-            const data = await resposne.json()
-
-            if(resposne.status !== 200) {
-                return alert(data)
+            const response = await fetch('/api/community-photo', options)
+            const result = await response.json()
+    
+            if(response.status !== 200) {
+                alert(result)
+                return
             }
-            return alert(data) // success
+            console.log('Profile photo saved')
         }
-
-
-        // createCommunity()
     }
 
     function handleJoinCommunity(event) {
@@ -81,7 +105,7 @@ export default function CommunityBrowser({notifyClosure}) {
                             <button type="button" onClick={handleJoinCommunity}>Join</button>
                         </div>
                     ))} */}
-                    <li>
+                    {/* <li>
                         <div className="left">
                             <img src="/images/default/community/default-community-photo1.png" alt="" />
                             Community 1
@@ -108,7 +132,7 @@ export default function CommunityBrowser({notifyClosure}) {
                             Community 4
                         </div>
                         <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
+                    </li> */}
 
                 </ul>
                 <div className="controller">
@@ -123,13 +147,26 @@ export default function CommunityBrowser({notifyClosure}) {
             <>
                 <form>
                     <label htmlFor="">Community name</label>
-                    <input type="text" className="form-control" />
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
                     <label htmlFor="">Community description</label>
-                    <input type="text" className="form-control" />
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        value={desc}
+                        onChange={(e) => setDesc(e.target.value)}
+                    />
                     <div className="visibility-config">
                         <label htmlFor="">Private</label>
                         <label className="switch">
-                            <input type="checkbox" />
+                            <input 
+                                type="checkbox" 
+                                onChange={(e) => setVisibility(e.target.checked ? 'private' : 'public')}
+                            />
                             <span className="slider round"></span>
                         </label>
                     </div>
