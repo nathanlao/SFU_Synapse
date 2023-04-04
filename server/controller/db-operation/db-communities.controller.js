@@ -50,32 +50,23 @@ const checkUserIsCommunityCreator = (req, res) => {
     })
 }
 
-// updates a field in communities table with community_id
-function updateCommunity(community_id, field, value) {
-    return new Promise((resolve, reject) => {
-        db.query(`UPDATE Communities SET ${field}=? WHERE community_id=?`, [value, community_id], (err) => {
-            if(err) reject(err)
-            resolve(`Field name '${field}' in Communities table has been updated to ${value}`)
-        })
-    })
-}
 
-// gets value of a field in communities table with community_id
-function getCommunityField(community_id, field) {
+function getCommunityPhoto(community_id) {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT ${field} FROM Communities WHERE community_id=?`, [community_id], (err, data) => {
+        db.query(`SELECT photo FROM \`Groups\` WHERE group_id=?`, [community_id], (err, data) => {
             if(err) reject(err)
             resolve(data)
         })
     })
 }
 
+
 // entry point (/community-photo).post()
 const setCommunityPhoto = async (req, res) => {
     console.log('Received request: setCommunityPhoto')
     try {
         // delete current image if not default
-        const data = await getCommunityField(community_id, 'photo')
+        const data = await getCommunityPhoto(req.body.community_id)
         if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
             // delete current photo
             const currentpath = data[0].photo
@@ -96,7 +87,7 @@ const setCommunityPhoto = async (req, res) => {
             }
             // save filename in database
             const filepath = '/images/uploads/' + req.file.filename
-            await updateCommunity(community_id, 'photo', filepath)
+            await updateCommunityPhotoInDb(req.body.community_id, filepath)
             // send response
             return res.status(200).json(filepath)
         })
@@ -106,19 +97,20 @@ const setCommunityPhoto = async (req, res) => {
     }
 }
 
-const getCommunityPhoto = async (req, res) => {
-    try {
-        const data = await getCommunityField(req.body.community_id, 'photo')
-        res.status(200).json(data[0].photo)
-    }catch(err) {
-        res.status(500).json(err)
-    }
+
+function updateCommunityPhotoInDb(community_id, value) {
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE \`Groups\` SET photo=? WHERE group_id=?`, [value, community_id], (err) => {
+            if(err) reject(err)
+            resolve(`Community photo has been updated to ${value}`)
+        })
+    })
 }
 
 const deleteCommunityPhoto = async (req, res) => {
     console.log('Received request: deleteCommunityPhoto')
     try {
-        const data = await getCommunityField(req.body.community_id, 'photo')
+        const data = await getCommunityPhoto(req.body.community_id)
         const currentpath = data[0].photo
         if(currentpath !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
             const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
@@ -129,7 +121,7 @@ const deleteCommunityPhoto = async (req, res) => {
                 }
                 return
             })
-            await updateCommunity(community_id, 'photo', process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
+            await updateCommunityPhotoInDb(req.body.community_id, process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
         }
         res.status(200).json(process.env.DEFAULT_COMMUNITY_PHOTO_PATH)
     }catch(err) {
