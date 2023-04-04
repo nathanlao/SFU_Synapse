@@ -22,9 +22,8 @@ export default function Notification({ isGroups }) {
                     <>
                         <Diversity1OutlinedIcon style={{ fontSize: '8rem', color: '#11515c' }} />
                         <Typography variant="h6" color="textSecondary" style={{ maxWidth: '460px' }}>
-                            There're no groups chat for you to see yet,
-                            click on a group chat to start chatting, 
-                            or click on the button to start joining your courses!
+                            You haven't selected a group chat yet. Please click on a group to view the chat, 
+                            or click on the button to join course groups!
                         </Typography>
                         <Link to="/setting/edit-course-enrollment">
                             <Button variant="contained" style={{ backgroundColor: '#11515c'}}>
@@ -36,8 +35,7 @@ export default function Notification({ isGroups }) {
                     <>
                         <RecentActorsOutlinedIcon style={{ fontSize: '8rem', color: '#11515c' }}/>
                         <Typography variant="h6" color="textSecondary" style={{ maxWidth: '460px' }}>
-                            There're no connections for you to see yet,
-                            click on an active connection to start chatting!
+                            Click on any connection to start chatting or navigate to Groups tab and send messages from the Discover tab to request a connection.
                         </Typography>
                     </>
                 )}

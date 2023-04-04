@@ -16,15 +16,16 @@ dotenv.config()
 
 
 // controllers
-const { getHomeContent } = require('./controller/home.controller')
+const { getHomeContent, getApp } = require('./controller/home.controller')
 const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
 const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getPendingConnections, createPendingConnection, updatePendingToActive, 
-    checkExistingPending, getActiveConnections, getInactiveConnections} = require('./controller/connections.controller')
+    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection} = require('./controller/connections.controller')
 const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
 const { getGroupMembers } = require('./controller/chat-operation/group-members.controller')
+const { getUnconnectedGroupMembers } = require('./controller/discover.controller')
 const { userLeaveGroup, joinInviteLink, getGroupDescriptionFromID, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
 const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
@@ -85,6 +86,8 @@ app.use('/', function(req,res,next){
 
 // Route: main
 Routes.route('/')
+    .get(getApp)
+Routes.route('/home/:year/:term')
     .get(getHomeContent)
 
 // Route: connections
@@ -102,6 +105,8 @@ Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
 Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
     .get(getLatestMessage)
+Routes.route('/connections/:connectionId/settings')
+    .delete(endConnection)
 
 // Route: groups
 Routes.route('/groups/courses')
@@ -109,6 +114,8 @@ Routes.route('/groups/courses')
     .post(createGroup)
 Routes.route('/groups/invite/:group_id')
     .get(getGroupInviteLink)
+Routes.route('/groups/discover/:group_id')
+    .get(getUnconnectedGroupMembers)
 Routes.route('/groups/chat/:user_id/:group_id')
     .get(getGroupMessages)
 Routes.route('/group-members/:group_id')
