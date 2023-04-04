@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { IconButton, Dialog, DialogTitle, Divider,
     DialogContent, Avatar, Card, CardHeader, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import ConnectionUpdatesContext from "../../context/ConnectionUpdatesContext";
 
 import tempPic from "../../images/default_profile_picture.png"
 import arrow from "../../images/connected-arrows.png"
@@ -10,6 +11,9 @@ import arrow from "../../images/connected-arrows.png"
 import "./Disconnect.css"
 
 export default function Disconnect() {
+
+    const { updateConnections, setUpdateConnections } = useContext(ConnectionUpdatesContext)
+
     const { connectionId } = useParams()
     const path = useLocation().pathname
     const nagivate = useNavigate()
@@ -93,6 +97,7 @@ export default function Disconnect() {
                     : deleteUser.userA_username}`)
             }
             nagivate("/connections", {replace: true})
+            setUpdateConnections(true)
         } catch (err) {
             console.log(err)
         }
