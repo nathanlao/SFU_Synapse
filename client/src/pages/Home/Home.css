@@ -121,6 +121,7 @@ div.home div.dashboard section.pannel ul li {
     align-items: center;
     padding-top: 8px;
     padding-bottom: 8px;
+    gap: 4px;
 }
 div.home div.dashboard section.pannel ul li div.summary {
     display: flex;
