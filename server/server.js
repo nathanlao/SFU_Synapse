@@ -42,7 +42,7 @@ const { getCommunities , joinCommunity, getCommunityDetails } = require('./contr
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
-const { getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+const {getJoinedCommunities, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -186,6 +186,8 @@ Routes.route('/admin/delete-course')
 //Route: community
 Routes.route('/community/add')
     .post(createCommunity)
+Routes.route('/community/joined')
+    .get(getJoinedCommunities)
 Routes.route('/community/creator/:group_id')
     .get(checkUserIsCommunityCreator)
 Routes.route('/community/visibility/:group_id')
