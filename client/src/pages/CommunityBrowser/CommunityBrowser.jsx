@@ -32,8 +32,8 @@ export default function CommunityBrowser({notifyClosure}) {
                     console.log(data)
                     setList(data)
                 }else if(response.status === 409) {
-                    console.log(data)
                     // TODO: display message (no communities have been created! Go ahead and create the first community!)
+
                 }else {
                     alert(data)
                     console.log('Failed to fetch community data')
@@ -61,7 +61,8 @@ export default function CommunityBrowser({notifyClosure}) {
                 if(resposne.status !== 200) {
                     return alert("Unable to create community")
                 }
-    
+                
+                setClose(true)
                 return data // success
             } catch (err) {
                 console.log(err)
@@ -91,7 +92,7 @@ export default function CommunityBrowser({notifyClosure}) {
             setClose(true)
         }
 
-        if (community_id || close) {
+        if (close) {
             alert("Created community!")
             notifyClosure()
         }
