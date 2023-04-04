@@ -137,7 +137,6 @@ export default function Discover() {
         <>
             <ChatTopBar />
 
-            {/* TODO: users' profile cards go here */}
             <div className="profile-cards-layout">
                 <div className="profile-cards-container">
                     {/* TODO: Link is for isSelected state and enable the use of sending function for now*/}
@@ -147,9 +146,6 @@ export default function Discover() {
                     >
                         <ProfileCard />
                     </Link>
-                    <ProfileCard />
-                    <ProfileCard />
-                    <ProfileCard />
                 </div>
             </div>
             <Divider />
