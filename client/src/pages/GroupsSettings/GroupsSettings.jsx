@@ -1,29 +1,46 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Typography, Box } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import Switch, { SwitchProps } from '@mui/material/Switch';
+import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
+import PopupWindow from '../../components/PopupWindow/PopupWindow';
+import { useNavigate, useParams, useOutletContext} from "react-router-dom";
 
 import './GroupsSettings.css'
 
 export default function GroupsSettings() {
+    const navigate = useNavigate();
     const [linkModalOpen, setLinkModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [isCommunityCreator, setIsCommunityCreator] = useState(false);
     const [inviteID, setInviteID] = useState("LOADING...");
     const [leaveSuccess, setLeaveSuccess] = useState("");
+    const [deleteSuccess, setDeleteSuccess] = useState("");
+    const [saveSuccess, setSaveSuccess] = useState("");
     const [groupName, setGroupName] = useState("");
     const [isGroupInfoObtained, setIsGroupInfoObtained] = useState(false);
     const { groupId } = useParams();
     const [groupDescription, setGroupDescription] = useState("");
     const [communityVisibile, setCommunityVisibile] = useState(true);
+    const [isCommunity, setIsCommunity] = useState(false);
+    const [popupWindowState, setPopupWindowState] = useState(false);
+    const [communityPhoto, setCommunityPhoto] = useState('/images/group_profile/community_random_default_1.png');
+    const { notifyModalClosure } = useOutletContext();
+
+    function showPopupWindow() {
+        setPopupWindowState(true)
+    }
+
+    const closePopupWindow = () => {
+        setPopupWindowState(false)
+    }
 
     function checkIfCommunityCreator() {
         const options = {
@@ -77,12 +94,36 @@ export default function GroupsSettings() {
                         (data[0].visibility === "public") ? setCommunityVisibile(true) : setCommunityVisibile(false)
                     })
                 } else {
-                    //setCommunityVisibile("Error getting community visibility")
+                    setCommunityVisibile(false)
                 }
             })
 
+            fetch(`/api/community/validate/${groupId}`, options).then(res => {
+                if(res.status === 200) {
+                    res.json().then(data => {
+                        (data.length === 0) ? setIsCommunity(false) : setIsCommunity(true)
+                    })
+                } else {
+                    setIsCommunity(false)
+                }
+            })
+    
+            fetch(`/api/community-photo/${groupId}`, options).then(res => {
+                if(res.status === 200) {
+                    res.json().then(data => {
+                        setCommunityPhoto(data[0].photo)
+                    })
+                } else {
+                    // Error getting group photo
+                    setCommunityPhoto('/images/group_profile/community_random_default_1.png')
+                }
+            })
             setIsGroupInfoObtained(true);
         }
+    }
+
+    function updateCommunityPhoto(path) {
+        setCommunityPhoto(path)
     }
 
     useEffect(() => {
@@ -108,7 +149,6 @@ export default function GroupsSettings() {
     }
 
     function getGroupInviteID() {
-        let groupUUID = "ERROR"
         const options = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -128,7 +168,7 @@ export default function GroupsSettings() {
         getGroupInviteID();
         setLinkModalOpen(true);
     }
-    const handleLinkModelClose = () => setLinkModalOpen(false);
+    const handleLinkModalClose = () => setLinkModalOpen(false);
 
     const handleEditModalOpen = () => {
         setEditModalOpen(true);
@@ -140,20 +180,62 @@ export default function GroupsSettings() {
         handleLeaveGroup();
         setLeaveModalOpen(true);
     }
-    const handleLeaveModelClose = () => setLeaveModalOpen(false);
+    const handleLeaveModalClose = () => {
+        setLeaveModalOpen(false);
+        notifyModalClosure()
+        navigate("/", { replace: true });
+    }
+
+    const handleDeleteModalOpen = () => {
+        handleDeleteCommunity();
+        setDeleteModalOpen(true);
+    }
+    const handleDeleteModalClose = () => {
+        setDeleteModalOpen(false);
+        navigate("/", { replace: true });
+    }
     
     function handleDeleteCommunity() {
-        // TODO: Implement backend to delete community
-        console.log("TODO: Delete community clicked. Implement query");
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_id: groupId })
+        }
+
+        fetch(`/api/community/delete`, options).then(res => {
+            if(res.status === 200) {
+                res.json().then(data => {
+                    // success
+                    data.affectedRows >= 1 ? setDeleteSuccess("Success") : setDeleteSuccess("Fail");
+                })
+            } else {
+                setDeleteSuccess("Fail");
+            }
+        })
     }
 
     const handleSwitchChange = (event) => {
-        setCommunityVisibile(event.target.checked)
+        setCommunityVisibile(event.target.checked);
+        setSaveSuccess("");
     }
 
     function handleSaveButton() {
-        // TODO: query to make all the changes
-        console.log("TODO: Save button clicked. Query needs to be ran")
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_id: groupId, group_name: groupName, group_description: groupDescription, visibility: communityVisibile })
+        }
+
+        fetch(`/api/community`, options).then(res => {
+            if(res.status === 200) {
+                res.json().then(data => {
+                    // success
+                    data.affectedRows >= 1 ? setSaveSuccess("Success") : setSaveSuccess("Fail");
+                })
+            } else {
+                setSaveSuccess("Fail");
+            }
+        })
     }
 
     const style = {
@@ -166,6 +248,7 @@ export default function GroupsSettings() {
         border: '2px solid #000',
         boxShadow: 24,
         p: 4,
+        borderRadius: 5
     };
 
     const AntSwitch = styled(Switch)(({ theme }) => ({
@@ -214,15 +297,16 @@ export default function GroupsSettings() {
         <>
             <ChatTopBar />
             <div className='groups-settings-container'>
-                <Button sx={{ml: 4, mt: 4, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>
-                {isCommunityCreator && <Button sx={{ml: 4, mt: 4, display: "block"}} variant="contained" onClick={handleEditModalOpen}>Edit Community</Button>}
-                {!isCommunityCreator ? <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button> :
-                <Button sx={{ml: 4, mt: 4, background: "#D30000", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleDeleteCommunity}>Delete Community</Button> 
+                {popupWindowState && <PopupWindow notifyClosure={closePopupWindow} notifyChange={updateCommunityPhoto}/>}
+                {isCommunity && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>}
+                {isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleEditModalOpen}>Edit Community</Button>}
+                {!isCommunityCreator ? <Button sx={{ml: 4, mt: 4, background: "#FF6057", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button> :
+                <Button sx={{ml: 4, mt: 4, background: "#FF6057", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleDeleteModalOpen}>Delete Community</Button> 
                 }
             </div>
             <Modal
                 open={linkModalOpen}
-                onClose={handleLinkModelClose}
+                onClose={handleLinkModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -243,17 +327,23 @@ export default function GroupsSettings() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
+                
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Edit Community
                     </Typography>
+                    <div className='edit-community-img-div'>
+                        <img className='edit-community-img' src={communityPhoto} alt="user profile photo" />
+                        <a className="change-community-photo-link" onClick={showPopupWindow}>Change community photo</a>
+                    </div>
                     <TextField
                         id="outlined-controlled"
                         label="Group Name"
                         value={groupName}
                         onChange={(event) => {
                             setGroupName(event.target.value);
+                            setSaveSuccess("");
                         }}
-                        sx={{width: 400, mt: 3}}
+                        sx={{width: 530, mt: 3}}
                     />
                     <TextField
                         id="outlined-controlled"
@@ -261,8 +351,9 @@ export default function GroupsSettings() {
                         value={groupDescription}
                         onChange={(event) => {
                             setGroupDescription(event.target.value);
+                            setSaveSuccess("");
                         }}
-                        sx={{width: 400, mt: 3, mb: 3}}
+                        sx={{width: 530, mt: 3, mb: 3}}
                     />
                     <Typography variant="body2" sx={{mb: 1, color: "#7f7f7f"}}>Group Visibility</Typography>
                     <Stack direction="row" spacing={1} alignItems="center">
@@ -270,12 +361,15 @@ export default function GroupsSettings() {
                         <AntSwitch onClick={handleSwitchChange} checked={communityVisibile} inputProps={{ 'aria-label': 'ant design' }} />
                         <Typography>Public</Typography>
                     </Stack>
-                    <Button sx={{ml: 55, mt: 4, display: "block"}} variant="contained" onClick={handleSaveButton}>Save</Button>
+                    <Button sx={{mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleSaveButton}>Save</Button>
+                    {saveSuccess === "Success" ? <Typography variant="body2" sx={{mt: 1, color: "#11515D"}}>Changes saved.</Typography> : 
+                    saveSuccess === "Fail" ? <Typography variant="body2" sx={{mt: 1, color: "#B30000"}}>Changes failed to save or no new changes.</Typography> :
+                    null}
                 </Box>
             </Modal>
             <Modal
                 open={leaveModalOpen}
-                onClose={handleLeaveModelClose}
+                onClose={handleLeaveModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -285,6 +379,22 @@ export default function GroupsSettings() {
                     </Typography>
                     {leaveSuccess === "Success" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>You have left the group.</Typography> :
                     leaveSuccess === "Fail" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>Unable to leave group. You may not be a member of this group.</Typography> :
+                    null
+                    }
+                </Box>
+            </Modal>
+            <Modal
+                open={deleteModalOpen}
+                onClose={handleDeleteModalClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Delete Community
+                    </Typography>
+                    {deleteSuccess === "Success" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>Community has been deleted.</Typography> :
+                    deleteSuccess === "Fail" ? <Typography id="modal-modal-description" sx={{ mt: 2 }}>Failed to delete community.</Typography> :
                     null
                     }
                 </Box>

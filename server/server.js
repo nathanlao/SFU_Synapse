@@ -42,7 +42,8 @@ const { getCommunities , joinCommunity, getCommunityDetails } = require('./contr
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
-const {getJoinedCommunities, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+const { getJoinedCommunities, updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -130,8 +131,6 @@ Routes.route('/groups/name/:group_id')
     .get(getGroupNameFromID)
 Routes.route('/groups/description/:group_id')
     .get(getGroupDescriptionFromID)
-Routes.route('/community/visibility/:group_id')
-    .get(getCommunityVisibilityFromID)
 
 // Route: settings
 Routes.route('/setting')
@@ -194,6 +193,8 @@ Routes.route('/community/creator/:group_id')
     .get(checkUserIsCommunityCreator)
 Routes.route('/community/visibility/:group_id')
     .get(getCommunityVisibilityFromID)
+Routes.route('/community/validate/:group_id')
+    .get(getCommunityFromID)
 Routes.route('/community/browse')
     .get(getCommunities)
     .post(joinCommunity)
@@ -203,6 +204,14 @@ Routes.route('/community-photo')
     .get(getCommunityPhoto)
     .post(setCommunityPhoto)
     .delete(deleteCommunityPhoto)
+Routes.route('/community-photo/:group_id')
+    .get(getCommunityPhotoFromId)
+Routes.route('/community/delete')
+    .delete(deleteCommunity)
+Routes.route('/community/visibility/:group_id')
+    .get(getCommunityVisibilityFromID)
+Routes.route('/community/')
+    .put(updateCommunity)
 
 // User specific data
 Routes.route('/course/:year/:term')

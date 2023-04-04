@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react"
-import closeBtnImg from "../../images/close-btn.png"
+import { useParams } from 'react-router-dom';
 import './PopupWindow.css'
 
 export default function PopupWindow({notifyClosure, notifyChange}) {
-    
+
+    const isGroupSettingsPage = window.location.href.split("/")[3] === "groups"
+    const isSettingsPage = window.location.href.split("/")[3] === "setting"
+
     const views = {
-        menu: { name: 'options', heading: 'Change profile photo' },
+        menu: { name: 'options', heading: 'Change photo' },
         select: { name: 'select', heading: 'Select new photo' },
         remove: { name: 'remove', heading: 'Remove current photo' }
     }
     const [view, setView] = useState(views.menu)
     const [newPhoto, setNewPhoto] = useState({})
+    const [isInitialized, setIsInitialized] = useState(false)
+    const { groupId } = useParams();
 
+    useEffect(()=>{
+        if(!isInitialized && isGroupSettingsPage) {
+            setViewOptionsMenu()
+            setIsInitialized(true);
+        }  
+    })
 
     // view controllers
     function setViewRemovePhoto() {
@@ -31,6 +42,16 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
     function closePopupWindow() {
         notifyClosure()
     }
+
+    useEffect(() => {
+        const close = (e) => {
+          if(e.keyCode === 27){
+            closePopupWindow()
+          }
+        }
+        window.addEventListener('keydown', close)
+      return () => window.removeEventListener('keydown', close)
+    },[])
 
 
     // templates
@@ -72,7 +93,7 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
     const removePhoto = () => {
         return (
             <div className="remove-photo-view">
-                <p>Are you sure you want to remove the current profile photo?</p>
+                {isSettingsPage ? <p>Are you sure you want to remove the current profile photo?</p> : <p>Are you sure you want to remove the current community photo?</p>}
                 <div className="controllers">
                     <button type="button" onClick={deletePhoto}>Confirm</button>
                     <button type="button" onClick={setViewOptionsMenu}>Cancel</button>
@@ -105,33 +126,61 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
     }
 
     async function updatePhoto() {
-        if(newPhoto.data) {
-            const data = new FormData()
+        if (!newPhoto.data) return
+
+        const data = new FormData()
+        let response = {}
+        let result = {}
+        if(newPhoto.data && isSettingsPage) {
             data.append('file', newPhoto.data)
 
             const options = {
                 method: 'POST',
                 body: data
             }
-            const response = await fetch('/api/user-photo', options)
-            const result = await response.json()
-
-            if(response.status !== 200) {
-                alert(result)
-                return
-            }
-
-            notifyChange(result) // update edit profile view
-            console.log('Profile photo updated!')
-
-            // close window
-            closePopupWindow()
+            response = await fetch('/api/user-photo', options)
+            result = await response.json()
         }
+        else if(newPhoto.data && isGroupSettingsPage) {
+            data.append('file', newPhoto.data)
+            data.append('community_id', groupId)
+
+            const options = {
+                method: 'POST',
+                body: data
+            }
+            response = await fetch('/api/community-photo', options)
+            result = await response.json()
+        }
+
+        if(response.status !== 200) {
+            alert(result)
+            return
+        }
+
+        notifyChange(result) // update edit profile view
+        console.log('Photo updated!')
+
+        // close window
+        closePopupWindow()
     }
     
     async function deletePhoto() {
-        const response = await fetch('/api/user-photo', { method: 'DELETE' })
-        const result = await response.json()
+        let response = {};
+        let result = {};
+        if (isSettingsPage) {
+            response = await fetch('/api/user-photo', { method: 'DELETE' })
+            result = await response.json()
+        }
+        else if (isGroupSettingsPage) {
+            const options = {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ community_id:  groupId})
+            }
+            response = await fetch('/api/community-photo', options)
+            result = await response.json()
+        }
         
         if(response.status !== 200) {
             alert(result)
@@ -139,7 +188,9 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
         }
         
         notifyChange(result)
-        console.log('Current profile deleted! Now it is just the default profile photo')
+
+
+        console.log('Current photo deleted! Now it is just the default photo')
 
         // close window
         closePopupWindow()
