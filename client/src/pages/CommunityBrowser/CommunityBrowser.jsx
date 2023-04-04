@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./CommunityBrowser.css"
 
-export default function CommunityBrowser({notifyClosure}) {
+export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate}) {
     const views = {
         browse: { name: 'browse', heading: 'Browse communities' },
         create: { name: 'create', heading: 'Create your own community' },
@@ -21,6 +21,7 @@ export default function CommunityBrowser({notifyClosure}) {
     const [selectedCommunityId, setSelectedCommunityId] = useState(null)
     const [communityDetails, setCommunityDetails] = useState([])
     const [close, setClose] = useState(false) // state to track modal close
+
 
     useEffect(() => {
         if(view.name === views.browse.name) {
@@ -99,6 +100,7 @@ export default function CommunityBrowser({notifyClosure}) {
 
         if (community_id || close) {
             alert("Created community!")
+            notifyCommunityUpdate()
             notifyClosure()
         }
     }
@@ -123,6 +125,7 @@ export default function CommunityBrowser({notifyClosure}) {
                 const data = await response.json()
                 if (data) {
                     alert(data)
+                    notifyCommunityUpdate()
                     notifyClosure()
                 }
             } catch (err) {
