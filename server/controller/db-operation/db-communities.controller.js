@@ -65,20 +65,19 @@ function getCommunityPhoto(community_id) {
 const setCommunityPhoto = async (req, res) => {
     console.log('Received request: setCommunityPhoto') 
     try {
-        // delete current image if not default
         const data = await getCommunityPhoto(req.body.community_id)
-        if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
-            // delete current photo
-            const currentpath = data[0].photo
-            const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
-            fs.unlink(imgPath, (err) => {
-                if(err) {
-                    console.log(err)
-                    throw err
-                }
-                return
-            })
-        }
+        // if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
+        //     // delete current photo
+        //     const currentpath = data[0].photo
+        //     const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
+        //     fs.unlink(imgPath, (err) => {
+        //         if(err) {
+        //             console.log(err)
+        //             throw err
+        //         }
+        //         return
+        //     })
+        // }
         upload(req, res, async (err) => {
             if(err instanceof multer.MulterError) {
                 return res.status(500).json(err)

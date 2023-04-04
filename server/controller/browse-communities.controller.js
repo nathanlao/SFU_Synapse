@@ -18,7 +18,7 @@ const getCommunities = (req,res) => {
     db.query(query, [user_id], (err,result) => {
         if (err) return res.status(500).json(err);
         if (result.length === 0) return res.status(409).json("There are no public communities to join.")
-        return res.status(200).json(result.rows)
+        return res.status(200).json(result)
     })
 
 

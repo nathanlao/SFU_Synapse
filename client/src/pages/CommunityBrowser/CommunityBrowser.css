@@ -59,7 +59,10 @@ div.community-browser div.window-body ul.community-list li {
 }
 div.community-browser div.window-body ul.community-list li img {
     width: 32px;
+    height: 32px;
     margin-right: 8px;
+    border-radius: 50%;
+    border:rgba(0, 0, 0, .6) 1px solid;
 }
 div.community-browser div.window-body ul.community-list li button {
     background-color: #C3D8D1;

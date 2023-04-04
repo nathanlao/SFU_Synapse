@@ -17,6 +17,7 @@ export default function CommunityBrowser({notifyClosure}) {
     const [desc, setDesc] = useState('') // pass as bio for POST request
     const [photo, setPhoto] = useState({})
     const [visibility, setVisibility] = useState('public')
+    const [close, setClose] = useState(false) // state to track modal close
 
     useEffect(() => {
         if(view.name === views.browse.name) {
@@ -39,7 +40,7 @@ export default function CommunityBrowser({notifyClosure}) {
                 }
             }
 
-            // fetchCommunityInfo()
+            fetchCommunityInfo()
 
         }
     }, [view])
@@ -57,9 +58,8 @@ export default function CommunityBrowser({notifyClosure}) {
                 const resposne = await fetch('/api/community/add', options)
                 const data = await resposne.json() // return a group_id
 
-                console.log(data)
                 if(resposne.status !== 200) {
-                    return alert(data)
+                    return alert("Unable to create community")
                 }
     
                 return data // success
@@ -67,17 +67,17 @@ export default function CommunityBrowser({notifyClosure}) {
                 console.log(err)
             }
         }
-        const group_id = await createCommunity()
-        console.log("🚀 ~ file: CommunityBrowser.jsx:88 ~ handleCreateCommunity ~ group_id:", group_id)
+        const community_id = await createCommunity()
 
+        // Update community photo
         if(photo.data) {
-            console.log("🚀 ~ file: CommunityBrowser.jsx:74 ~ handleCreateCommunity ~ photo.data:", photo.data)
             const data = new FormData()
             data.append('file', photo.data)
+            data.append('community_id', community_id)
     
             const options = {
                 method: 'POST',
-                body: JSON.stringify({ community_id: group_id, data: data })
+                body: data
             }
             const response = await fetch('/api/community-photo', options)
             const result = await response.json()
@@ -87,6 +87,13 @@ export default function CommunityBrowser({notifyClosure}) {
                 return
             }
             console.log('Profile photo saved')
+
+            setClose(true)
+        }
+
+        if (community_id || close) {
+            alert("Created community!")
+            notifyClosure()
         }
     }
 
@@ -98,42 +105,15 @@ export default function CommunityBrowser({notifyClosure}) {
         return (
             <>
                 <ul className="community-list">
-                    {/* {list.map((community) => (
-                        <div className="community" id={community.community_id}>
-                            <img src={community.photo} alt="" />
-                            {community.community_name}
-                            <button type="button" onClick={handleJoinCommunity}>Join</button>
-                        </div>
-                    ))} */}
-                    {/* <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 1
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 2
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 3
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 4
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li> */}
-
+                    {list.map((community) => (
+                        <li key={community.community_id}>
+                            <div className="community" >
+                                <img src={community.photo} alt="" />
+                                    {community.group_name}
+                            </div>
+                            <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
+                        </li>
+                    ))}
                 </ul>
                 <div className="controller">
                     <button type="button" className="btn" onClick={() => {setView(views.create)}}>Create your own</button>
