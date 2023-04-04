@@ -9,7 +9,6 @@ import settingLogo from "../../images/settings.svg"
 
 import './Discover.css'
 
-// TODO: NEED TO REPLACE RECEIVER_ID!!
 export default function Discover() {
 
     // Data from groupLayout
@@ -22,6 +21,9 @@ export default function Discover() {
     // ProfileCard is selected
     const [isSelected, setIsSelected] = useState(false)
     const [currentUserId, setCurrentUserId] = useState(null)
+    const [currentReceiverId, setCurrentReceiverId] = useState(null)
+    console.log("🚀 ~ file: Discover.jsx:25 ~ Discover ~ currentReceiverId:", currentReceiverId)
+    const [currentReceiverFirstName, setCurrentReceiverFirstName] = useState(null)
     const [input, setInput] = useState("")
     const [hasSentFirstMessage, setHasSentFirstMessage] = useState(false)
 
@@ -33,6 +35,12 @@ export default function Discover() {
         const minutes = date.getMinutes().toString().padStart(2, '0')
         const seconds = date.getSeconds().toString().padStart(2, '0')
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    }
+
+    function handleSelectUser(receiverId, firstName) {
+        setIsSelected(true)
+        setCurrentReceiverId(receiverId)
+        setCurrentReceiverFirstName(firstName)
     }
 
     function handleInputChange(e) {
@@ -79,8 +87,7 @@ export default function Discover() {
                 },
                 body: JSON.stringify({
                     sender_id: currentUserId,
-                    // Hard-coded receiver
-                    receiver_id: "4"
+                    receiver_id: currentReceiverId
                 })
             }
 
@@ -107,8 +114,7 @@ export default function Discover() {
         if (input !== "") {
             const messageData = {
                 sender_id: currentUserId,
-                // Hard coded receiver
-                receiver_id: "4",
+                receiver_id: currentReceiverId,
                 message: input,
                 timestamp: formatTimestamp(timestamp)
             }
@@ -137,19 +143,14 @@ export default function Discover() {
         <>
             <ChatTopBar />
 
-            {/* TODO: users' profile cards go here */}
             <div className="profile-cards-layout">
                 <div className="profile-cards-container">
-                    {/* TODO: Link is for isSelected state and enable the use of sending function for now*/}
                     <Link 
                         to={`/groups/${groupId}/discover`}
                         onClick={() => setIsSelected(true)}
                     >
-                        <ProfileCard />
+                        <ProfileCard onSelectUser={handleSelectUser}/>
                     </Link>
-                    <ProfileCard />
-                    <ProfileCard />
-                    <ProfileCard />
                 </div>
             </div>
             <Divider />
@@ -159,7 +160,7 @@ export default function Discover() {
                     disabled={isSelected ? false : true}
                     value={input}
                     onChange={handleInputChange}
-                    placeholder="Hi Nima! I'm from CMPT 120 too">
+                    placeholder={`Message to ${currentReceiverFirstName}...`}>
                 </InputBase>
                 <IconButton type="submit" disabled={isSelected ? false : true}>
                     <GroupAddIcon className="send-button"/>

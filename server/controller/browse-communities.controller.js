@@ -14,11 +14,12 @@ const getCommunities = (req,res) => {
                     LEFT JOIN MemberOf m 
                     ON c.community_id = m.group_id AND m.user_id = ? 
                     WHERE c.visibility = 'public' AND m.user_id IS NULL`
+
                     
     db.query(query, [user_id], (err,result) => {
         if (err) return res.status(500).json(err);
         if (result.length === 0) return res.status(409).json("There are no public communities to join.")
-        return res.status(200).json(result.rows)
+        return res.status(200).json(result)
     })
 
 
@@ -78,5 +79,26 @@ const joinCommunity = (req,res) => {
     })
 }
 
+const getCommunityDetails = (req, res) => {
+    const group_id = req.params.group_id
+    const query = `
+        SELECT *
+        FROM \`Groups\` 
+        WHERE group_id = ?`
 
-module.exports = { getCommunities , joinCommunity }
+    db.query(query, [group_id], (err, data) => {
+        if (err) {
+            console.error(err)
+            return res.status(500).json('Internal server error')
+        }
+
+        if (data.length === 0) {
+            return res.status(404).json('Community not found')
+        }
+
+        res.status(200).json(data)
+    })
+}
+
+
+module.exports = { getCommunities , joinCommunity, getCommunityDetails }

@@ -71,9 +71,7 @@ export default function EditProfile() {
         }
 
         setCurrentUsername(username)
-
-        // toast (data) for usability
-        console.log(data)
+        alert(data)
         
     }
 

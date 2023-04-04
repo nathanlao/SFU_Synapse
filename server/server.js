@@ -38,11 +38,12 @@ const { setProfileBio } = require('./controller/account-setup.controller');
 const { setUserPhoto, getUserPhoto, deleteUserPhoto } = require('./controller/db-operation/db-users.controller');
 const { checkLoginStatus, logout } = require('./middleware/express-session.middleware');
 const { createCommunity } = require('./controller/add-communities.controller');
-const { getCommunities , joinCommunity } = require('./controller/browse-communities.controller');
+const { getCommunities , joinCommunity, getCommunityDetails } = require('./controller/browse-communities.controller');
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
-const { updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+const { getJoinedCommunities, updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto } = require('./controller/db-operation/db-communities.controller')
+
 
 // socket.io to enable bidirectional communication
 const server = http.createServer(app)
@@ -100,7 +101,7 @@ Routes.route('/connections/check-pending/:sender_id/:receiver_id')
     .get(checkExistingPending)
 Routes.route('/connections/inactive-connections')
     .get(getInactiveConnections)
-Routes.route('/connections/active-connections/:connetionId')
+Routes.route('/connections/active-connections/:connectionId')
     .get(getActiveConnections)
     .put(updatePendingToActive) 
 Routes.route('/connections/chat/:sender_id/:receiver_id')
@@ -186,6 +187,8 @@ Routes.route('/admin/delete-course')
 //Route: community
 Routes.route('/community/add')
     .post(createCommunity)
+Routes.route('/community/joined')
+    .get(getJoinedCommunities)
 Routes.route('/community/creator/:group_id')
     .get(checkUserIsCommunityCreator)
 Routes.route('/community/visibility/:group_id')
@@ -195,6 +198,8 @@ Routes.route('/community/validate/:group_id')
 Routes.route('/community/browse')
     .get(getCommunities)
     .post(joinCommunity)
+Routes.route('/community/browse/:group_id')
+    .get(getCommunityDetails)
 Routes.route('/community-photo')
     .get(getCommunityPhoto)
     .post(setCommunityPhoto)
