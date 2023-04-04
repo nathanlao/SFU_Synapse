@@ -384,6 +384,7 @@ div.home div.viewer .card .desc ul.listing li {
     flex-direction: row;
     padding-top: 8px;
     padding-bottom: 8px;
+    align-items: center;
 }
 div.home div.viewer .card .desc ul.listing li p {
     margin-bottom: 0;
