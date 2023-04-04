@@ -189,9 +189,91 @@ const endConnection = (req,res) => {
     })
 }
 
-const updateActiveToInactive = (req, res) => {
-
+// get user_id of all users that the current user has active connections with
+function getActiveConnectionUsers(userId) {
+    const qGetActiveConnectionUsers = `SELECT userA_id AS user_id
+                                    FROM Connections
+                                    WHERE userB_id = ? AND status='active'
+                                    UNION 
+                                    SELECT userB_id AS user_id
+                                    FROM Connections
+                                    WHERE userA_id = ? AND status='active'`
+    return new Promise((resolve, reject) => {
+        db.query(qGetActiveConnectionUsers, [userId, userId], (err, data) => {
+            if(err) reject(err)
+            resolve(data)
+        })
+    })
 }
+
+function setToInactiveInDb(userId, otherUserId) {
+    const qUpdateStatus = `UPDATE Connections SET status = 'inactive' 
+                            WHERE (userA_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)`
+    return new Promise((resolve, reject) => {
+        db.query(qUpdateStatus, [userId, otherUserId, otherUserId, userId], (err, data) => {
+            if(err) reject(err)
+            resolve(`The connection between '${userId}' and '${otherUserId}' has been updated to 'inactive'.`)
+        })
+    })
+}
+
+function getLastChat(userId, otherUserId) {
+    const qGetLastChat = `SELECT timestamp FROM DirectMessages
+                            WHERE sender_id = ? AND receiver_id = ?
+                            ORDER BY id DESC
+                            LIMIT 1`
+    return new Promise((resolve, reject) => {
+        db.query(qGetLastChat, [userId, otherUserId], (err, data) => {
+            if(err) reject(err)
+            resolve(data)
+        })
+    })
+}
+
+const updateActiveToInactive = async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+
+    try {
+        const activeConnections = await getActiveConnectionUsers(userId)
+        const four_months = 175200 //in minutes
+
+        // for all the users that the current user has active connections with,
+        for (let i=0; i<activeConnections.length; i++) {
+            let lastChatSent = await getLastChat(userId, activeConnections[i].user_id)
+            let lastChatReceived = await getLastChat(activeConnections[i].user_id, userId)
+
+            /*if (lastChatSent.length === 0) {
+                let timeDiffInSec = (Math.abs(lastChatReceived[0].timestamp.getTime() - Date.now().getTime())) / 1000
+                let timeDiffInMin = timeDiffInSec / 60
+                if (timeDiffInMin >= four_months) {
+                    setToInactiveInDb(userId, activeConnections[i].user_id)
+                }
+            } else if (lastChatReceived.length === 0) {
+                let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - Date.now().getTime())) / 1000
+                let timeDiffInMin = timeDiffInSec / 60
+                if (timeDiffInMin >= four_months) {
+                    setToInactiveInDb(userId, activeConnections[i].user_id)
+                }
+            } else {
+            */
+            let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
+            let timeDiffInMin = timeDiffInSec / 60
+            if (timeDiffInMin >= four_months) {
+                const response = await setToInactiveInDb(userId, activeConnections[i].user_id)
+                console.log(response)
+            }
+        }
+        res.status(200).json("Made all necessary updates to the status of the user's connections.")
+    } catch(err) {
+        res.status(500).json(err)
+        return
+    }
+}
+
+
 
 module.exports = { 
     createPendingConnection, 
