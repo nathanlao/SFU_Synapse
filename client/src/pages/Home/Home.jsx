@@ -11,14 +11,6 @@ import privateIcon from "../../images/lock-color.png"
 export default function Home() {
     const navigate = useNavigate()
 
-    // views
-    // const views = {
-    //     inactive: { name: 'inactive', heading: ''},
-    //     user: { name: 'user', heading: 'User profile'},
-    //     course: { name: 'course', heading: 'Course profile'},
-    //     community: { name: 'community', heading: 'Community profile'}
-    // }
-    // const [view, setView] = useState(views.inactive)
     
     // data
     const [user, setUser] = useState({})
@@ -29,6 +21,7 @@ export default function Home() {
     // viewer
     const [viewerState, setViewerState] = useState(false)
     const [target, setTarget] = useState(null)
+    const [idx, setIdx] = useState(-1)
     const [info, setInfo] = useState(null)
 
     useEffect(() => {
@@ -71,6 +64,7 @@ export default function Home() {
             if(response.status !== 200) {
                 alert(data)
                 setTarget(null)
+                setIdx(-1)
                 return
             }
             console.log(data)
@@ -84,12 +78,24 @@ export default function Home() {
         if(info) setViewerState(true)
     }, [info])
 
+    useEffect(() => {
+        if(!viewerState) {
+            setTarget(null)
+            setInfo(null)
+            setIdx(-1)
+        }
+    }, [viewerState])
+
     function navigateToSettings() {
         navigate('/setting/edit-profile')
     }
 
     function handleViewGroup(event) {
-        setTarget({ id: event.target.parentElement.parentElement.id, type: 'group' })
+        const elm = event.target.parentElement.parentElement
+        if(elm.dataset.groupType === 'community') {
+            setIdx(elm.dataset.index)
+        }
+        setTarget({ id: elm.id, type: 'group' })
     }
     
     function handleViewUser(event) {
@@ -148,7 +154,7 @@ export default function Home() {
 
     const cardTemplate = () => {
         return (
-            <div className="card">
+            <div className={`card ${idx !== -1 && (communities[idx].created_by === user.user_id || communities[idx].visibility === 'private') ? 'display-status-icon': ''}`}>
                 <div id="closeBtn" onClick={() => setViewerState(false)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -157,6 +163,10 @@ export default function Home() {
                 </div>
                 <div className={`banner ${'random-bg' + (Math.floor(Math.random() * 10) + 1)}`}>
                     <img src={info.fullProfile.photo} alt="" />
+                </div>
+                <div className="status-icon-area">
+                    {target.type === 'group' && idx !== -1 && communities[idx].created_by === user.user_id && <img className="status-icon-img" src={crownIcon} alt="" />}
+                    {target.type === 'group' && idx !== -1 && communities[idx].visibility === 'private' && <img className="status-icon-img" src={privateIcon} alt="" />}
                 </div>
                 <h2 className="name">
                     {target.type === 'user' && (info.fullProfile.first_name + ' ' + info.fullProfile.last_name)}
