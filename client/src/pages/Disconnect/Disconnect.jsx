@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Button, IconButton, Dialog, DialogTitle, Divider,
+import { IconButton, Dialog, DialogTitle, Divider,
     DialogContent, Avatar, Card, CardHeader, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -15,6 +15,30 @@ export default function Disconnect() {
     const nagivate = useNavigate()
 
     const [openPopup, setOpenPopup] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState(null)
+    const [deleteUser, setDeleteUser] = useState([])
+
+    useEffect(() => {
+        async function getCurrentLoginUser() {
+            try {
+                const response = await fetch("/api/currentuser")
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch current login user", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
+                setCurrentUserId(data[0].user_id)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCurrentLoginUser()
+    }, [])
+
     useEffect(() => {
         if(path === `/connections/${connectionId}/settings`) {
             setOpenPopup(true)
@@ -25,7 +49,30 @@ export default function Disconnect() {
         setOpenPopup(false);
         nagivate(`/connections`, {replace: true})
     };
-    
+
+    // GET the exising connection 
+    useEffect(() => {
+        async function currentConnection() {
+            try {
+                const response = await fetch(`/api/connections/disconnect/${connectionId}`)
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to get current connection", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data =  await response.json()
+                setDeleteUser(data[0])
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        currentConnection()
+    },[])
+
+
     // DELETE request
     async function removeConnection() {
         try {
@@ -40,6 +87,11 @@ export default function Disconnect() {
             }
             const data =  await response.json()
             console.log("Disconnect successfully with Id:", connectionId)
+            if (data){
+                alert(`Successfully disconnect with ${deleteUser.userA_id === currentUserId 
+                    ? deleteUser.userB_username 
+                    : deleteUser.userA_username}`)
+            }
             nagivate("/connections", {replace: true})
         } catch (err) {
             console.log(err)
@@ -65,9 +117,13 @@ export default function Disconnect() {
                 <div className="pop-up-content">
                     <Card className="dialog-card">
                         <CardHeader avatar={
-                            <Avatar alt="User A profile pic" src={tempPic} />
+                            <Avatar alt="User A profile pic" src={`${deleteUser.userA_id === currentUserId 
+                                ? deleteUser.userA_photo
+                                : deleteUser.userB_photo}`} />
                         }
-                        title="You"
+                        title={deleteUser.userA_id === currentUserId 
+                            ? deleteUser.userA_username 
+                            : deleteUser.userB_username}
                         subheader="User A username"
                     />
                     </Card>
@@ -77,16 +133,22 @@ export default function Disconnect() {
                     </div>
                     <Card className="dialog-card">
                         <CardHeader avatar={
-                            <Avatar alt="User B profile pic"  src={tempPic} />
+                            <Avatar alt="User B profile pic"  src={`${deleteUser.userA_id === currentUserId 
+                                ? deleteUser.userB_photo
+                                : deleteUser.userA_photo}`} />
                         }
-                        title="User B name"
+                        title={deleteUser.userA_id === currentUserId 
+                            ? deleteUser.userB_username 
+                            : deleteUser.userA_username}
                         subheader="User B username"
                     />
                     </Card>
                 </div>
                 <div className="disconnect-prompt">
                     <Typography variant="body2" component="div">
-                        Would you like to disconnect with Nathan?
+                        {`Would you like to disconnect with ${deleteUser.userA_id === currentUserId 
+                            ? deleteUser.userB_username 
+                            : deleteUser.userA_username}`}
                     </Typography>
                     <button onClick={removeConnection}>
                         Disconnect
