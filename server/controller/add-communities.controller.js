@@ -28,7 +28,7 @@ const createCommunity = (req, res) => {
         //add a community entry, referencing the group entry above, to db
         db.query(qInsertCommunity, [group_id, user_id, req.body.visibility], (err,data) => {
             if (err) return res.status(500).json(err);
-            return res.status(200).json("Community created successfully.");
+            return res.status(200).json(group_id);
         })
     });
 }
