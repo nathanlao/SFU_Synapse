@@ -16,6 +16,7 @@ export default function GroupsLayout() {
     const [groupName, setGroupName] = useState("")
     const [groupPic, setGroupPic] = useState("")
     const [onGroupChat, setOnGroupChat] = useState(false)
+    const [onInvitePage, setOnInvitePage] = useState(false)
 
     const handleSwitchSubtabs = ({ groupId, groupName, groupPic }) => {
         setGroupId(groupId)
@@ -26,16 +27,22 @@ export default function GroupsLayout() {
     // Check if its is on group chats
     useEffect(() => {
         if (path === `/groups/${groupId}` || path === `/groups/${groupId}/discover` || path === `/groups/${groupId}/settings`) {
+            setOnInvitePage(false)
             setOnGroupChat(true)
-        } else {
+        } else if (window.location.href.split("/")[3] === 'invite') {
             setOnGroupChat(false)
+            setOnInvitePage(true)
+        }
+        else {
+            setOnGroupChat(false)
+            setOnInvitePage(false)
         }
     }, [path, groupId])
 
     return (
         <>
             <Sidepanel groups handleSwitchSubtabs={handleSwitchSubtabs} />
-            {onGroupChat ? (
+            {(onGroupChat || onInvitePage) ? (
                 <div className="groups-container">
                     {/* "from" property to indicate the current path 
                         (used this in chat component) */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './EditProfile.css'
-import PopupWindow from './PopupWindow'
+import PopupWindow from '../../components/PopupWindow/PopupWindow'
 
 export default function EditProfile() {
     const wordLimit = 150

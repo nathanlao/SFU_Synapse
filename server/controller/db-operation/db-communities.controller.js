@@ -6,6 +6,50 @@ const db = require('../../db/connection.db').pool
 const dotenv = require('dotenv')
 dotenv.config()
 
+const deleteCommunity = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    const groupId = req.body.group_id
+
+    const selectQuery = `DELETE FROM \`Groups\` WHERE group_id IN (SELECT community_id FROM Communities WHERE created_by=?) AND group_id=?`
+
+    db.query(selectQuery, [userId, groupId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                res.status(200).json(data)
+            } else { 
+                console.log("Not community owner or no permission")
+                res.status(404).json("Not community owner or no permission")
+            }
+        }
+    })
+}
+
+const getCommunityFromID = (req, res) => {
+    const groupId = req.params.group_id
+    const selectQuery = `SELECT community_id from Communities WHERE community_id =?`
+
+    db.query(selectQuery, [groupId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                console.log(data)
+                res.status(200).json(data)
+            } else { 
+                console.log("No community or no permission")
+                res.status(404).json("No community or no permission")
+            }
+        }
+    })
+}
+
 const getCommunityVisibilityFromID = (req, res) => {
     const groupId = req.params.group_id
     const selectQuery = `SELECT visibility from Communities WHERE group_id =?`
@@ -45,6 +89,30 @@ const checkUserIsCommunityCreator = (req, res) => {
             } else { 
                 console.log("Not community owner or no permission")
                 res.status(404).json("Not community owner or no permission")
+            }
+        }
+    })
+}
+
+const getCommunityPhotoFromId = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    const groupId = req.params.group_id
+
+    const selectQuery = `SELECT photo FROM \`Groups\` WHERE group_id=?`
+
+    db.query(selectQuery, [groupId], (err, data) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json("Internal server error")
+        } else {
+            if (data || data.length > 0) {
+                res.status(200).json(data)
+            } else { 
+                console.log("No community photo or no permission")
+                res.status(404).json("No community photo or no permission")
             }
         }
     })
@@ -130,4 +198,4 @@ const deleteCommunityPhoto = async (req, res) => {
 }
 
 
-module.exports = { getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
+module.exports = { deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
