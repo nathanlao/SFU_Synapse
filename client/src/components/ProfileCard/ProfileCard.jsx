@@ -31,47 +31,46 @@ export default function ProfileCard() {
         fetchUnconnectedGroupMembers()
     }, [])
 
-    console.log(unconnectedMembers)
-
     const profileCardEl = unconnectedMembers.map(unconnectedMember => {
         return (
-            <Card className="profile-card" key={unconnectedMember.user_id}>
+            <Card className="profile-card" key={unconnectedMember.user.user_id}>
                 <CardHeader
                     avatar={
                         <Avatar 
                             className="profile-card-icon"
-                            src={unconnectedMember.photo} 
+                            src={unconnectedMember.user.photo} 
                             alt="user icon" 
                             sx={{ width: 80, height: 80 }}
                         />
                     }
                     title={
-                            <span className="prodile-card-name">{`${unconnectedMember.first_name} ${unconnectedMember.last_name}`}</span>
+                            <span className="prodile-card-name">{`${unconnectedMember.user.first_name} ${unconnectedMember.user.last_name}`}</span>
                     }
                     subheader={
                         <div className="profile-card-hashtags">
-                            <span>#volleyball</span>
-                            <span>#cs</span>
-                            <span>#secondyear</span>
-                            <span>#volrant</span>
+                            {unconnectedMember.user.username}
                         </div>
                     }
                 />
                 <CardContent className="profile-card-content">
                     <Typography variant="body2" className="profile-card-bio">
-                        {unconnectedMember.bio}
+                        {unconnectedMember.user.bio}
                     </Typography>
                     <Typography variant="body2" className="profile-card-subtitle">
                         <strong>Classes</strong>
                     </Typography>
                     <Typography variant="body2" className="classes-and-clubs-content">
-                        <span>CMPT120</span>
+                        {unconnectedMember.courses.map(course => (
+                            <span key={course.group_name}>{course.group_name}</span>
+                        ))}
                     </Typography>
                     <Typography variant="body2" className="profile-card-subtitle">
                         <strong>Clubs</strong>
                     </Typography>
                     <Typography variant="body2" className="classes-and-clubs-content">
-                        <span>CSSS</span>
+                        {unconnectedMember.communities.map(community => (
+                            <span key={community.group_name}>{community.group_name}</span>
+                        ))}
                     </Typography>
                 </CardContent>
             </Card>

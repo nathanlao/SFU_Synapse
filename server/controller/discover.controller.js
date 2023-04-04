@@ -55,10 +55,32 @@ const getUnconnectedGroupMembers = async (req, res) => {
                             WHERE userA_id = ?)
                         )`
 
-    db.query(query, [group_id, , user_id, user_id, user_id], (err, result) => {
+    db.query(query, [group_id, user_id, user_id, user_id], async (err, result) => {
         if (err) return res.status(500).json(err)
         if (result.length === 0) return res.status(404).json("No users to connect with.")
-        return res.status(200).json(result)
+
+        try {
+            const unconnectedMembers = []
+
+            for (const user of result) {
+                const target_id = user.user_id
+
+                const courses = await getTargetUserCourseHistory(target_id)
+                const communities = await getTargetUserCommunities(target_id)
+                
+                unconnectedMembers.push({
+                    user: user,
+                    courses: courses,
+                    communities: communities
+                })
+            }
+
+    
+            res.status(200).json(unconnectedMembers)
+        }catch(err) {
+            console.log(err)
+            return res.status(500).json(err)
+        }
     })
 }
 
