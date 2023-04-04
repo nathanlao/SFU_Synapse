@@ -24,7 +24,6 @@ div.home div.dashboard {
     ;
     grid-template-columns: 4fr 5fr;
     grid-template-rows: max-content 1fr;
-    height: 80vh;
 }
 div.home div.dashboard button {
     background-color: #fff;
@@ -122,6 +121,7 @@ div.home div.dashboard section.pannel ul li {
     align-items: center;
     padding-top: 8px;
     padding-bottom: 8px;
+    gap: 4px;
 }
 div.home div.dashboard section.pannel ul li div.summary {
     display: flex;
@@ -385,6 +385,7 @@ div.home div.viewer .card .desc ul.listing li {
     padding-top: 8px;
     padding-bottom: 8px;
     align-items: center;
+    text-align: left;
 }
 div.home div.viewer .card .desc ul.listing li p {
     margin-bottom: 0;
