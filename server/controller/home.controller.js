@@ -59,7 +59,7 @@ async function getConnections(user_id) {
 async function getCourses(user_id, year, term) {
     return new Promise((resolve, reject) => {
         console.log(user_id, year, term)
-        const query = 'SELECT G.group_name, G.group_description, G.photo FROM MemberOf M, Courses C, `Groups` G WHERE M.group_id=C.course_id AND C.course_id=G.group_id AND M.user_id=? AND C.offered_year=? AND C.offered_term=?'
+        const query = 'SELECT C.course_id, G.group_name, G.group_description, G.photo FROM MemberOf M, Courses C, `Groups` G WHERE M.group_id=C.course_id AND C.course_id=G.group_id AND M.user_id=? AND C.offered_year=? AND C.offered_term=?'
         db.query(query, [user_id, year, term], (err, data) => {
             if(err) return reject(err)
             console.log(data)
@@ -69,7 +69,7 @@ async function getCourses(user_id, year, term) {
 }
 async function getCommunities(user_id) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT G.group_name, G.group_description, G.photo, C.created_by, C.visibility FROM MemberOf M, Communities C, `Groups` G WHERE M.group_id=C.community_id AND C.community_id=G.group_id AND M.user_id=?'
+        const query = 'SELECT C.community_id, G.group_name, G.group_description, G.photo, C.created_by, C.visibility FROM MemberOf M, Communities C, `Groups` G WHERE M.group_id=C.community_id AND C.community_id=G.group_id AND M.user_id=?'
         db.query(query, [user_id], (err, data) => {
             if(err) return reject(err)
             return resolve(data)
@@ -79,6 +79,7 @@ async function getCommunities(user_id) {
 
 const getApp = (req, res) => {
     console.log('Received request: getApp')
+    res.status(200).json('Retrieving data for SFU Synapse.')
 }
 
 module.exports = { getHomeContent, getApp }

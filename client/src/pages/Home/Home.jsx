@@ -80,9 +80,7 @@ export default function Home() {
                         </div>
                         <button type="button" className="btn" onClick={navigateToSettings}>Edit profile</button>
                     </section>
-                    <div>
-                        <p id="bio">{user.bio}</p>
-                    </div>
+                    {user.bio && <p id="bio">{user.bio}</p>}
                 </section>
                 <section className="connections pannel">
                     <h3>Connections</h3>
@@ -92,7 +90,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'active'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.username} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -152,7 +150,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'pending'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.username} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -191,7 +189,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'inactive'
                             }).map((item) => (
-                                <li id={item.username}>
+                                <li id={item.username} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -220,7 +218,7 @@ export default function Home() {
                         <h5>Course</h5>
                         <ul>
                             {courses.map((course) => (
-                                <li>
+                                <li id={course.course_id}  key={course.course_id}>
                                     <div className="summary">
                                         <img src={course.photo} alt="" />
                                         <div>
@@ -237,7 +235,7 @@ export default function Home() {
                         <h5>Community</h5>
                         <ul>
                             {communities.map((community) => (
-                                <li>
+                                <li id={community.community_id}  key={community.community_id}>
                                     <div className="summary">
                                         <img src={community.photo} alt="" />
                                         <div>

@@ -50,6 +50,9 @@ div.home div.dashboard .pannel {
 /* profile pannel */
 div.home div.dashboard section.user-info {
     padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 div.home div.dashboard section.user-info p {
     margin-bottom: 0;
@@ -65,7 +68,7 @@ div.home div.dashboard section.profile {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 24px;
+    /* padding-bottom: 24px; */
 }
 
 div.home div.dashboard section.profile p#name {
