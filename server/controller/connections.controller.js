@@ -162,7 +162,7 @@ const getInactiveConnections = (req, res) => {
                         FROM Connections c 
                         JOIN Users ua ON c.userA_id = ua.user_id 
                         JOIN Users ub ON c.userB_id = ub.user_id
-                        WHERE c.status = 'Inactive'
+                        WHERE c.status = 'inactive'
                         AND (c.userA_id = ? OR c.userB_id = ?)`
 
     db.query(selectQuery, [userId, userId], (err, data) => {
@@ -197,7 +197,7 @@ const getExistingConnection = (req, res) => {
                         FROM Connections c 
                         JOIN Users ua ON c.userA_id = ua.user_id 
                         JOIN Users ub ON c.userB_id = ub.user_id
-                        WHERE c.status = 'Inactive' OR c.status = 'pending'
+                        WHERE c.status = 'active' OR c.status = 'pending' OR c.status = 'inactive'
                         AND (c.userA_id = ? OR c.userB_id = ?)
                         AND c.connection_id = ?`
 
