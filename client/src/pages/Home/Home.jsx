@@ -26,20 +26,18 @@ export default function Home() {
 
     useEffect(() => {
         async function init() {
-            console.log('initialization: Home')
-            const year = 2023
-            const term = 'spring'
-            const response = await fetch(`/api/home/${year}/${term}`)
+            const semester = getYearAndTerm()
+            const response = await fetch(`/api/home/${semester.year}/${semester.term}`)
             const data = await response.json()
 
             if(response.status !== 200) {
                 return alert(data)
             }
 
-            console.log(data.user)
-            console.log(data.connections)
-            console.log(data.courses)
-            console.log(data.communities)
+            // console.log(data.user)
+            // console.log(data.connections)
+            // console.log(data.courses)
+            // console.log(data.communities)
 
             setUser(data.user)
             setConnections(data.connections)
@@ -52,12 +50,10 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        console.log('target changed!')
         if(target === null) return
 
         // get data adn store in info state
         async function fetchInfo() {
-            console.log('fetching info')
             const response = await fetch(`/api/home/info/${target.type}/${target.id}`)
             const data = await response.json()
     
@@ -67,14 +63,14 @@ export default function Home() {
                 setIdx(-1)
                 return
             }
-            console.log(data)
+            // console.log(data)
             setInfo(data)
         }
         fetchInfo()
     }, [target])
 
     useEffect(() => {
-        console.log(info)
+        // console.log(info)
         if(info) setViewerState(true)
     }, [info])
 
@@ -102,6 +98,24 @@ export default function Home() {
         setTarget({ id: event.target.parentElement.id, type: 'user' })
     }
 
+    function getYearAndTerm() {
+        const time = new Date()
+        const year = time.getFullYear()
+        const month = time.getMonth() + 1
+
+        if(month < 5) {
+            return { year: year, term: 'spring'}
+        }else if(month < 9) {
+            return { year: year, term: 'summer'}
+        }else {
+            return { year: year, term: 'fall'}
+        }
+    }
+
+
+
+
+    // templates
     const ViewerWindow = () => {
         return (
             <div className="viewer">
@@ -110,8 +124,6 @@ export default function Home() {
         )
     }
 
-
-    // templates
     const renderGroup = (list, heading) => {
         return (
             <>
@@ -148,7 +160,6 @@ export default function Home() {
                 </ul>
             </>
         )
-
     }
 
 
