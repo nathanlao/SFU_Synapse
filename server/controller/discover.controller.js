@@ -15,7 +15,7 @@ const getUnconnectedGroupMembers = (req, res) => {
                     WHERE user_id IN
                         (SELECT user_id 
                         FROM MemberOf 
-                        WHERE group_id = ? AND user_id NOT IN 
+                        WHERE group_id = ? AND user_id != ? AND user_id NOT IN 
                             (SELECT userA_id AS user_id
                             FROM Connections
                             WHERE userB_id = ?
@@ -25,7 +25,7 @@ const getUnconnectedGroupMembers = (req, res) => {
                             WHERE userA_id = ?)
                         )`
 
-    db.query(query, [group_id, user_id, user_id], (err, result) => {
+    db.query(query, [group_id, , user_id, user_id, user_id], (err, result) => {
         if (err) return res.status(500).json(err)
         if (data.length === 0) return res.status(404).json("No users to connect with.")
         return res.status(200).json(result.rows)
