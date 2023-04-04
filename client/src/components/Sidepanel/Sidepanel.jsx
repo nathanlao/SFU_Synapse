@@ -284,6 +284,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
 
     const [courseGroups, setCourseGroups] = useState([])
+    const [communities, setCommunities] = useState([])
     const [communityBrowser, setCommunityBrowser] = useState(false)
 
     useEffect(() => {
@@ -305,6 +306,27 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             }
         }
         getGroupsOfCourses()
+    }, [])
+
+    useEffect(() => {
+        async function fetchCommunityInfo() {
+            try {
+                const response = await fetch('/api/community/joined')
+                if (!response.ok) {
+                    // eslint-disable-next-line no-throw-literal
+                    throw {
+                        message: "Failed to fetch community info", 
+                        statusText: response.statusText,
+                        status: response.status
+                    }
+                }
+                const data = await response.json()
+                setCommunities(data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchCommunityInfo()
     }, [])
 
     const courseGroupsEl = courseGroups.map(group => {
@@ -330,6 +352,21 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
             </Link>
         )
     })
+    
+    const communitiesEl = communities.map(community => {
+        const moreThanOneMember = (community.member_count > 1) ? "members" : "member"
+
+        return (
+            <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
+                <SidepanelItem 
+                    image={community.photo}
+                    title={community.group_name}
+                    subtitle={`${community.member_count} ${moreThanOneMember}`}
+                    indicator=""
+                    />
+            </Accordion.Body>
+        )
+    })
 
     async function handleBrowseBtnClick() {
         setCommunityBrowser(true)
@@ -347,13 +384,10 @@ function GroupsSidepanel({ handleSwitchSubtabs, currentUserId }) {
                             {courseGroupsEl}
                     </Accordion.Item>
                 </Accordion>
-                <Accordion flush style={{backgroundColor: '#11515c'}}>
+                <Accordion flush style={{backgroundColor: '#11515c'}} defaultActiveKey="0">
                     <Accordion.Item style={{backgroundColor: '#11515c'}} eventKey="0">
                         <Accordion.Header style={{backgroundColor: '#11515c'}}>Communities</Accordion.Header>
-                        <Accordion.Body style={{backgroundColor: '#11515c'}}>
-                            <SidepanelItem title="Wildin'" subtitle="9 members" indicator={<FontAwesomeIcon icon={faLock}/>}/>
-                            <SidepanelItem title="Dog Owners" subtitle="78 members" indicator=""/>
-                        </Accordion.Body>
+                            {communitiesEl}
                     </Accordion.Item>
                 </Accordion>
             </div>

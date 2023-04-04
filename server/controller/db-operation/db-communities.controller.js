@@ -6,6 +6,38 @@ const db = require('../../db/connection.db').pool
 const dotenv = require('dotenv')
 dotenv.config()
 
+const getJoinedCommunities = (req,res) => {
+
+    if (!req.session || !req.session.user) {
+        return res.status(401).json("Login is required.")
+    }
+    const user_id = req.session.user.user_id
+    
+    const query = `SELECT
+                    g.group_name,
+                    g.group_description,
+                    g.photo,
+                    c.community_id,
+                    c.visibility,
+                    COUNT(DISTINCT mo2.user_id) AS member_count
+                    FROM
+                        Communities c
+                    JOIN MemberOf mo ON c.community_id = mo.group_id
+                    JOIN Users u ON mo.user_id = u.user_id
+                    JOIN \`Groups\` g ON c.community_id = g.group_id
+                    LEFT JOIN MemberOf mo2 ON c.community_id = mo2.group_id
+                    WHERE u.user_id = ?
+                    GROUP BY
+                    c.community_id,
+                    u.user_id`
+                    
+    db.query(query, [user_id], (err, result) => {
+        if (err) return res.status(500).json(err);
+        if (result.length === 0) return res.status(409).json("There are no communities.")
+        return res.status(200).json(result)
+    })
+}
+
 const getCommunityVisibilityFromID = (req, res) => {
     const groupId = req.params.group_id
     const selectQuery = `SELECT visibility from Communities WHERE group_id =?`
@@ -63,22 +95,21 @@ function getCommunityPhoto(community_id) {
 
 // entry point (/community-photo).post()
 const setCommunityPhoto = async (req, res) => {
-    console.log('Received request: setCommunityPhoto')
+    console.log('Received request: setCommunityPhoto') 
     try {
-        // delete current image if not default
         const data = await getCommunityPhoto(req.body.community_id)
-        if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
-            // delete current photo
-            const currentpath = data[0].photo
-            const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
-            fs.unlink(imgPath, (err) => {
-                if(err) {
-                    console.log(err)
-                    throw err
-                }
-                return
-            })
-        }
+        // if(data[0].photo !== process.env.DEFAULT_COMMUNITY_PHOTO_PATH) {
+        //     // delete current photo
+        //     const currentpath = data[0].photo
+        //     const imgPath = path.join(__dirname, '..', '..', 'public') + currentpath
+        //     fs.unlink(imgPath, (err) => {
+        //         if(err) {
+        //             console.log(err)
+        //             throw err
+        //         }
+        //         return
+        //     })
+        // }
         upload(req, res, async (err) => {
             if(err instanceof multer.MulterError) {
                 return res.status(500).json(err)
@@ -130,4 +161,4 @@ const deleteCommunityPhoto = async (req, res) => {
 }
 
 
-module.exports = { getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
+module.exports = { getJoinedCommunities, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto }
