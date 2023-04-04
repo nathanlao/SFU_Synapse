@@ -57,8 +57,10 @@ export default function CommunityBrowser({notifyClosure}) {
                 }
                 const resposne = await fetch('/api/community/add', options)
                 const data = await resposne.json() // return a group_id
-
-                if(resposne.status !== 200) {
+                
+                if (resposne.status === 409) {
+                    return alert("Community name is already used, please choose a different name")
+                } else if(resposne.status !== 200) {
                     return alert("Unable to create community")
                 }
                 
@@ -92,7 +94,7 @@ export default function CommunityBrowser({notifyClosure}) {
             setClose(true)
         }
 
-        if (close) {
+        if (community_id || close) {
             alert("Created community!")
             notifyClosure()
         }
