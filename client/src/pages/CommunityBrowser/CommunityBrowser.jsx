@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./CommunityBrowser.css"
 
-export default function CommunityBrowser({notifyClosure}) {
+export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate}) {
     const views = {
         browse: { name: 'browse', heading: 'Browse communities' },
-        create: { name: 'create', heading: 'Create your own community' }
+        create: { name: 'create', heading: 'Create your own community' },
+        community_info: { name: 'info', heading: 'Browse community details'}
     }
 
     const [view, setView] = useState(views.browse)
@@ -17,6 +18,10 @@ export default function CommunityBrowser({notifyClosure}) {
     const [desc, setDesc] = useState('') // pass as bio for POST request
     const [photo, setPhoto] = useState({})
     const [visibility, setVisibility] = useState('public')
+    const [selectedCommunityId, setSelectedCommunityId] = useState(null)
+    const [communityDetails, setCommunityDetails] = useState([])
+    const [close, setClose] = useState(false) // state to track modal close
+
 
     useEffect(() => {
         if(view.name === views.browse.name) {
@@ -27,12 +32,12 @@ export default function CommunityBrowser({notifyClosure}) {
                 const data = await response.json()
 
                 if(response.status === 200) {
-                    console.log('list of communities:')
-                    console.log(data)
+                    // console.log('list of communities:')
+                    // console.log(data)
                     setList(data)
                 }else if(response.status === 409) {
-                    console.log(data)
                     // TODO: display message (no communities have been created! Go ahead and create the first community!)
+
                 }else {
                     alert(data)
                     console.log('Failed to fetch community data')
@@ -44,72 +49,130 @@ export default function CommunityBrowser({notifyClosure}) {
         }
     }, [view])
 
-    function handleCreateCommunity() {
+    async function handleCreateCommunity() {
         console.log('creating your community')
 
         async function createCommunity() {
+            try {
+                const options = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ community_name: name, bio: desc, photo: photo, visibility: visibility })
+                }
+                const resposne = await fetch('/api/community/add', options)
+                const data = await resposne.json() // return a group_id
+                
+                if (resposne.status === 409) {
+                    return alert("Community name is already used, please choose a different name")
+                } else if(resposne.status !== 200) {
+                    return alert("Unable to create community")
+                }
+                
+                setClose(true)
+                return data // success
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        const community_id = await createCommunity()
+
+        // Update community photo
+        if(photo.data) {
+            const data = new FormData()
+            data.append('file', photo.data)
+            data.append('community_id', community_id)
+    
             const options = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ community_name: name, bio: desc, photo: photo, visibility: visibility })
+                body: data
             }
-            const resposne = await fetch('/api/community/add', options)
-            const data = await resposne.json()
+            const response = await fetch('/api/community-photo', options)
+            const result = await response.json()
+    
+            if(response.status !== 200) {
+                alert(result)
+                return
+            }
+            // console.log('Profile photo saved')
 
-            if(resposne.status !== 200) {
-                return alert(data)
-            }
-            return alert(data) // success
+            setClose(true)
         }
 
-
-        // createCommunity()
+        if (community_id || close) {
+            alert("Created community!")
+            notifyCommunityUpdate()
+            notifyClosure()
+        }
     }
 
-    function handleJoinCommunity(event) {
-        console.log('Join community (id: ' + event.target.id + ')')
+    function handleJoinCommunity(community_id) {
+        console.log('Join community (id: ' + community_id + ')')
+
+        async function joinCommunity() {
+
+            try {
+                const options = {
+                    method: 'POST',
+                    headers: {'Content-type': 'application/json'},
+                    body: JSON.stringify({community_id: community_id })
+                }
+                const response = await fetch(`/api/community/browse`, options)
+                if(response.status !== 200) {
+                    alert("Unable to join the community")
+                    return
+                } 
+
+                const data = await response.json()
+                if (data) {
+                    alert(data)
+                    notifyCommunityUpdate()
+                    notifyClosure()
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        } 
+        joinCommunity()
+    }
+
+    function handleCommunityDetails(e, community_id) {
+        e.preventDefault()
+
+        setView(views.community_info)
+        setSelectedCommunityId(community_id)
+
+        async function getCommunityDetails() {
+            try {
+                const response = await fetch(`/api/community/browse/${community_id}`)
+                const data = await response.json()
+                setCommunityDetails(data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getCommunityDetails()
+    
     }
 
     const communityList = () => {
         return (
             <>
                 <ul className="community-list">
-                    {/* {list.map((community) => (
-                        <div className="community" id={community.community_id}>
-                            <img src={community.photo} alt="" />
-                            {community.community_name}
-                            <button type="button" onClick={handleJoinCommunity}>Join</button>
-                        </div>
-                    ))} */}
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 1
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 2
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 3
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-                    <li>
-                        <div className="left">
-                            <img src="/images/default/community/default-community-photo1.png" alt="" />
-                            Community 4
-                        </div>
-                        <button type="button" className="btn" onClick={handleJoinCommunity}>Join</button>
-                    </li>
-
+                    {list.map((community) => (
+                        <li key={community.community_id}>
+                            <div className="community" >
+                                <img src={community.photo} alt="" />
+                                    <button 
+                                        type="button" 
+                                        className="community-name"
+                                        onClick={(e) => handleCommunityDetails(e, community.community_id)}
+                                    >
+                                        {community.group_name}
+                                    </button>
+                            </div>
+                            <button type="button" className="btn" onClick={() => handleJoinCommunity(community.community_id)}>Join</button>
+                        </li>
+                    ))}
                 </ul>
                 <div className="controller">
                     <button type="button" className="btn" onClick={() => {setView(views.create)}}>Create your own</button>
@@ -123,13 +186,26 @@ export default function CommunityBrowser({notifyClosure}) {
             <>
                 <form>
                     <label htmlFor="">Community name</label>
-                    <input type="text" className="form-control" />
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
                     <label htmlFor="">Community description</label>
-                    <input type="text" className="form-control" />
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        value={desc}
+                        onChange={(e) => setDesc(e.target.value)}
+                    />
                     <div className="visibility-config">
                         <label htmlFor="">Private</label>
                         <label className="switch">
-                            <input type="checkbox" />
+                            <input 
+                                type="checkbox" 
+                                onChange={(e) => setVisibility(e.target.checked ? 'private' : 'public')}
+                            />
                             <span className="slider round"></span>
                         </label>
                     </div>
@@ -142,6 +218,25 @@ export default function CommunityBrowser({notifyClosure}) {
                     <button type="button" className="btn" onClick={handleCreateCommunity}>Submit</button>
                 </div>
             </>
+        )
+    }
+
+    const browseCommunityInfo = (community_id) => {
+
+        return (
+            <div key={communityDetails[0]?.group_id}>  
+                <h6>Profile photo</h6>
+                <div className="preview-area">
+                    <img src={communityDetails[0]?.photo} alt="" />
+                </div>
+                <h6>Community name</h6>
+                <p>{communityDetails[0]?.group_name}</p>
+                <h6>Community description</h6>
+                <p>{communityDetails[0]?.group_description}</p>
+                <div className="controller">
+                    <button type="button" className="btn" onClick={() => {setView(views.browse)}}>Browse</button>
+                </div>
+            </div>
         )
     }
 
@@ -199,6 +294,7 @@ export default function CommunityBrowser({notifyClosure}) {
                     <div>
                         {view.name === views.browse.name && communityList()}
                         {view.name === views.create.name && createCommunityForm()}
+                        {view.name === views.community_info.name && browseCommunityInfo(selectedCommunityId)}
                     </div>
                 </section>
             </div>

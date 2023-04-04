@@ -24,7 +24,6 @@ div.home div.dashboard {
     ;
     grid-template-columns: 4fr 5fr;
     grid-template-rows: max-content 1fr;
-    height: 80vh;
 }
 div.home div.dashboard button {
     background-color: #fff;
@@ -122,6 +121,7 @@ div.home div.dashboard section.pannel ul li {
     align-items: center;
     padding-top: 8px;
     padding-bottom: 8px;
+    gap: 4px;
 }
 div.home div.dashboard section.pannel ul li div.summary {
     display: flex;
@@ -140,6 +140,7 @@ div.home div.dashboard section.pannel ul li div.summary p.name {
 div.home div.dashboard section.pannel ul li div.summary img {
     width: 34px;
     height: 34px;
+    border-radius: 50%;
 }
 
 
@@ -153,6 +154,16 @@ div.home div.dashboard section.community-groups div.icon-buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+div.home div.card div.status-icon-area {
+    padding-top: 20px;
+    padding-right: 24px;
+    text-align: right;
+}
+div.home div.card div.status-icon-area img.status-icon-img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
 }
 div.home div.dashboard section.community-groups div.icon-buttons img.status-icon-img {
     width: 16px;
@@ -277,11 +288,15 @@ div.home div.viewer .card .banner img {
 }
 
 div.home div.viewer .card h2.name {
-  text-align: center;
-  padding: 0 2rem 0.5rem;
-  margin: 0;
-  margin-top: 80px;
+    text-align: center;
+    padding: 0 2rem 0.5rem;
+    margin: 0;
+    margin-top: 80px;
 }
+div.home div.viewer .card.display-status-icon h2.name {
+    margin-top: 48px;
+} 
+
 div.home div.viewer .card .title {
   color: #a0a0a0;
   font-size: 0.85rem;
@@ -369,6 +384,8 @@ div.home div.viewer .card .desc ul.listing li {
     flex-direction: row;
     padding-top: 8px;
     padding-bottom: 8px;
+    align-items: center;
+    text-align: left;
 }
 div.home div.viewer .card .desc ul.listing li p {
     margin-bottom: 0;
