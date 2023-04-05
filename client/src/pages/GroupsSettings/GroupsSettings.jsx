@@ -268,6 +268,16 @@ export default function GroupsSettings() {
         }
     }
 
+    async function handlePassOwnership() {
+        console.log("passing ownership")
+
+        try {
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const style = {
         position: 'absolute',
         top: '50%',
@@ -343,7 +353,7 @@ export default function GroupsSettings() {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Pass Ownership
+                        Member List
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }} component="div">
                     <List>
@@ -356,9 +366,9 @@ export default function GroupsSettings() {
                                 <Button 
                                     variant="contained" 
                                     sx={{background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }}}
-                                    onClick={() => {console.log("PASS")}}    
+                                    onClick={handlePassOwnership}    
                                 >
-                                    Pass
+                                    Confirm passing
                                 </Button>
                             </ListItem>
                         ))}
