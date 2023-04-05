@@ -20,7 +20,10 @@ const updateCommunity = async (req, res) => {
     const promise = new Promise((resolve, reject) => {
         const qSelect = "SELECT community_id FROM Communities WHERE community_id=? AND created_by=?";
         db.query(qSelect, [groupId, userId], (err, data) => {
-            if(err) return reject(err)
+            if(err) {
+                console.log(err)
+                return reject(err)
+            }
             if(data.length) {
                 return resolve(true) // user is creator
             }else {
@@ -34,11 +37,11 @@ const updateCommunity = async (req, res) => {
         return res.status(400).json("User is not the community creator")
     }
 
-    const updateQuery = `UPDATE Communites SET visibility=? WHERE community_id=?`
+    const updateCommunityQuery = `UPDATE Communities SET visibility=? WHERE community_id=?`
 
     db.query(updateCommunityQuery, [visibility, groupId], (err,data) => {
         if (err) return res.status(500).json(err);
-        const qInsertCommunity = "UPDATE \`Groups\` SET group_name=?, group_description=? WHERE group_id=?";
+        const updateGroupQuery = "UPDATE \`Groups\` SET group_name=?, group_description=? WHERE group_id=?";
         
         db.query(updateGroupQuery, [groupName, groupDescription, groupId], (err,data) => {
             if (err) return res.status(500).json(err);
@@ -125,7 +128,7 @@ const getJoinedCommunities = (req,res) => {
 
 const getCommunityVisibilityFromID = (req, res) => {
     const groupId = req.params.group_id
-    const selectQuery = `SELECT visibility from Communities WHERE group_id =?`
+    const selectQuery = `SELECT visibility from Communities WHERE community_id =?`
 
     db.query(selectQuery, [groupId], (err, data) => {
         if (err) {
