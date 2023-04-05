@@ -20,7 +20,8 @@ const { getHomeContent, getApp, fetchInfo } = require('./controller/home.control
 const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
 const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getExistingConnection, getPendingConnections, createPendingConnection, updatePendingToActive, 
-    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection, updateActiveToInactive} = require('./controller/connections.controller')
+    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection, 
+    updateActiveToInactive, updateInactiveToActive} = require('./controller/connections.controller')
 const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
@@ -108,6 +109,8 @@ Routes.route('/connections/active-connections/:connectionId')
     .put(updatePendingToActive) 
 Routes.route('/connections/update-inactive')
     .put(updateActiveToInactive)
+Routes.route('/connections/update-active')
+    .put(updateInactiveToActive)
 Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
 Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
