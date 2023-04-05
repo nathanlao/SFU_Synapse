@@ -228,29 +228,29 @@ const endConnection = (req,res) => {
 }
 
 // get user_id of all users that the current user has active connections with
-function getActiveConnectionUsers(userId) {
-    const qGetActiveConnectionUsers = `SELECT userA_id AS user_id
+function getConnectionWithStatus(userId, status) {
+    const qGetConnections = `SELECT userA_id AS user_id
                                     FROM Connections
-                                    WHERE userB_id = ? AND status='active'
+                                    WHERE userB_id = ? AND status=?
                                     UNION 
                                     SELECT userB_id AS user_id
                                     FROM Connections
-                                    WHERE userA_id = ? AND status='active'`
+                                    WHERE userA_id = ? AND status=?`
     return new Promise((resolve, reject) => {
-        db.query(qGetActiveConnectionUsers, [userId, userId], (err, data) => {
+        db.query(qGetConnections, [userId, status, userId, status], (err, data) => {
             if(err) reject(err)
             resolve(data)
         })
     })
 }
 
-function setToInactiveInDb(userId, otherUserId) {
-    const qUpdateStatus = `UPDATE Connections SET status = 'inactive' 
+function updateStatusInDb(userId, otherUserId, status) {
+    const qUpdateStatus = `UPDATE Connections SET status = ? 
                             WHERE (userA_id = ? AND userB_id = ?) OR (userB_id = ? AND userA_id = ?)`
     return new Promise((resolve, reject) => {
-        db.query(qUpdateStatus, [userId, otherUserId, otherUserId, userId], (err, data) => {
+        db.query(qUpdateStatus, [status, userId, otherUserId, otherUserId, userId], (err, data) => {
             if(err) reject(err)
-            resolve(`The connection between '${userId}' and '${otherUserId}' has been updated to 'inactive'.`)
+            resolve(`The connection between '${userId}' and '${otherUserId}' has been updated to '${status}'.`)
         })
     })
 }
@@ -275,7 +275,7 @@ const updateActiveToInactive = async (req, res) => {
     const userId = req.session.user.user_id
 
     try {
-        const activeConnections = await getActiveConnectionUsers(userId)
+        const activeConnections = await getConnectionWithStatus(userId, 'active')
         const four_months = 175200 //in minutes
 
         // for all the users that the current user has active connections with,
@@ -300,7 +300,36 @@ const updateActiveToInactive = async (req, res) => {
             let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
             let timeDiffInMin = timeDiffInSec / 60
             if (timeDiffInMin >= four_months) {
-                const response = await setToInactiveInDb(userId, activeConnections[i].user_id)
+                const response = await updateStatusInDb(userId, activeConnections[i].user_id, 'inactive')
+                console.log(response)
+            }
+        }
+        res.status(200).json("Made all necessary updates to the status of the user's connections.")
+    } catch(err) {
+        res.status(500).json(err)
+        return
+    }
+}
+
+const updateInactiveToActive = async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+    const userId = req.session.user.user_id
+    
+    try {
+        const inactiveConnections = await getConnectionWithStatus(userId, 'inactive')
+        const four_months = 175200 //in minutes
+
+        // for all the users that the current user has inactive connections with,
+        for (let i=0; i<inactiveConnections.length; i++) {
+            let lastChatSent = await getLastChat(userId, inactiveConnections[i].user_id)
+            let lastChatReceived = await getLastChat(inactiveConnections[i].user_id, userId)
+
+            let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
+            let timeDiffInMin = timeDiffInSec / 60
+            if (timeDiffInMin < four_months) {
+                const response = await updateStatusInDb(userId, inactiveConnections[i].user_id, 'active')
                 console.log(response)
             }
         }
@@ -313,6 +342,7 @@ const updateActiveToInactive = async (req, res) => {
 
 
 
+
 module.exports = {
     getExistingConnection,
     createPendingConnection, 
@@ -322,5 +352,6 @@ module.exports = {
     getActiveConnections, 
     getInactiveConnections,
     updateActiveToInactive,
+    updateInactiveToActive,
     endConnection
 }

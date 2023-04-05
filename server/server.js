@@ -20,7 +20,8 @@ const { getHomeContent, getApp, fetchInfo } = require('./controller/home.control
 const { getCurrentLoginUser } = require('./controller/chat-operation/current-user.controller')
 const { getUserDetails } = require('./controller/chat-operation/user-details.controller')
 const { getExistingConnection, getPendingConnections, createPendingConnection, updatePendingToActive, 
-    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection, updateActiveToInactive} = require('./controller/connections.controller')
+    checkExistingPending, getActiveConnections, getInactiveConnections, endConnection, 
+    updateActiveToInactive, updateInactiveToActive} = require('./controller/connections.controller')
 const { getDirectMessages } = require('./controller/chat-operation/direct-messages.controller')
 const { getGroupMessages } = require('./controller/chat-operation/group-messages.controller')
 const { getLatestMessage } = require('./controller/chat-operation/latest-message.controller')
@@ -28,7 +29,7 @@ const { getGroupMembers } = require('./controller/chat-operation/group-members.c
 const { getUnconnectedGroupMembers } = require('./controller/discover.controller')
 const { userLeaveGroup, joinInviteLink, getGroupDescriptionFromID, getGroupNameFromID, getGroupInviteLink, getCourseGroups, createGroup } = require('./controller/groups.controller')
 const { verifyLogin, verifyAdminLogin } = require('./controller/login.controller')
-const { addSection, addCourse, deleteCourse, deleteSection } = require('./controller/admin.controller')
+const { addSection, addCourse, deleteCourse, deleteSection, adminLogout } = require('./controller/admin.controller')
 const { getSettings, updateSettings, deleteAccount, updatePassoword } = require('./controller/setting.controller')
 const { createUser } = require('./controller/signup.controller')
 const { fetchCourseInfo } = require('./controller/course-list.controller')
@@ -42,7 +43,7 @@ const { getCommunities , joinCommunity, getCommunityDetails } = require('./contr
 const socketController = require('./controller/chat-operation/socket-io.controller')
 const session = require('express-session');
 const { SendVerificationEmail } = require('./controller/email-authentication.controller')
-const { getJoinedCommunities, updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto, getMembers } = require('./controller/db-operation/db-communities.controller')
+const { getJoinedCommunities, updateCommunity, deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, getCommunityPhoto, setCommunityPhoto, deleteCommunityPhoto, passOwnership, getMembers } = require('./controller/db-operation/db-communities.controller')
 
 
 // socket.io to enable bidirectional communication
@@ -108,6 +109,8 @@ Routes.route('/connections/active-connections/:connectionId')
     .put(updatePendingToActive) 
 Routes.route('/connections/update-inactive')
     .put(updateActiveToInactive)
+Routes.route('/connections/update-active')
+    .put(updateInactiveToActive)
 Routes.route('/connections/chat/:sender_id/:receiver_id')
     .get(getDirectMessages)
 Routes.route('/connections/chat/latest/:sender_id/:receiver_id')
@@ -177,6 +180,8 @@ Routes.route('/logout')
 // Route: admin
 Routes.route('/admin/login')
     .post(verifyAdminLogin)
+Routes.route('/admin/logout')
+    .post(adminLogout)
 Routes.route('/admin')
     .post(fetchCourseInfo)
 Routes.route('/admin/add-section')
@@ -218,6 +223,8 @@ Routes.route('/community/')
     .put(updateCommunity)
 Routes.route('/community/member-list')
     .post(getMembers)
+Routes.route('/community/pass-ownership')
+    .put(passOwnership)
 
 // User specific data
 Routes.route('/course/:year/:term')

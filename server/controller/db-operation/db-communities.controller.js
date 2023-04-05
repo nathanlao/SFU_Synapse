@@ -273,6 +273,24 @@ const deleteCommunityPhoto = async (req, res) => {
     }
 }
 
+const passOwnership = (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.sendStatus(401)
+    }
+
+    const user_id = req.session.user.user_id
+    const new_owner_id = req.body.new_owner_id
+    const community_id = req.body.community_id
+
+    const queryStr = 'UPDATE Communities SET created_by=? WHERE community_id=? AND created_by=?'
+
+    db.query(queryStr, [new_owner_id, community_id, user_id], (err) => {
+        if(err) return res.status(500).json(err)
+        return res.status(200).json('Successfully passed ownership.')
+    })
+}
+
+module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, passOwnership }
 // Helper function
 async function getMemberList(target_id, currentuser_id) {
     return new Promise((resolve, reject) => {
