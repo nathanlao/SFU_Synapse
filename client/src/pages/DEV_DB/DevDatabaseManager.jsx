@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react"
+import { requiresLogin } from "../../services/authentication.service";
+import { useNavigate } from "react-router-dom";
 import './DevDatabaseManager.css'
 
 
-// IMPORTANT!!! DELETE BEFORE DEPLOYMENT
 export default function DevDatabaseManager() {
+    const navigate = useNavigate()
     const [users, setUsers] = useState([])
     const [admins, setAdmins] = useState([])
     const [connections, setConnections] = useState([])
     const [groups, setGroups] = useState([])
     const [courses, setCourses] = useState([])
     const [communities, setCommunities] = useState([])
-    const [directMessages, setDirectMessages] = useState([])
-    const [groupMessages, setGroupMessages] = useState([])
+    // const [directMessages, setDirectMessages] = useState([])
+    // const [groupMessages, setGroupMessages] = useState([])
     const [memberOf, setMemberOf] = useState([])
-    const [authCodes, setAuthCodes] = useState([])
+    // const [authCodes, setAuthCodes] = useState([])
 
     useEffect(() => {
         const tables = [
@@ -31,19 +33,25 @@ export default function DevDatabaseManager() {
 
         const apiBaseUrl = '/api/dev/db/'
         async function getAllData() {
+
+            const login = await requiresLogin('admin') // logged in: false
+            if(login) {
+                return navigate('/admin/login', { replace: true })
+            }
+
             // get Users tables
-            console.log(`${apiBaseUrl + tables[0]}`)
+            // console.log(`${apiBaseUrl + tables[0]}`)
             const res1 = await fetch(`${apiBaseUrl + tables[0]}`)
             if(res1.status !== 200) return
             const data1 = await res1.json()
-            console.log(data1)
+            // console.log(data1)
             setUsers(data1)
             
             // get Admins tables
             const res2 = await fetch(`${apiBaseUrl + tables[1]}`)
             if(res2.status !== 200) return
             const data2 = await res2.json()
-            console.log(data2)
+            // console.log(data2)
             setAdmins(data2)
             
             
@@ -51,7 +59,7 @@ export default function DevDatabaseManager() {
             const res3 = await fetch(`${apiBaseUrl + tables[2]}`)
             if(res3.status !== 200) return
             const data3 = await res3.json()
-            console.log(data3)
+            // console.log(data3)
             setConnections(data3)
             
             
@@ -59,7 +67,7 @@ export default function DevDatabaseManager() {
             const res4 = await fetch(`${apiBaseUrl + tables[3]}`)
             if(res4.status !== 200) return
             const data4 = await res4.json()
-            console.log(data4)
+            // console.log(data4)
             setGroups(data4)
             
             
@@ -67,46 +75,46 @@ export default function DevDatabaseManager() {
             const res5 = await fetch(`${apiBaseUrl + tables[4]}`)
             if(res5.status !== 200) return
             const data5 = await res5.json()
-            console.log(data5)
+            // console.log(data5)
             setCourses(data5)
             
             
             // get DirectMessages tables
-            const res6 = await fetch(`${apiBaseUrl + tables[5]}`)
-            if(res6.status !== 200) return
-            const data6 = await res6.json()
-            console.log(data6)
-            setDirectMessages(data6)
+            // const res6 = await fetch(`${apiBaseUrl + tables[5]}`)
+            // if(res6.status !== 200) return
+            // const data6 = await res6.json()
+            // console.log(data6)
+            // setDirectMessages(data6)
             
             
             // get GroupMessages tables
-            const res7 = await fetch(`${apiBaseUrl + tables[6]}`)
-            if(res7.status !== 200) return
-            const data7 = await res7.json()
-            console.log(data7)
-            setGroupMessages(data7)
+            // const res7 = await fetch(`${apiBaseUrl + tables[6]}`)
+            // if(res7.status !== 200) return
+            // const data7 = await res7.json()
+            // console.log(data7)
+            // setGroupMessages(data7)
             
             
             // get MemberOf tables
             const res8 = await fetch(`${apiBaseUrl + tables[7]}`)
             if(res8.status !== 200) return
             const data8 = await res8.json()
-            console.log(data8)
+            // console.log(data8)
             setMemberOf(data8)
             
             // get Communities tables
             const res9 = await fetch(`${apiBaseUrl + tables[8]}`)
             if(res9.status !== 200) return
             const data9 = await res9.json()
-            console.log(data9)
+            // console.log(data9)
             setCommunities(data9)
 
             // get AuthCodes tables
-            const res10 = await fetch(`${apiBaseUrl + tables[9]}`)
-            if(res10.status !== 200) return
-            const data10 = await res10.json()
-            console.log(data10)
-            setAuthCodes(data10)
+            // const res10 = await fetch(`${apiBaseUrl + tables[9]}`)
+            // if(res10.status !== 200) return
+            // const data10 = await res10.json()
+            // console.log(data10)
+            // setAuthCodes(data10)
         }
         getAllData()
     }, [])
@@ -115,7 +123,7 @@ export default function DevDatabaseManager() {
     
     return (
         <div className="dev-database-manager" id="topOfPage">
-            <h1>DEV DATABASE MANAGER</h1>
+            <h1>DATABASE MANAGER</h1>
 
             <h5>Links to tables</h5>
             <div className="links-to-tables">
@@ -125,9 +133,13 @@ export default function DevDatabaseManager() {
                 <button type="button" className="btn btn-light"><a href="#groups">Groups</a></button>
                 <button type="button" className="btn btn-light"><a href="#courses">Courses</a></button>
                 <button type="button" className="btn btn-light"><a href="#communities">Communities</a></button>
-                <button type="button" className="btn btn-light"><a href="#directMessages">DirectMessages</a></button>
-                <button type="button" className="btn btn-light"><a href="#groupMessages">GroupMessages</a></button>
-                <button type="button" className="btn btn-light"><a href="#authCodes">AuthCodes</a></button>
+                {/* <button type="button" className="btn btn-light"><a href="#directMessages">DirectMessages</a></button> */}
+                {/* <button type="button" className="btn btn-light"><a href="#groupMessages">GroupMessages</a></button> */}
+                {/* <button type="button" className="btn btn-light"><a href="#authCodes">AuthCodes</a></button> */}
+                <button type="button" className="btn btn-light"><a href="#memberOf">MemberOf</a></button>
+            </div>
+            <div className="navigate-button">
+                <button type="button" className="btn btn-outline-dark" onClick={() => navigate('/admin')}>Edit added course groups</button>
             </div>
 
             <button type="button" className="to-top-floating-btn btn btn-dark">
@@ -303,8 +315,8 @@ export default function DevDatabaseManager() {
                 </tbody>
             </table>
 
-            {/* DirectMessages */}
-            <h2 id="directMessages">DirectMessages</h2>
+            {/* DirectMessages -- confidential */}
+            {/* <h2 id="directMessages">DirectMessages</h2>
             <table class="table table-hover">
                 <thead> 
                     <tr>
@@ -312,6 +324,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">id</th>
                     <th scope="col">sender_id</th>
                     <th scope="col">receiver_id</th>
+                    <th scope="col">message</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -321,13 +334,14 @@ export default function DevDatabaseManager() {
                         <td>{item.id}</td>
                         <td>{item.sender_id}</td>
                         <td>{item.receiver_id}</td>
+                        <td>{item.message}</td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table> */}
 
-            {/* GroupMessages */}
-            <h2 id="groupMessages">GroupMessages</h2>
+            {/* GroupMessages -- confidential */}
+            {/* <h2 id="groupMessages">GroupMessages</h2>
             <table class="table table-hover">
                 <thead> 
                     <tr>
@@ -335,6 +349,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">id</th>
                     <th scope="col">group_id</th>
                     <th scope="col">user_id</th>
+                    <th scope="col">message</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -344,10 +359,11 @@ export default function DevDatabaseManager() {
                         <td>{item.id}</td>
                         <td>{item.group_id}</td>
                         <td>{item.user_id}</td>
+                        <td>{item.message}</td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table> */}
 
             {/* MemberOf */}
             <h2 id="memberOf">MemberOf</h2>
@@ -371,8 +387,8 @@ export default function DevDatabaseManager() {
             </table>
 
 
-            {/* AuthCodes */}
-            <h2 id="authCodes">AuthCodes</h2>
+            {/* AuthCodes - confidential */}
+            {/* <h2 id="authCodes">AuthCodes</h2>
             <table class="table table-hover">
                 <thead> 
                     <tr>
@@ -392,7 +408,7 @@ export default function DevDatabaseManager() {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table> */}
         </div>
     )
 }

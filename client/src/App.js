@@ -62,7 +62,7 @@ export default function App() {
                     {/* Admin pages */}
                     <Route path='/admin/login' element={<AdminLogin />} />
                     <Route path='/admin' element={<Admin />} />
-                    <Route path='/database-manager' element={<DevDatabaseManager />} />
+                    <Route path='/admin/database-manager' element={<DevDatabaseManager />} />
                 </Routes>
             </main>
         </div>

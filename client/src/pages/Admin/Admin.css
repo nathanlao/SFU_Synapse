@@ -34,3 +34,13 @@ div.admin-dashboard section.workarea input[type='checkbox'] {
     margin-right: 12px;
 }
 
+div.admin-dashboard div.flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+}
+
+div.admin-dashboard div.flex button {
+    margin-left: 8px;
+}
