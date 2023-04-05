@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import './ChangePassword.css'
 
 var md5 = require('md5');
 
 export default function ChangePassword() {
+    const navigate = useNavigate()
     const [photo, setPhoto] = useState('/images/default/default-user-photo.png')
     const [username, setUsername] = useState('')
 
@@ -34,7 +36,7 @@ export default function ChangePassword() {
                 return alert(data)
             }
 
-            console.log(data[0].username, data[0].photo)
+            // console.log(data[0].username, data[0].photo)
             setUsername(data[0].username)
             setPhoto(data[0].photo)
         }
@@ -106,13 +108,13 @@ export default function ChangePassword() {
         const response = await fetch('/api/change-password', options)
         const data = await response.json()
 
-        if(response.status !== 200) {
+        if(response.status === 400) {
+            navigate('/login')
+        }else if(response.status !== 200) {
             return alert(data)
         }
 
-        console.log(data)
-        // display toast (data) for usability
-
+        alert(data)
         reset()
     }
     
@@ -167,7 +169,7 @@ export default function ChangePassword() {
                     <input type="password" id="confirm-password" onChange={handleConfirmPasswordChange}/>
                     {!isMatching && <div className="pass-match-error">*Passwords do not match</div> }
                     <button type='button' onClick={handleBtnClick} disabled={!validNewPassword || !isMatching || oldPassword === ''}>Change password</button>
-                    <p><a href="">Forgot password?</a></p>
+                    {/* <p><a href="">Forgot password?</a></p> */}
                 </div>
             </div>
         </div>

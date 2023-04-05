@@ -46,7 +46,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                 return null
             }
         } catch (err) {
-            console.error(err)
+            // console.error(err)
         }
         return null
     }
@@ -76,7 +76,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
             setPendingConnections(updatedConnections)
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             setError(err)
         }
     }
@@ -105,7 +105,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
             setActiveConnections(updatedConnections)
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             setError(err)
         }
     }
@@ -138,7 +138,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
             setInactiveConnections(updatedConnections)
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             setError(err)
         }
     }
@@ -165,7 +165,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
     // Fetching pending/active/inactive connections
     useEffect(() => {
-        console.log('connections updates: ' + updateConnections)
+        // console.log('connections updates: ' + updateConnections)
 
         if(updateConnections) {
             fetchAllConnections()
@@ -345,7 +345,7 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
                 const data = await response.json()
                 setCourseGroups(data)
             } catch(err) {
-                console.log(err)
+                // console.log(err)
             }
         }
         getGroupsOfCourses()
@@ -366,7 +366,7 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
             setCommunities(data)
             setCommunityUpdates(false)
         } catch (err) {
-            console.log(err)
+            // console.log(err)
         }
     }
 
@@ -375,7 +375,6 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
     }, [])
 
     useEffect(() => {
-        console.log('updates: ' + communityUpdates)
         if(communityUpdates) {
             fetchCommunityInfo()
         }
@@ -533,7 +532,7 @@ export default function Sidepanel(props) {
                 const data =  await response.json()
                 setCurrentUserId(data[0].user_id)
             } catch (err) {
-                console.log(err)
+                // console.log(err)
             }
         }
         getCurrentLoginUser()

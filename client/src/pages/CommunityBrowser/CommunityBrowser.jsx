@@ -25,7 +25,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
 
     useEffect(() => {
         if(view.name === views.browse.name) {
-            console.log('fetch list of communities')
+            // console.log('fetch list of communities')
 
             async function fetchCommunityInfo() {
                 const response = await fetch('/api/community/browse')
@@ -40,7 +40,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
 
                 }else {
                     alert(data)
-                    console.log('Failed to fetch community data')
+                    // console.log('Failed to fetch community data')
                 }
             }
 
@@ -50,7 +50,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
     }, [view])
 
     async function handleCreateCommunity() {
-        console.log('creating your community')
+        // console.log('creating your community')
 
         async function createCommunity() {
             try {
@@ -71,7 +71,8 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                 setClose(true)
                 return data // success
             } catch (err) {
-                console.log(err)
+                // console.log(err)
+                alert(err.message)
             }
         }
         const community_id = await createCommunity()
@@ -106,7 +107,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
     }
 
     function handleJoinCommunity(community_id) {
-        console.log('Join community (id: ' + community_id + ')')
+        // console.log('Join community (id: ' + community_id + ')')
 
         async function joinCommunity() {
 
@@ -129,7 +130,8 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                     notifyClosure()
                 }
             } catch (err) {
-                console.log(err)
+                // console.log(err)
+                alert(err.message)
             }
         } 
         joinCommunity()
@@ -147,7 +149,8 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                 const data = await response.json()
                 setCommunityDetails(data)
             } catch (err) {
-                console.log(err)
+                // console.log(err)
+                alert(err.message)
             }
         }
         getCommunityDetails()
@@ -250,7 +253,6 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                     data: file
                 }
                 setPhoto(img)
-                console.log(photo)
             }else {
                 setPhoto({})
                 event.target.value = ''

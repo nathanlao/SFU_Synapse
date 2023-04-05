@@ -30,7 +30,7 @@ export default function EditProfile() {
                 return alert(data)
             }
 
-            console.log(data[0].username, data[0].bio, data[0].photo)
+            // console.log(data[0].username, data[0].bio, data[0].photo)
             setCurrentUsername(data[0].username)
             setUsername(data[0].username)
             setPhoto(data[0].photo)
@@ -55,7 +55,7 @@ export default function EditProfile() {
     }
 
     async function handleSaveSettings() {
-        console.log(username, bio)
+        // console.log(username, bio)
 
         const options = {
             method: 'PUT',
