@@ -274,7 +274,7 @@ const updateActiveToInactive = async (req, res) => {
 
     try {
         const activeConnections = await getActiveConnectionUsers(userId)
-        const four_months = 1 //in minutes
+        const four_months = 175200 //in minutes
 
         // for all the users that the current user has active connections with,
         for (let i=0; i<activeConnections.length; i++) {

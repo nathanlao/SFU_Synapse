@@ -144,7 +144,6 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     }
 
     async function fetchAllConnections() {
-        setUpdateConnections(true)
         await getPendingConnections()
         await getActiveConnections()
         await getInactiveConnections()
@@ -180,16 +179,16 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         }
     }, [currentUserId])
 
-    // useEffect(() => {
-    //     // Call the function to update inactive connections periodically
-    //     const interval = setInterval(() => {
-    //         updateInactiveConnections()
-    //     }, 5000) // Check every hour
+    useEffect(() => {
+        // Call the function to update inactive connections periodically
+        const interval = setInterval(() => {
+            updateInactiveConnections()
+        }, 3600000) // Check every hour
         
-    //     return () => {
-    //         clearInterval(interval)
-    //     }
-    // }, [updateConnections])
+        return () => {
+            clearInterval(interval)
+        }
+    }, [updateConnections])
     
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {

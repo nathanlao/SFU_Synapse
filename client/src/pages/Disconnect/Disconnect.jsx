@@ -68,7 +68,6 @@ export default function Disconnect() {
                     }
                 }
                 const data =  await response.json()
-                console.log("🚀 ~ file: Disconnect.jsx:71 ~ currentConnection ~ data:", data)
                 setDeleteUser(data[0])
             } catch (err) {
                 console.log(err)
@@ -96,9 +95,9 @@ export default function Disconnect() {
                 alert(`Successfully disconnect with ${deleteUser.userA_id === currentUserId 
                     ? deleteUser.userB_username 
                     : deleteUser.userA_username}`)
+                setUpdateConnections(true)
             }
             nagivate("/connections", {replace: true})
-            setUpdateConnections(true)
         } catch (err) {
             console.log(err)
         }
