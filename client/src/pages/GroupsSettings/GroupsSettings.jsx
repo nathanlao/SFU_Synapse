@@ -268,11 +268,22 @@ export default function GroupsSettings() {
         }
     }
 
-    async function handlePassOwnership() {
-        console.log("passing ownership")
+    async function handlePassOwnership(new_owner_id, username) {
 
         try {
+            const options = {
+                method: "PUT",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_owner_id: new_owner_id, community_id: groupId})
+            }
 
+            const response = await fetch('/api/community/pass-ownership', options)
+            if (response.status !== 200) {
+                alert("Unable to pass ownership")
+                return
+            }
+            alert(`Successfully passed ownership to ${username}`)
+            navigate("/groups", {replace: true})
         } catch (err) {
             console.log(err)
         }
@@ -366,7 +377,7 @@ export default function GroupsSettings() {
                                 <Button 
                                     variant="contained" 
                                     sx={{background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }}}
-                                    onClick={handlePassOwnership}    
+                                    onClick={() => handlePassOwnership(member.user_id, member.username)}    
                                 >
                                     Confirm passing
                                 </Button>
