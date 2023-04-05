@@ -40,6 +40,28 @@
     margin-top: -15px !important;
 }
 
+.pending {
+    color: #ebb134;
+    margin-top: -15px !important;
+}
+
+.active {
+    color: #4E8C24;
+    margin-top: -15px !important;
+}
+
+.pending-arrow img {
+    filter: invert(60%) sepia(85%) saturate(1700%) hue-rotate(14deg) brightness(102%) contrast(135%);
+    width: 60px;
+    margin-top: 10px;
+}
+
+.active-arrow img {
+    filter: invert(93%) sepia(800%) saturate(800%) hue-rotate(60deg) brightness(51%) contrast(135%);
+    width: 60px;
+    margin-top: 10px;
+}
+
 .disconnect-prompt {
     color: #41a0e8;
     display: flex;

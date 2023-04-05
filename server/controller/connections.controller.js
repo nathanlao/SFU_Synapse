@@ -190,6 +190,8 @@ const getExistingConnection = (req, res) => {
 
     const selectQuery = `SELECT c.connection_id, c.status, 
                             c.userA_id, c.userB_id,
+                            ua.first_name AS userA_first_name, ua.last_name AS userA_last_name,
+                            ub.first_name AS userB_first_name, ub.last_name AS userB_last_name,
                             ua.username AS userA_username, 
                             ub.username AS userB_username, 
                             ua.photo AS userA_photo, 
@@ -197,7 +199,7 @@ const getExistingConnection = (req, res) => {
                         FROM Connections c 
                         JOIN Users ua ON c.userA_id = ua.user_id 
                         JOIN Users ub ON c.userB_id = ub.user_id
-                        WHERE c.status = 'active' OR c.status = 'pending' OR c.status = 'inactive'
+                        WHERE (c.status = 'active' OR c.status = 'pending' OR c.status = 'inactive')
                         AND (c.userA_id = ? OR c.userB_id = ?)
                         AND c.connection_id = ?`
 
@@ -244,7 +246,7 @@ function getActiveConnectionUsers(userId) {
 
 function setToInactiveInDb(userId, otherUserId) {
     const qUpdateStatus = `UPDATE Connections SET status = 'inactive' 
-                            WHERE (userA_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)`
+                            WHERE (userA_id = ? AND userB_id = ?) OR (userB_id = ? AND userA_id = ?)`
     return new Promise((resolve, reject) => {
         db.query(qUpdateStatus, [userId, otherUserId, otherUserId, userId], (err, data) => {
             if(err) reject(err)

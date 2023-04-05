@@ -142,23 +142,53 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
             setError(err)
         }
     }
+
     async function fetchAllConnections() {
-        setUpdateConnections(true)
         await getPendingConnections()
         await getActiveConnections()
         await getInactiveConnections()
     }
 
+    async function updateInactiveConnections() {
+        try {
+            const response = await fetch('/api/connections/update-inactive', {method: 'PUT'})
+            if (response.status === 200) {
+                console.log('Inactive connections updated')
+            } else {
+                console.log('Error updating inactive connections')
+            }
+            setUpdateConnections(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     // Fetching pending/active/inactive connections
     useEffect(() => {
         // console.log('connections updates: ' + updateConnections)
-        if (currentUserId) {
-            fetchAllConnections()
-        }
+
         if(updateConnections) {
             fetchAllConnections()
         }
-    }, [updateConnections, currentUserId])
+
+    }, [updateConnections])
+
+    useEffect(() => {
+        if (currentUserId) {
+            fetchAllConnections()
+        }
+    }, [currentUserId])
+
+    useEffect(() => {
+        // Call the function to update inactive connections periodically
+        const interval = setInterval(() => {
+            updateInactiveConnections()
+        }, 3600000) // Check every hour
+        
+        return () => {
+            clearInterval(interval)
+        }
+    }, [updateConnections])
     
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
@@ -227,20 +257,32 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     // Map over inactiveConnections data return from backend
     const inactiveConnectionsEl = inactiveConnections.map((connection) => {
         return (
-            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem 
-                    image={connection.userA_id === currentUserId 
-                        ? connection.userB_photo 
-                        : connection.userA_photo
-                    } 
-                    title={ connection.userA_id === currentUserId
-                        ? connection.userB_username
-                        : connection.userA_username
-                    } 
-                    subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
-                    indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
-                />
-            </Accordion.Body>
+            <Link
+                to={`/connections/${connection.connection_id}`}
+                key={connection.connection_id}
+                state={{ 
+                    sender_id: currentUserId,
+                    receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
+                    pendingConnections: inactiveConnections
+                }}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
+                
+            >
+                <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={connection.userA_id === currentUserId 
+                            ? connection.userB_photo 
+                            : connection.userA_photo
+                        } 
+                        title={ connection.userA_id === currentUserId
+                            ? connection.userB_username
+                            : connection.userA_username
+                        } 
+                        subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                        indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
+                    />
+                </Accordion.Body>
+            </Link>
         )
     })
 
@@ -367,14 +409,14 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
 
         return (
             <Link 
-                to={`/groups/${community.group_id}`} 
-                key={community.group_id}
-                onClick={() => handleSwitchSubtabs({groupId: community.group_id, groupName: community.group_name, groupPic: community.photo})}
+                to={`/groups/${community.community_id}`} 
+                key={community.community_id}
+                onClick={() => handleSwitchSubtabs({groupId: community.community_id, groupName: community.group_name, groupPic: community.photo})}
                 state={{
                     user_id: currentUserId
                 }}
             >
-                <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
                     <SidepanelItem 
                         image={community.photo}
                         title={community.group_name}

@@ -95,9 +95,9 @@ export default function Disconnect() {
                 alert(`Successfully disconnect with ${deleteUser.userA_id === currentUserId 
                     ? deleteUser.userB_username 
                     : deleteUser.userA_username}`)
+                setUpdateConnections(true)
             }
             nagivate("/connections", {replace: true})
-            setUpdateConnections(true)
         } catch (err) {
             console.log(err)
         }
@@ -127,14 +127,41 @@ export default function Disconnect() {
                                 : deleteUser.userB_photo}`} />
                         }
                         title={deleteUser.userA_id === currentUserId 
-                            ? deleteUser.userA_username 
+                            ? (`${deleteUser.userA_first_name} ${deleteUser.userA_last_name}`)
+                            : (`${deleteUser.userB_first_name} ${deleteUser.userB_last_name}`)}
+                        subheader={deleteUser.userA_id === currentUserId 
+                            ? deleteUser.userA_username
                             : deleteUser.userB_username}
-                        subheader="User A username"
                     />
                     </Card>
-                    <div className="inactive-arrow">
-                        <img alt="arrow" src={arrow}/>
-                        <Typography variant="body2" className="inactive">Inactive</Typography>
+                    <div className={
+                            deleteUser.status === 'inactive'
+                                ? 'inactive-arrow'
+                                : deleteUser.status === 'pending'
+                                ? 'pending-arrow'
+                                : deleteUser.status === 'active'
+                                ? 'active-arrow'
+                                : ''
+                            }>
+                        <img alt="arrow" src={arrow} />
+                        <Typography 
+                            variant="body2" 
+                            className={
+                                deleteUser.status === 'inactive'
+                                    ? 'inactive'
+                                    : deleteUser.status === 'pending'
+                                    ? 'pending'
+                                    : deleteUser.status === 'active'
+                                    ? 'active'
+                                    : ''
+                            }>{deleteUser.status === 'pending' 
+                                ? "pending" 
+                                : deleteUser.status === 'inactive'
+                                ? "inactive"
+                                : deleteUser.status === 'active'
+                                ? "active"
+                                : ""}
+                        </Typography>
                     </div>
                     <Card className="dialog-card">
                         <CardHeader avatar={
@@ -143,9 +170,11 @@ export default function Disconnect() {
                                 : deleteUser.userA_photo}`} />
                         }
                         title={deleteUser.userA_id === currentUserId 
-                            ? deleteUser.userB_username 
+                            ? (`${deleteUser.userB_first_name} ${deleteUser.userB_last_name}`)
+                            : (`${deleteUser.userA_first_name} ${deleteUser.userA_last_name}`)}
+                        subheader={deleteUser.userA_id === currentUserId 
+                            ? deleteUser.userB_username
                             : deleteUser.userA_username}
-                        subheader="User B username"
                     />
                     </Card>
                 </div>
