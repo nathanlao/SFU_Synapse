@@ -160,7 +160,7 @@ export default function DevDatabaseManager() {
                     <th scope="col">first_name</th>
                     <th scope="col">last_name</th>
                     <th scope="col">email</th>
-                    <th scope="col">userpass</th>
+                    {/* <th scope="col">userpass</th> */}
                     <th scope="col">photo</th>
                     <th scope="col">bio</th>
                     <th scope="col">status</th>
@@ -175,7 +175,7 @@ export default function DevDatabaseManager() {
                         <td>{item.first_name}</td>
                         <td>{item.last_name}</td>
                         <td>{item.email}</td>
-                        <td>{item.userpass}</td>
+                        {/* <td>{item.userpass}</td> */}
                         <td>{item.photo}</td>
                         <td>{item.bio}</td>
                         <td>{item.status ? 'active' : 'deleted'}</td>
