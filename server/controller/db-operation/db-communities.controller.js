@@ -4,6 +4,7 @@ const fs = require('fs')
 const { upload } = require('../../middleware/multer.middleware')
 const db = require('../../db/connection.db').pool
 const dotenv = require('dotenv')
+const session = require('express-session')
 dotenv.config()
 
 const updateCommunity = async (req, res) => {
@@ -289,4 +290,32 @@ const passOwnership = (req, res) => {
     })
 }
 
-module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, passOwnership }
+// Helper function
+async function getMemberList(target_id, currentuser_id) {
+    return new Promise((resolve, reject) => {
+        const status = 1
+        const query = 'SELECT U.user_id, U.username, U.first_name, U.last_name, U.photo FROM MemberOf M, Users U WHERE M.group_id=? AND U.user_id=M.user_id AND U.status=? AND U.user_id != ?'
+        db.query(query, [target_id, status, currentuser_id], (err, data) => {
+            if(err) return reject(err)
+            resolve(data)
+        })
+    })
+}
+
+const getMembers = async (req, res) => {
+    const user_id = req.session.user.user_id
+    try {
+        const data = await getMemberList(req.body.community_id, user_id)
+
+        if (data || data.length > 0) {
+            res.status(200).json(data)  
+        } else {
+            res.status(404).json("No member lists found")
+        }
+    }catch(err) {
+        res.status(500).json(err)
+    }
+}
+
+
+module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, getMembers, passOwnership }
