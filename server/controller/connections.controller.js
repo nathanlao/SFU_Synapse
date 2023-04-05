@@ -285,7 +285,7 @@ const updateActiveToInactive = async (req, res) => {
 
     try {
         const activeConnections = await getConnectionWithStatus(userId, 'active')
-        const four_months = 1 //in minutes
+        const four_months = 175200 //in minutes
 
         // for all the users that the current user has active connections with,
         for (let i=0; i<activeConnections.length; i++) {
@@ -306,12 +306,22 @@ const updateActiveToInactive = async (req, res) => {
                 }
             } else {
             */
-            let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
-            let timeDiffInMin = timeDiffInSec / 60
-            if (timeDiffInMin >= four_months) {
-                const response = await updateStatusInDb(userId, activeConnections[i].user_id, 'inactive')
-                console.log(response)
-            }
+                let mostRecentChatTimestamp;
+                if (lastChatSent.length === 0 && lastChatReceived.length === 0) {
+                    continue
+                } else if (lastChatSent.length === 0) {
+                    mostRecentChatTimestamp = lastChatReceived[0].timestamp
+                } else if (lastChatReceived.length === 0) {
+                    mostRecentChatTimestamp = lastChatSent[0].timestamp
+                } else {
+                    mostRecentChatTimestamp = new Date(Math.max(lastChatSent[0].timestamp, lastChatReceived[0].timestamp))
+                }
+                let timeDiffInSec = (Math.abs(mostRecentChatTimestamp.getTime() - Date.now())) / 1000
+                let timeDiffInMin = timeDiffInSec / 60
+                if (timeDiffInMin >= four_months) {
+                    const response = await updateStatusInDb(userId, activeConnections[i].user_id, 'inactive')
+                    console.log(response)
+                }
         }
         res.status(200).json("Made all necessary updates to the status of the user's connections.")
     } catch(err) {

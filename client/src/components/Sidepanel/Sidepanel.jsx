@@ -183,7 +183,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         // Call the function to update inactive connections periodically
         const interval = setInterval(() => {
             updateInactiveConnections()
-        }, 3600000) // Check every hour
+        }, 60 * 60 * 1000) // Check every hour
         
         return () => {
             clearInterval(interval)
