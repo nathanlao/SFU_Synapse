@@ -112,8 +112,8 @@ async function getUser(user_id) {
 
 async function getConnections(user_id) {
     return new Promise((resolve, reject) => {
-        const query = 'SELECT user_id, username, first_name, last_name, photo FROM Users WHERE user_id IN (SELECT C1.userB_id AS user_id FROM Connections C1 WHERE C1.userA_id=? UNION SELECT C2.userA_id FROM Connections C2 WHERE C2.userB_id=?)'
-        db.query(query, [user_id, user_id], (err, data) => {
+        const qStr = `(SELECT U.user_id, U.username, U.first_name, U.last_name, U.photo, C.status FROM Users U, (SELECT userB_id AS connected_user_id, status FROM Connections WHERE userA_id=?) AS C WHERE U.user_id=C.connected_user_id) UNION (SELECT U.user_id, U.username, U.first_name, U.last_name, U.photo, C.status FROM Users U, (SELECT userA_id AS connected_user_id, status FROM Connections WHERE userB_id=?) AS C WHERE U.user_id=C.connected_user_id);`
+        db.query(qStr, [user_id, user_id], (err, data) => {
             if(err) return reject(err)
             return resolve(data)
 

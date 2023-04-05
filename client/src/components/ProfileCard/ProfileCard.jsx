@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent, Typography, Avatar } from "@mui/material";
-import profileIcon from "../../images/default_profile_picture.png"
 
 import './ProfileCard.css'
 import { useParams } from "react-router-dom";
@@ -9,6 +8,7 @@ export default function ProfileCard({ onSelectUser }) {
 
     const { groupId } = useParams()
     const [unconnectedMembers, setUnconnectedMembers] = useState([])
+    const [selectedUser, setSelectedUser] = useState('')
     
     useEffect(() => {
         async function fetchUnconnectedGroupMembers() {
@@ -34,12 +34,13 @@ export default function ProfileCard({ onSelectUser }) {
     const profileCardEl = unconnectedMembers.map(unconnectedMember => {
 
         const handleCardClick = () => {
+            setSelectedUser(unconnectedMember.user.user_id)
             onSelectUser(unconnectedMember.user.user_id, unconnectedMember.user.first_name)
         }
 
         return (
             <Card 
-                className="profile-card" 
+                className={`profile-card ${selectedUser === unconnectedMember.user.user_id ? 'selected' : ''}`}
                 key={unconnectedMember.user.user_id}
                 onClick={handleCardClick}>
                 <CardHeader

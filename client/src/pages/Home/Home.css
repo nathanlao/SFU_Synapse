@@ -113,6 +113,9 @@ div.home div.dashboard img.colored-connection-icon {
 div.home div.dashboard section.pannel ul {
     padding-left: 0;
 }
+div.home div.dashboard section.pannel ul p.emptyMsg {
+    text-align: center;
+}
 div.home div.dashboard section.pannel ul li {
     list-style-type: none;
     display: flex;

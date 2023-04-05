@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import './DeleteAccount.css'
 var md5 = require('md5');
@@ -21,8 +21,7 @@ export default function DeleteAccount() {
             return alert(data)
         }
 
-        // toast data
-        console.log(data)
+        alert(data)
         navigate('/login')
     }
 
