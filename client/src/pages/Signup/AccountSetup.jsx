@@ -168,11 +168,12 @@ export default function AccountSetup() {
                     <h5>Profile photo</h5>
                     {photo.preview && <img src={photo.preview} width='100' height='100' />}
                     <input type="file" accept="image/*" name="file" id="profilePhoto" className="form-control" onChange={handleFileChange} />
+                    <p><small>The maximum file size allowed is 200KB.</small></p>
                 </section>
                 <section className="bio">
                     <h5>Bio</h5>
                     <textarea id="bioTextarea" className="form-control" onChange={checkWordCount} />
-                    <small>{bioLen} / {bioMaxLen}</small>
+                    <small><span className={`${bioLen > bioMaxLen ? 'invalid' : ''}`}>{bioLen}</span> / {bioMaxLen}</small>
                 </section>
                 <div className="submit-btn">
                     <button type="button" id="skipBtn" className="btn btn-light" onClick={handleSkipBtnClick}>Skip</button>

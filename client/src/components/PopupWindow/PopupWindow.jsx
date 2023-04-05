@@ -85,8 +85,9 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
                     <img src={newPhoto.preview} alt="" />
                 </div>
                 <input type="file" className="form-control" accept="images/*" onChange={handleFileChange} />
-                <button type="button" onClick={updatePhoto} disabled={!newPhoto.data}>Confirm</button>
-                <button type="button" onClick={setViewOptionsMenu}>Cancel</button>
+                <p><small>The maximum file size allowed is 200KB.</small></p>
+                <button type="button" className="btn" onClick={updatePhoto} disabled={!newPhoto.data}>Confirm</button>
+                <button type="button" className="btn" onClick={setViewOptionsMenu}>Cancel</button>
             </div>
         )
     }
@@ -95,8 +96,8 @@ export default function PopupWindow({notifyClosure, notifyChange}) {
             <div className="remove-photo-view">
                 {isSettingsPage ? <p>Are you sure you want to remove the current profile photo?</p> : <p>Are you sure you want to remove the current community photo?</p>}
                 <div className="controllers">
-                    <button type="button" onClick={deletePhoto}>Confirm</button>
-                    <button type="button" onClick={setViewOptionsMenu}>Cancel</button>
+                    <button type="button" className="btn" onClick={deletePhoto}>Confirm</button>
+                    <button type="button" className="btn" onClick={setViewOptionsMenu}>Cancel</button>
                 </div>
             </div>
         )

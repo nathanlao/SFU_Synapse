@@ -218,7 +218,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                 </form>
                 <div className="controller">
                     <button type="button" className="btn" onClick={() => {setView(views.browse)}}>Browse</button>
-                    <button type="button" className="btn" onClick={handleCreateCommunity}>Submit</button>
+                    <button type="button" className="btn" onClick={handleCreateCommunity} disabled={name.trim() === '' || desc.trim() === ''}>Submit</button>
                 </div>
             </>
         )
@@ -271,6 +271,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                     <img src={photo.preview} alt="" />
                 </div>
                 <input type="file" className="form-control" accept="images/*" onChange={handleFileChange} />
+                <p><small>The maximum file size allowed is 200KB.</small></p>
             </div>
         )
     }

@@ -236,7 +236,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
                                     data-num={item.num} 
                                     data-section={item.section} 
                                     data-new-item={item.new_item} >
-                                        {(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()} {item.new_item && <strong>New!</strong>}
+                                        <p>{(item.dep + item.num).toUpperCase()} {item.section.toUpperCase()} {item.new_item && <strong>New!</strong>}</p>
                                         <button type="button" onClick={handleRemoveItem}>Remove</button>
                                 </li>
                             ))}

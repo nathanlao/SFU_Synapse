@@ -41,6 +41,19 @@ div.popup-window-change-photo button {
     color: black;
     margin-top: 8px;
 }
+div.popup-window-change-photo .select-photo-view button,
+div.popup-window-change-photo .remove-photo-view button {
+    border: 1px solid #11515D;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    color: #11515D;
+    margin-right: 8px;
+}
+div.popup-window-change-photo .select-photo-view button:hover,
+div.popup-window-change-photo .remove-photo-view button:hover {
+    background-color: #11515D;
+    color: #fff;
+}
 div.popup-window-change-photo button:hover {
     background-color: transparent;
 }

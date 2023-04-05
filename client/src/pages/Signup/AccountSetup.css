@@ -9,6 +9,11 @@ div.account-setup section.photo {
     margin-bottom: 40px;
 }
 
+div.account-setup section.photo img {
+    margin-bottom: 16px;
+    border-radius: 50%;
+}
+
 div.account-setup section.bio h5,
 div.account-setup section.photo h5 {
     color: #11515D;
@@ -16,6 +21,12 @@ div.account-setup section.photo h5 {
 
 div.account-setup #bioTextarea {
     width: 100%;
+}
+div.account-setup section.bio span {
+    color: #5FA624
+}
+div.account-setup section.bio span.invalid {
+    color: #cc0000;
 }
 
 div.account-setup div.submit-btn button {

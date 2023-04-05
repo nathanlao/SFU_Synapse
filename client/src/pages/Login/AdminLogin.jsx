@@ -31,7 +31,7 @@ export default function AdminLogin() {
     }
 
     
-    function validateLogin() {
+    async function validateLogin() {
         // console.log('validating admin login')
         // console.log(`adminname: ${adminname}, password: ${adminpass}`)
 
@@ -41,14 +41,15 @@ export default function AdminLogin() {
             body: JSON.stringify({ adminname: adminname, adminpass: adminpass})
         }
 
-        fetch('/api/admin/login', options).then(res => {
-            if(res.status === 200) {
-                navigate("/admin", {replace: true})
-            }else {
-                // show error message in view
-            }
-        })
+        const response = await fetch('/api/admin/login', options)
+        const msg = await response.json()
 
+        
+        if(response.status === 200) {
+            return navigate("/admin", {replace: true})
+        }
+
+        return alert(msg)
     }
 
 

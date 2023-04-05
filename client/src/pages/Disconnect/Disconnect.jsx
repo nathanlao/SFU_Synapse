@@ -148,11 +148,11 @@ export default function Disconnect() {
                             variant="body2" 
                             className={
                                 deleteUser.status === 'inactive'
-                                    ? 'inactive'
+                                    ? 'inactive-connection'
                                     : deleteUser.status === 'pending'
-                                    ? 'pending'
+                                    ? 'pending-connection'
                                     : deleteUser.status === 'active'
-                                    ? 'active'
+                                    ? 'active-connection'
                                     : ''
                             }>{deleteUser.status === 'pending' 
                                 ? "pending" 

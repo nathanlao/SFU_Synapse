@@ -35,19 +35,22 @@
     margin-top: 10px;
 }
 
-.inactive {
+.inactive-connection {
     color: #C3560D;
     margin-top: -15px !important;
+    text-align: center;
 }
 
-.pending {
-    color: #ebb134;
+.pending-connection {
+    color: #D29500;
     margin-top: -15px !important;
+    text-align: center;
 }
 
-.active {
-    color: #4E8C24;
+.active-connection {
+    color: #4DA862;
     margin-top: -15px !important;
+    text-align: center;
 }
 
 .pending-arrow img {

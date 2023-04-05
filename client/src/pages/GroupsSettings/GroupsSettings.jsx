@@ -228,7 +228,7 @@ export default function GroupsSettings() {
     }
 
     const handleSwitchChange = (event) => {
-        setCommunityVisibile(event.target.checked);
+        setCommunityVisibile(!event.target.checked);
         setSaveSuccess("");
     }
 
@@ -296,7 +296,7 @@ export default function GroupsSettings() {
         transform: 'translate(-50%, -50%)',
         width: 600,
         bgcolor: 'background.paper',
-        border: '2px solid #000',
+        // border: '2px solid #000',
         boxShadow: 24,
         p: 4,
         borderRadius: 5
@@ -441,8 +441,8 @@ export default function GroupsSettings() {
                     <Typography variant="body2" sx={{mb: 1, color: "#7f7f7f"}}>Group Visibility</Typography>
                     <Stack direction="row" spacing={1} alignItems="center">
                         <Typography>Private</Typography>
-                        <AntSwitch onClick={handleSwitchChange} checked={communityVisibile} inputProps={{ 'aria-label': 'ant design' }} />
-                        <Typography>Public</Typography>
+                        <AntSwitch onClick={handleSwitchChange} checked={!communityVisibile} inputProps={{ 'aria-label': 'ant design' }} />
+                        {/* <Typography>Public</Typography> */}
                     </Stack>
                     <Button sx={{mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleSaveButton}>Save</Button>
                     {saveSuccess === "Success" ? <Typography variant="body2" sx={{mt: 1, color: "#11515D"}}>Changes saved.</Typography> : 

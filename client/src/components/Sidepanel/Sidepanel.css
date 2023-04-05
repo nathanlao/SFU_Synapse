@@ -89,6 +89,9 @@
     padding-left: 10px;
     line-height: 50px;
 }
+.setting-item-div.active {
+    color: #95ceb1;
+}
 
 .setting-item-div:hover {
     border-left: 8px solid #529780;

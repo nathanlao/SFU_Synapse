@@ -42,6 +42,15 @@ div.community-browser div.window-body div.controller {
     margin-top: 16px;
     text-align: right;
 }
+div.community-browser div.window-body div.controller button {
+    border-color: #11515D;
+    color: #11515D;
+    margin-left: 8px;
+}
+div.community-browser div.window-body div.controller button:hover {
+    background-color: #11515D;
+    color: #fff;
+}
 
 div.community-browser div.window-body ul.community-list {
     padding-left: 0;
