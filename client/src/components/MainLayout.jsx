@@ -14,7 +14,7 @@ export default function Layouts() {
     const socketRef = useRef()
 
     useEffect(() => {
-        socketRef.current = io.connect('http://localhost:8080')
+        socketRef.current = io.connect()
 
         return () => {
             socketRef.current.disconnect()
