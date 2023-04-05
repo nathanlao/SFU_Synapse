@@ -69,7 +69,6 @@ export default function GroupsSettings() {
             fetch(`/api/groups/name/${groupId}`, options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
                         setGroupName(data[0].group_name)
                     })
                 } else {
@@ -90,7 +89,6 @@ export default function GroupsSettings() {
             fetch(`/api/community/visibility/${groupId}`, options).then(res => {
                 if(res.status === 200) {
                     res.json().then(data => {
-                        console.log(data)
                         if (data[0].visibility === "public")
                             setCommunityVisibile(true)
                         else 
