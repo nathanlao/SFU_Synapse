@@ -23,6 +23,7 @@ div.community-browser div.window-body h2 {
     color: #11515D;
     font-size: 24px;
     margin-bottom: 20px;
+    padding-left: 8px;
 }
 div.community-browser div.window-body #closeBtn {
     position: absolute;
@@ -45,17 +46,25 @@ div.community-browser div.window-body div.controller {
 
 div.community-browser div.window-body ul.community-list {
     padding-left: 0;
+    max-height: 340px;
+    overflow-y: scroll;
+}
+div.community-browser div.window-body ul.community-list::-webkit-scrollbar {
+    display: none;
 }
 
 div.community-browser div.window-body ul.community-list li {
     list-style-type: none;
-    border-bottom: 1px solid #11515D;
     padding-top: 4px;
+    padding-left: 8px;
     padding-bottom: 4px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+div.community-browser div.window-body ul.community-list li:hover {
+    background-color: #C3D8D1;
 }
 div.community-browser div.window-body ul.community-list li img {
     width: 32px;
@@ -65,14 +74,16 @@ div.community-browser div.window-body ul.community-list li img {
     border:rgba(0, 0, 0, .6) 1px solid;
 }
 div.community-browser div.window-body ul.community-list li button {
-    background-color: #C3D8D1;
-    border-radius: 8px;
     margin-left: 8px;
+}
+div.community-browser div.window-body ul.community-list li button#joinBtn:hover {
+    font-weight: bold;
+    color: #11515D;
 }
 
 div.community-browser div.window-body ul.community-list li button.community-name {
     border: none;
-    background-color: white;
+    background-color: transparent;
     margin: 0;
     padding: 0;
 }

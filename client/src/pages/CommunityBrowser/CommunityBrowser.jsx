@@ -170,7 +170,7 @@ export default function CommunityBrowser({notifyClosure, notifyCommunityUpdate})
                                         {community.group_name}
                                     </button>
                             </div>
-                            <button type="button" className="btn" onClick={() => handleJoinCommunity(community.community_id)}>Join</button>
+                            <button type="button" className="btn" id="joinBtn" onClick={() => handleJoinCommunity(community.community_id)}>Join</button>
                         </li>
                     ))}
                 </ul>

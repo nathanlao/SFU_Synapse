@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent, Typography, Avatar } from "@mui/material";
-import profileIcon from "../../images/default_profile_picture.png"
 
 import './ProfileCard.css'
 import { useParams } from "react-router-dom";

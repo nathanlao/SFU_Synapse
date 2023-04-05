@@ -181,9 +181,20 @@ const deleteAccount = async (req, res) => {
         })
         await promise3
 
+
+        // 4. remove user from all groups
+        const promise4 = await new Promise((resolve, reject) => {
+            const query = 'DELETE FROM MemberOf WHERE user_id=?'
+            db.query(query, [user_id], (err) => {
+                if(err) return reject(err)
+                return resolve()
+            })
+        })
+        await promise4
+
         console.log('all done')
         req.session.destroy()
-        res.status(200).json('Account deletion completed.')
+        res.status(200).json('Account successfully deleted.')
 
     }catch(err) {
         console.log(err)

@@ -35,7 +35,7 @@ export default function Home() {
             }
 
             // console.log(data.user)
-            // console.log(data.connections)
+            console.log(data.connections)
             // console.log(data.courses)
             // console.log(data.communities)
 
@@ -244,7 +244,8 @@ export default function Home() {
                                     <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
-                            <li id="65b6bb93-6d94-4120-8404-669ec6809c47">
+                            {connections.filter((item) => {return item.status === 'active'}).length === 0 && <p className="emptyMsg"><small>No active connections.</small></p>}
+                            {/* <li id="65b6bb93-6d94-4120-8404-669ec6809c47">
                                 <div className="summary">
                                     <img src="/images/default/default-user-photo.png" alt="" />
                                     <div>
@@ -253,7 +254,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <button type="button" className="btn" onClick={handleViewUser}>view</button>
-                            </li>
+                            </li> */}
                         </ul>
                     </section>
                     <section className="pending-connections">
@@ -262,7 +263,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'pending'
                             }).map((item) => (
-                                <li id={item.username} key={item.username}>
+                                <li id={item.user_id} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -273,27 +274,7 @@ export default function Home() {
                                     <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
-
+                            {connections.filter((item) => {return item.status === 'pending'}).length === 0 && <p className="emptyMsg"><small>No pending connections.</small></p>}
                         </ul>
                     </section>
                     <section className="inactive-connections">
@@ -302,7 +283,7 @@ export default function Home() {
                             {connections.filter((item) => {
                                 return item.status === 'inactive'
                             }).map((item) => (
-                                <li id={item.username} key={item.username}>
+                                <li id={item.user_id} key={item.username}>
                                     <div className="summary">
                                         <img src={item.photo} alt="" />
                                         <div>
@@ -313,16 +294,7 @@ export default function Home() {
                                     <button type="button" className="btn" onClick={handleViewUser}>view</button>
                                 </li>
                             ))}
-                            <li>
-                                <div className="summary">
-                                    <img src="/images/default/default-user-photo.png" alt="" />
-                                    <div>
-                                        <p className="name">Lincoln Pholips</p>
-                                        <p>lincolnP312</p>
-                                    </div>
-                                </div>
-                                <button type="button" className="btn">view</button>
-                            </li>
+                            {connections.filter((item) => {return item.status === 'inactive'}).length === 0 && <p className="emptyMsg"><small>No inactive connections.</small></p>}
                         </ul>
                     </section>
                 </section>
@@ -345,6 +317,7 @@ export default function Home() {
                                     </div>
                                 </li>
                             ))}
+                            {courses.length === 0 && <p><small>You have no enrolled courses.</small></p>}
                         </ul>
                     </section>
                     <section className="community-groups">
@@ -366,7 +339,7 @@ export default function Home() {
                                     </div>
                                 </li>
                             ))}
-
+                            {communities.length === 0 && <p><small>You haven't joined any communities.</small></p>}
                         </ul>
                     </section>
                 </section>
