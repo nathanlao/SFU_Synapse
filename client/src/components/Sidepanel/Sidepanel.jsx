@@ -399,14 +399,14 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
 
         return (
             <Link 
-                to={`/groups/${community.group_id}`} 
-                key={community.group_id}
-                onClick={() => handleSwitchSubtabs({groupId: community.group_id, groupName: community.group_name, groupPic: community.photo})}
+                to={`/groups/${community.community_id}`} 
+                key={community.community_id}
+                onClick={() => handleSwitchSubtabs({groupId: community.community_id, groupName: community.group_name, groupPic: community.photo})}
                 state={{
                     user_id: currentUserId
                 }}
             >
-                <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
+                <Accordion.Body style={{backgroundColor: '#11515c'}}>
                     <SidepanelItem 
                         image={community.photo}
                         title={community.group_name}
