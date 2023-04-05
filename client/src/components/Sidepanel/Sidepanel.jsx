@@ -142,6 +142,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
             setError(err)
         }
     }
+
     async function fetchAllConnections() {
         setUpdateConnections(true)
         await getPendingConnections()
@@ -149,16 +150,46 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         await getInactiveConnections()
     }
 
+    async function updateInactiveConnections() {
+        try {
+            const response = await fetch('/api/connections/update-inactive', {method: 'PUT'})
+            if (response.status === 200) {
+                console.log('Inactive connections updated')
+            } else {
+                console.log('Error updating inactive connections')
+            }
+            setUpdateConnections(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     // Fetching pending/active/inactive connections
     useEffect(() => {
         console.log('connections updates: ' + updateConnections)
-        if (currentUserId) {
-            fetchAllConnections()
-        }
+
         if(updateConnections) {
             fetchAllConnections()
         }
-    }, [updateConnections, currentUserId])
+
+    }, [updateConnections])
+
+    useEffect(() => {
+        if (currentUserId) {
+            fetchAllConnections()
+        }
+    }, [currentUserId])
+
+    // useEffect(() => {
+    //     // Call the function to update inactive connections periodically
+    //     const interval = setInterval(() => {
+    //         updateInactiveConnections()
+    //     }, 5000) // Check every hour
+        
+    //     return () => {
+    //         clearInterval(interval)
+    //     }
+    // }, [updateConnections])
     
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
