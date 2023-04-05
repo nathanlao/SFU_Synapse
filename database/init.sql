@@ -111,23 +111,10 @@ CREATE TABLE AuthCodes (
 	expires DATETIME NOT NULL
 );
 
--- SET GLOBAL time_zone = 'America/Vancouver';
 INSERT INTO Admins (admin_id, adminname, adminpass) VALUES ('01', 'default-admin', 'defAdmin@synapse');
 
 -- connect to database using docker for dev
 -- mysql -h localhost -P 3306 -u root -p
 
--- 1 test entries
--- INSERT INTO Users (user_id, username, first_name, last_name, email, userpass, intro) 
---     VALUES ('testuser1', 'bobby', 'Bobby', 'Chan', 'bobbyc@sfu.ca', 'bobbypass', 'I am the instructor for CMPT372!');
--- INSERT INTO `Groups` (group_id, group_name, group_description) 
---     VALUES ('1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed', 'Volleyball Lovers', 'We welcome all lovers of volleyball!');
--- INSERT INTO Communities (community_id, created_by) 
---     VALUES ('1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed', 'testuser1');
-
--- 2 test queries
--- select * from Users;
--- select * from `Groups`;
--- select G.group_id, G.group_name, G.group_description, C.created_by, C.visibility from `Groups` G, Communities C WHERE G.group_id=C.community_id;
 
 flush privileges;

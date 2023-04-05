@@ -161,5 +161,22 @@ function getRandomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
+// '/api/admin/logout' .post()
+const adminLogout = (req, res) => {
+    console.log('Received request: adminLogout')
 
-module.exports = { addSection, addCourse, deleteSection, deleteCourse }
+    if(!req.session || !req.session.admin) {
+        res.sendStatus(401)
+    }
+
+    console.log('destroying session')
+    req.session.destroy(err => {
+        if(err) {
+          return res.status(500).json(err)
+        }
+        return res.status(200).json('Logout successful')
+    })
+}
+
+
+module.exports = { addSection, addCourse, deleteSection, deleteCourse, adminLogout }
