@@ -32,8 +32,8 @@ export default function AdminLogin() {
 
     
     function validateLogin() {
-        console.log('validating admin login')
-        console.log(`adminname: ${adminname}, password: ${adminpass}`)
+        // console.log('validating admin login')
+        // console.log(`adminname: ${adminname}, password: ${adminpass}`)
 
         const options = {
             method: 'POST',

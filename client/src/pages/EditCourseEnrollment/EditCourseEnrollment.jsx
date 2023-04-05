@@ -19,7 +19,7 @@ export default function EditCourseEnrollment() {
     }
 
     useEffect(() => {
-        console.log('received update from child component')
+        // console.log('received update from child component')
         setUpdate(false)
     }, [list])
 
@@ -52,7 +52,7 @@ export default function EditCourseEnrollment() {
             return fetch(url, { method: 'DELETE' })
         })
         await Promise.all(promises1)
-        console.log('Removed courses')
+        // console.log('Removed courses')
         
         // 2 add new courses
         const promises2 = list.filter((item) => {
@@ -62,10 +62,10 @@ export default function EditCourseEnrollment() {
             return fetch(url, { method: 'POST' })
         })
         await Promise.all(promises2)
-        console.log('Added new courses')
+        // console.log('Added new courses')
 
         
-        console.log('Edited course enrollment!!')
+        // console.log('Edited course enrollment!!')
         notifyChild()
     }
 

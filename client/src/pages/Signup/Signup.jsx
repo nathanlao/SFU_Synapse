@@ -92,7 +92,7 @@ export default function Signup() {
             return alert(data)
         }
 
-        console.log(data)
+        // console.log(data)
     }
 
     function handleUsernameChange(event) {

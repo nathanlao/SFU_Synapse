@@ -23,7 +23,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
             }
     
             const data = await result.json()
-            console.log(data)
+            // console.log(data)
             const tempDeps = []
             data.map((item) => {
                 tempDeps.push(
@@ -31,14 +31,14 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
                 )
             })
     
-            console.log(tempDeps)
+            // console.log(tempDeps)
             setDeps(tempDeps)
         }
         fetchDeps()
 
         // not account setup
         if(!setup) {
-            console.log("getting enrolled courses")
+            // console.log("getting enrolled courses")
 
             async function fetchEnrolledCourses() {
                 const url = `/api/course/${year}/${term}`
@@ -48,7 +48,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
                 }
 
                 const data = await result.json()
-                console.log(data)
+                // console.log(data)
                 const enrolledList = data.map((item) => {
                     return {...item, new_item: false, keep: true}
                 })
@@ -62,7 +62,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
     
     useEffect(() => {
         if(updateFromParent) {
-            console.log('Theres is an update from parent')
+            // console.log('Theres is an update from parent')
 
             const updatedList = selectedList.filter((item1) => {
                 return item1.keep
@@ -86,7 +86,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
             }
     
             const data = await result.json()
-            console.log(data)
+            // console.log(data)
             const tempCourses = []
             data.map((item) => {
                 tempCourses.push(
@@ -94,7 +94,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
                 )
             })
     
-            console.log(tempCourses)
+            // console.log(tempCourses)
             setCourses(tempCourses)
         }
 
@@ -109,7 +109,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
         if(dep === null || course === null) {
             return
         }
-        console.log('Department: ' + dep.label + ' Course: ' + course.label)
+        // console.log('Department: ' + dep.label + ' Course: ' + course.label)
         
         async function fetchSections() {
             const url = `/api/course-list/${year}/${term}/${dep.value}/${course.value}`
@@ -120,7 +120,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
             }
     
             const data = await result.json()
-            console.log(data)
+            // console.log(data)
             setSections(data)
         }
         fetchSections()
@@ -133,12 +133,12 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
 
 
     function handleDepChange(dep) {
-        console.log(dep)
+        // console.log(dep)
         setDep(dep)
     }
 
     function handleCourseChange(course) {
-        console.log(course)
+        // console.log(course)
         setCourse(course)
     }
 
@@ -149,7 +149,7 @@ export default function CourseSelector({year, term, updateParentList, setup, upd
         const selectedNum = metadata.num
         const selectedSection = metadata.section
 
-        console.log('add ' + selectedDep.toUpperCase() + selectedNum.toUpperCase() + ' ' + selectedSection.toUpperCase())
+        // console.log('add ' + selectedDep.toUpperCase() + selectedNum.toUpperCase() + ' ' + selectedSection.toUpperCase())
 
         var modifiedList = [...selectedList]
         if(!modifiedList.find(item => {

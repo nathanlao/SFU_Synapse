@@ -35,7 +35,7 @@ export default function Home() {
             }
 
             // console.log(data.user)
-            console.log(data.connections)
+            // console.log(data.connections)
             // console.log(data.courses)
             // console.log(data.communities)
 

@@ -40,7 +40,7 @@ export default function AccountSetup() {
             return fetch(url, { method: 'DELETE' })
         })
         await Promise.all(promises1)
-        console.log('Removed courses')
+        // console.log('Removed courses')
         
         // 2 add new courses
         const promises2 = list.filter((item) => {
@@ -50,11 +50,11 @@ export default function AccountSetup() {
             return fetch(url, { method: 'POST' })
         })
         await Promise.all(promises2)
-        console.log('Added new courses')
+        // console.log('Added new courses')
         
         // 3 update user's bio
         const bio = document.getElementById('bioTextarea')
-        console.log(bio.value)
+        // console.log(bio.value)
         if(bio.value !== '') {
             const options = {
                 method: 'PUT',
@@ -64,10 +64,10 @@ export default function AccountSetup() {
             const result = await fetch('/api/setup/bio', options)
             if(result.status !== 200) {
                 const msg = await result.json()
-                console.log(msg)
+                // console.log(msg)
                 return
             }else {
-                console.log('Profile bio saved')
+                // console.log('Profile bio saved')
             }
         }
 
@@ -88,30 +88,23 @@ export default function AccountSetup() {
                 return
             }
 
-            console.log('Profile photo saved')
+            // console.log('Profile photo saved')
         }
 
 
-        console.log('Account setup Completed!!')
+        // console.log('Account setup Completed!!')
         navigate("/", {replace: true})
     }
 
 
     function checkWordCount(event) {
-        console.log(event.target.value.length)
         setBioLen(event.target.value.length)
     }
 
     const updateList = (list) => {
-        console.log(list)
         setList(list)
     }
 
-    useEffect(() => {
-        console.log('received update from child component')
-        console.log(list)
-
-    }, [list])
 
     function handleFileChange(event) {
         if(event.target.files && event.target.files[0]) {
@@ -123,7 +116,7 @@ export default function AccountSetup() {
                     data: file
                 }
                 setPhoto(img)
-                console.log(photo)
+                // console.log(photo)
             }else {
                 setPhoto({})
                 event.target.value = ''
