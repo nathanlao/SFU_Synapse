@@ -290,7 +290,6 @@ const passOwnership = (req, res) => {
     })
 }
 
-module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, passOwnership }
 // Helper function
 async function getMemberList(target_id, currentuser_id) {
     return new Promise((resolve, reject) => {
@@ -319,4 +318,4 @@ const getMembers = async (req, res) => {
 }
 
 
-module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, getMembers }
+module.exports = { getJoinedCommunities, updateCommunity,deleteCommunity, getCommunityPhotoFromId, getCommunityFromID, getCommunityVisibilityFromID, checkUserIsCommunityCreator, setCommunityPhoto, getCommunityPhoto, deleteCommunityPhoto, getMembers, passOwnership }
