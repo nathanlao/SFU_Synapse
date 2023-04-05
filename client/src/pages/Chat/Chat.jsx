@@ -23,6 +23,8 @@ export default function Chat() {
     const connectionObj = location.state?.pendingConnections?.find(connection => {
         return connection.connection_id === connectionId
     })
+
+    const isInactive = location?.state?.isInactive
     
     const [input, setInput] = useState("")
     const [messageList, setMessageList] = useState([])
@@ -97,6 +99,25 @@ export default function Chat() {
         }
     }
 
+    // Update inactive connection to be active again
+    async function updateInactiveToActive(connection_id) {
+        try {
+            const response = await fetch('/api/connections/update-active', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ connection_id: connection_id })
+            })
+            if (response.status === 200) {
+                console.log('Inactive connections updated to active')
+            } else {
+                console.log('Error updating inactive connections')
+            }
+            setUpdateConnections(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     function handleInputChange(e) {
         setInput(e.target.value)
     }
@@ -142,6 +163,11 @@ export default function Chat() {
 
         // update the state in sidepanel.jsx
         setUpdateConnections(true)
+
+        if (isInactive) {
+            console.log(connectionObj.connection_id)
+            updateInactiveToActive(connectionObj.connection_id)
+        }
     }
 
     useEffect(() => {
@@ -186,6 +212,11 @@ export default function Chat() {
                     timestamp: timestamp
                 }])
                 setUpdateConnections(true)
+
+                if (isInactive) {
+                    console.log("updated ")
+                    updateInactiveToActive(connectionObj.connection_id)
+                }
             })
 
             // Clean up the event listener

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, List, ListItem, ListItemIcon, ListItemText, Avatar } from "@mui/material";
 import ChatTopBar from "../../components/ChatTopBar/ChatTopBar";
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
@@ -19,6 +19,7 @@ export default function GroupsSettings() {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [leaveModalOpen, setLeaveModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [passModalOpen, setPassModalOpen] = useState(false);
     const [isCommunityCreator, setIsCommunityCreator] = useState(false);
     const [inviteID, setInviteID] = useState("LOADING...");
     const [leaveSuccess, setLeaveSuccess] = useState("");
@@ -33,6 +34,7 @@ export default function GroupsSettings() {
     const [popupWindowState, setPopupWindowState] = useState(false);
     const [communityPhoto, setCommunityPhoto] = useState('/images/group_profile/community_random_default_1.png');
     const { notifyModalClosure } = useOutletContext();
+    const [memberList, setMemberList] = useState([]);
 
     function showPopupWindow() {
         setPopupWindowState(true)
@@ -181,6 +183,16 @@ export default function GroupsSettings() {
         handleLeaveGroup();
         setLeaveModalOpen(true);
     }
+
+    const handlePassOwnershipModalOpen = () => {
+        setPassModalOpen(true);
+        getMemberList();
+    }
+
+    const handlePassModalClose = () => {
+        setPassModalOpen(false);
+    }
+
     const handleLeaveModalClose = () => {
         setLeaveModalOpen(false);
         notifyModalClosure()
@@ -238,6 +250,43 @@ export default function GroupsSettings() {
                 setSaveSuccess("Fail");
             }
         })
+    }
+
+    async function getMemberList() {
+        try {
+            const response = await fetch('/api/community/member-list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ community_id:  groupId})
+                })
+            const data = await response.json()
+            setMemberList(data)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async function handlePassOwnership(new_owner_id, username) {
+
+        try {
+            const options = {
+                method: "PUT",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_owner_id: new_owner_id, community_id: groupId})
+            }
+
+            const response = await fetch('/api/community/pass-ownership', options)
+            if (response.status !== 200) {
+                alert("Unable to pass ownership")
+                return
+            }
+            alert(`Successfully passed ownership to ${username}`)
+            navigate("/groups", {replace: true})
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const style = {
@@ -302,10 +351,42 @@ export default function GroupsSettings() {
                 {popupWindowState && <PopupWindow notifyClosure={closePopupWindow} notifyChange={updateCommunityPhoto}/>}
                 {isCommunity && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>}
                 {isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleEditModalOpen}>Edit Community</Button>}
+                {isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handlePassOwnershipModalOpen}>Pass Ownership</Button> }
                 {!isCommunityCreator ? <Button sx={{ml: 4, mt: 4, background: "#FF6057", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button> :
                 <Button sx={{ml: 4, mt: 4, background: "#FF6057", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleDeleteModalOpen}>Delete Community</Button> 
                 }
             </div>
+            <Modal
+                open={passModalOpen}
+                onClose={handlePassModalClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Member List
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }} component="div">
+                    <List>
+                        {memberList.map((member) => (
+                            <ListItem key={member.user_id}>
+                                <ListItemIcon>
+                                    <Avatar alt={member.username} src={member.photo} />
+                                </ListItemIcon>
+                                <ListItemText primary={member.username} />
+                                <Button 
+                                    variant="contained" 
+                                    sx={{background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }}}
+                                    onClick={() => handlePassOwnership(member.user_id, member.username)}    
+                                >
+                                    Confirm passing
+                                </Button>
+                            </ListItem>
+                        ))}
+                    </List>
+                    </Typography>
+                </Box>
+            </Modal>
             <Modal
                 open={linkModalOpen}
                 onClose={handleLinkModalClose}

@@ -244,13 +244,22 @@ function getConnectionWithStatus(userId, status) {
     })
 }
 
-function updateStatusInDb(userId, otherUserId, status) {
+async function updateStatusInDb(userId, otherUserId, status) {
     const qUpdateStatus = `UPDATE Connections SET status = ? 
                             WHERE (userA_id = ? AND userB_id = ?) OR (userB_id = ? AND userA_id = ?)`
     return new Promise((resolve, reject) => {
         db.query(qUpdateStatus, [status, userId, otherUserId, otherUserId, userId], (err, data) => {
             if(err) reject(err)
             resolve(`The connection between '${userId}' and '${otherUserId}' has been updated to '${status}'.`)
+        })
+    })
+}
+async function updateInactiveStatusToActive(connection_id, status) {
+    return new Promise((resolve, reject) => {
+        const query = 'UPDATE Connections SET status = ? WHERE connection_id = ?'
+        db.query(query, [status, connection_id], (err, result) => {
+            if (err) return reject(err)
+            resolve(result)
         })
     })
 }
@@ -297,12 +306,22 @@ const updateActiveToInactive = async (req, res) => {
                 }
             } else {
             */
-            let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
-            let timeDiffInMin = timeDiffInSec / 60
-            if (timeDiffInMin >= four_months) {
-                const response = await updateStatusInDb(userId, activeConnections[i].user_id, 'inactive')
-                console.log(response)
-            }
+                let mostRecentChatTimestamp;
+                if (lastChatSent.length === 0 && lastChatReceived.length === 0) {
+                    continue
+                } else if (lastChatSent.length === 0) {
+                    mostRecentChatTimestamp = lastChatReceived[0].timestamp
+                } else if (lastChatReceived.length === 0) {
+                    mostRecentChatTimestamp = lastChatSent[0].timestamp
+                } else {
+                    mostRecentChatTimestamp = new Date(Math.max(lastChatSent[0].timestamp, lastChatReceived[0].timestamp))
+                }
+                let timeDiffInSec = (Math.abs(mostRecentChatTimestamp.getTime() - Date.now())) / 1000
+                let timeDiffInMin = timeDiffInSec / 60
+                if (timeDiffInMin >= four_months) {
+                    const response = await updateStatusInDb(userId, activeConnections[i].user_id, 'inactive')
+                    console.log(response)
+                }
         }
         res.status(200).json("Made all necessary updates to the status of the user's connections.")
     } catch(err) {
@@ -316,27 +335,17 @@ const updateInactiveToActive = async (req, res) => {
         return res.sendStatus(401)
     }
     const userId = req.session.user.user_id
+    const { connection_id } = req.body
     
     try {
-        const inactiveConnections = await getConnectionWithStatus(userId, 'inactive')
-        const four_months = 175200 //in minutes
-
-        // for all the users that the current user has inactive connections with,
-        for (let i=0; i<inactiveConnections.length; i++) {
-            let lastChatSent = await getLastChat(userId, inactiveConnections[i].user_id)
-            let lastChatReceived = await getLastChat(inactiveConnections[i].user_id, userId)
-
-            let timeDiffInSec = (Math.abs(lastChatSent[0].timestamp.getTime() - lastChatReceived[0].timestamp.getTime())) / 1000
-            let timeDiffInMin = timeDiffInSec / 60
-            if (timeDiffInMin < four_months) {
-                const response = await updateStatusInDb(userId, inactiveConnections[i].user_id, 'active')
-                console.log(response)
-            }
+        const result = await updateInactiveStatusToActive(connection_id, 'active')
+        if (result) {
+            res.status(200).json("Connection status updated to active.")
+        } else {
+            res.status(500).json("Error updating connection status.")
         }
-        res.status(200).json("Made all necessary updates to the status of the user's connections.")
-    } catch(err) {
+    } catch (err) {
         res.status(500).json(err)
-        return
     }
 }
 
