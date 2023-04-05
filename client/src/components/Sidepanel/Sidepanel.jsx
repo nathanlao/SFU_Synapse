@@ -153,9 +153,9 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
         try {
             const response = await fetch('/api/connections/update-inactive', {method: 'PUT'})
             if (response.status === 200) {
-                console.log('Inactive connections updated')
+                console.log('Active connections updated to inactive')
             } else {
-                console.log('Error updating inactive connections')
+                console.log('Error updating active connections')
             }
             setUpdateConnections(true)
         } catch (err) {
@@ -263,7 +263,8 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
                 state={{ 
                     sender_id: currentUserId,
                     receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
-                    pendingConnections: inactiveConnections
+                    pendingConnections: inactiveConnections,
+                    isInactive: true
                 }}
                 onClick={() => handleClickChat({connectionId: connection.connection_id})}
                 
