@@ -91,7 +91,10 @@ export default function GroupsSettings() {
                 if(res.status === 200) {
                     res.json().then(data => {
                         console.log(data)
-                        (data[0].visibility === "public") ? setCommunityVisibile(true) : setCommunityVisibile(false)
+                        if (data[0].visibility === "public")
+                            setCommunityVisibile(true)
+                        else 
+                            setCommunityVisibile(false)
                     })
                 } else {
                     setCommunityVisibile(false)
@@ -220,10 +223,11 @@ export default function GroupsSettings() {
     }
 
     function handleSaveButton() {
+        const communityVisibileString = (communityVisibile ? "public" : "private");
         const options = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ group_id: groupId, group_name: groupName, group_description: groupDescription, visibility: communityVisibile })
+            body: JSON.stringify({ group_id: groupId, group_name: groupName, group_description: groupDescription, visibility: communityVisibileString })
         }
 
         fetch(`/api/community`, options).then(res => {
