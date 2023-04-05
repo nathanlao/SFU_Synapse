@@ -257,20 +257,32 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     // Map over inactiveConnections data return from backend
     const inactiveConnectionsEl = inactiveConnections.map((connection) => {
         return (
-            <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem 
-                    image={connection.userA_id === currentUserId 
-                        ? connection.userB_photo 
-                        : connection.userA_photo
-                    } 
-                    title={ connection.userA_id === currentUserId
-                        ? connection.userB_username
-                        : connection.userA_username
-                    } 
-                    subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
-                    indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
-                />
-            </Accordion.Body>
+            <Link
+                to={`/connections/${connection.connection_id}`}
+                key={connection.connection_id}
+                state={{ 
+                    sender_id: currentUserId,
+                    receiver_name: connection.userA_id === currentUserId ? connection.userB_username : connection.userA_username, 
+                    pendingConnections: inactiveConnections
+                }}
+                onClick={() => handleClickChat({connectionId: connection.connection_id})}
+                
+            >
+                <Accordion.Body key={connection.connection_id} style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={connection.userA_id === currentUserId 
+                            ? connection.userB_photo 
+                            : connection.userA_photo
+                        } 
+                        title={ connection.userA_id === currentUserId
+                            ? connection.userB_username
+                            : connection.userA_username
+                        } 
+                        subtitle={connection.latestMessage ? connection.latestMessage : "No messages yet"}
+                        indicator={connection.latestTime ? formatTimestampForDisplay(connection.latestTime) : ""}
+                    />
+                </Accordion.Body>
+            </Link>
         )
     })
 

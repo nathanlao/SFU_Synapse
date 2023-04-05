@@ -190,6 +190,8 @@ const getExistingConnection = (req, res) => {
 
     const selectQuery = `SELECT c.connection_id, c.status, 
                             c.userA_id, c.userB_id,
+                            ua.first_name AS userA_first_name, ua.last_name AS userA_last_name,
+                            ub.first_name AS userB_first_name, ub.last_name AS userB_last_name,
                             ua.username AS userA_username, 
                             ub.username AS userB_username, 
                             ua.photo AS userA_photo, 
