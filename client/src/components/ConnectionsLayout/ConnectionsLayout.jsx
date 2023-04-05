@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useOutletContext } from "react-router-dom";
 import Sidepanel from "../Sidepanel/Sidepanel";
 import Notification from "../Notification/Notification"
+import ConnectionUpdatesContext from "../../context/ConnectionUpdatesContext";
 
 import './ConnectionsLayout.css'
         
@@ -13,6 +14,7 @@ export default function ConnectionsLayout() {
 
     const [onChatTab, setOnChatTab] = useState(false)
     const [connectionId, setConnectionId] = useState(null);
+    const [updateConnections, setUpdateConnections] = useState(false)
 
     const handleClickChat = ({ connectionId }) => {
         setConnectionId(connectionId)
@@ -27,15 +29,16 @@ export default function ConnectionsLayout() {
     }, [path, connectionId])
 
     return (
-        <>
+        <ConnectionUpdatesContext.Provider value={{ updateConnections, setUpdateConnections }}>
             <Sidepanel connections handleClickChat={handleClickChat} />
             {onChatTab ? (
                 <div className="connection-container">
-                    <Outlet context={{from: path, socketForConnection: socket }}/>
+                    <Outlet context={{from: path, socketForConnection: socket}}/>
                 </div>
             ) : (
                 <Notification />
             )}
-        </>
+        </ConnectionUpdatesContext.Provider>
+        
     )
 }

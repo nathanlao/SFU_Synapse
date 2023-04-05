@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock } from '@fortawesome/free-solid-svg-icons'
 import binocularsIcon from "../../images/binoculars.png";
 import CommunityBrowser from "../../pages/CommunityBrowser/CommunityBrowser"
+import ConnectionUpdatesContext from "../../context/ConnectionUpdatesContext";
 
 import "./Sidepanel.css";
 
@@ -20,6 +21,7 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
     const [activeConnections, setActiveConnections] = useState([])
     const [inactiveConnections, setInactiveConnections] = useState([])
     const [error, setError] = useState(null)
+    const { updateConnections, setUpdateConnections } = useContext(ConnectionUpdatesContext)
 
     function formatTimestampForDisplay(timestamp) {
         const date = new Date(timestamp);
@@ -140,8 +142,8 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
             setError(err)
         }
     }
-
     async function fetchAllConnections() {
+        setUpdateConnections(true)
         await getPendingConnections()
         await getActiveConnections()
         await getInactiveConnections()
@@ -149,17 +151,14 @@ function ConnectionsSidepanel({ handleClickChat, currentUserId }) {
 
     // Fetching pending/active/inactive connections
     useEffect(() => {
+        console.log('connections updates: ' + updateConnections)
         if (currentUserId) {
             fetchAllConnections()
-            // const intervalId = setInterval(() => {
-            //     fetchAllConnections()
-            // }, 5000) // Fetch connections every 5 seconds
-    
-            // return () => {
-            //     clearInterval(intervalId)
-            // }
         }
-    }, [currentUserId])
+        if(updateConnections) {
+            fetchAllConnections()
+        }
+    }, [updateConnections, currentUserId])
     
     // Map over the pendingConnections
     const pendingConnectionsEl = pendingConnections.map((connection) => {
@@ -368,14 +367,23 @@ function GroupsSidepanel({ shouldUpdate, handleSwitchSubtabs, currentUserId }) {
         const moreThanOneMember = (community.member_count > 1) ? "members" : "member"
 
         return (
-            <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
-                <SidepanelItem 
-                    image={community.photo}
-                    title={community.group_name}
-                    subtitle={`${community.member_count} ${moreThanOneMember}`}
-                    indicator=""
-                    />
-            </Accordion.Body>
+            <Link 
+                to={`/groups/${community.group_id}`} 
+                key={community.group_id}
+                onClick={() => handleSwitchSubtabs({groupId: community.group_id, groupName: community.group_name, groupPic: community.photo})}
+                state={{
+                    user_id: currentUserId
+                }}
+            >
+                <Accordion.Body key={community.community_id} style={{backgroundColor: '#11515c'}}>
+                    <SidepanelItem 
+                        image={community.photo}
+                        title={community.group_name}
+                        subtitle={`${community.member_count} ${moreThanOneMember}`}
+                        indicator=""
+                        />
+                </Accordion.Body>
+            </Link>
         )
     })
 
