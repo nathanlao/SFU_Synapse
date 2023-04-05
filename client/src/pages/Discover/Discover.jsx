@@ -159,7 +159,7 @@ export default function Discover() {
                     disabled={isSelected ? false : true}
                     value={input}
                     onChange={handleInputChange}
-                    placeholder={`Message to ${currentReceiverFirstName}...`}>
+                    placeholder={isSelected ? `Message to ${currentReceiverFirstName}...` : "Select a profile card to start connecting..."}>
                 </InputBase>
                 <IconButton type="submit" disabled={isSelected ? false : true}>
                     <GroupAddIcon className="send-button"/>
