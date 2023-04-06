@@ -156,7 +156,7 @@ npm start
 Oftentimes, SFU students have a hard time getting to know classmates and building long-lasting friendships. There is a high chance that a classmate sitting right beside you is also a big fan of your favorite game. However, you would rarely come across such information in a real classroom setting and probably won’t start a conversation, missing out on the opportunity to build a relationship. Our web application will make it easier to discover other students with common interests and help users build and maintain strong connections.
 
 
-### Purpose of Features
+### Features and their Purposes
 - **SFU Email Verification** 
     -  Limits app access to SFU students by verifying their SFU email when creating an account
 - **Course groups**
