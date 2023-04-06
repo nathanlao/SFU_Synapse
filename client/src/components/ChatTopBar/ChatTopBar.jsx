@@ -17,6 +17,7 @@ export default function ChatTopBar(props) {
 
     const chatSubtab = useMatch(`/groups/${groupId}`)
     const discoverSubtab = useMatch(`/groups/${groupId}/discover`)
+    const settingsSubtab = useMatch(`/groups/${groupId}/settings`)
 
     // receiver_name, groupName, groupPic from Sidepanel.jsx
     const chatNames = useLocation().state?.receiver_name
@@ -67,13 +68,13 @@ export default function ChatTopBar(props) {
                         <div className="subtabs">
                             <NavLink
                                 to={`/groups/${groupId}/discover`}
-                                className={discoverSubtab ? "active-subtab" : ""}
+                                className={discoverSubtab ? "active-subtab" : "inactive-subtab"}
                             >
                                 DISCOVER
                             </NavLink>
                             <NavLink 
                                 to={`/groups/${groupId}`}
-                                className={chatSubtab ? "active-subtab" : ""}
+                                className={chatSubtab ? "active-subtab" : "inactive-subtab"}
                             >
                                 CHAT
                             </NavLink>
@@ -81,7 +82,7 @@ export default function ChatTopBar(props) {
                         <NavLink 
                             to={`/groups/${groupId}/settings`}
                         >
-                            <img className="groups-settings-logo" src={settingLogo} alt="setting logo"/>
+                            <img className={settingsSubtab ? "active-groups-settings-logo": "groups-settings-logo"} src={settingLogo} alt="setting logo"/>
                         </NavLink>
                         </>
                     ) : null

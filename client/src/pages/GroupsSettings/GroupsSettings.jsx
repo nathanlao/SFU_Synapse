@@ -349,7 +349,7 @@ export default function GroupsSettings() {
             <ChatTopBar />
             <div className='groups-settings-container'>
                 {popupWindowState && <PopupWindow notifyClosure={closePopupWindow} notifyChange={updateCommunityPhoto}/>}
-                {isCommunity && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>}
+                {(isCommunity && !communityVisibile) && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleLinkModalOpen}>Get Invite Link</Button>}
                 {isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handleEditModalOpen}>Edit Community</Button>}
                 {isCommunityCreator && <Button sx={{ml: 4, mt: 4, background: "#5E9697",  "&:hover":{backgroundColor: "#11515D" }, display: "block"}} variant="contained" onClick={handlePassOwnershipModalOpen}>Pass Ownership</Button> }
                 {!isCommunityCreator ? <Button sx={{ml: 4, mt: 4, background: "#FF6057", "&:hover": {backgroundColor: "#B30000" }}} variant="contained" onClick={handleLeaveModalOpen}>Leave Group</Button> :

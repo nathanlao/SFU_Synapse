@@ -39,8 +39,19 @@
     color: #11515D;
 }
 
+.inactive-subtab {
+    margin-bottom: 2px;
+}
+
 .groups-settings-logo {
     width: 20px;
     padding-top: 20px;
     padding-bottom: 21px;
+}
+
+.active-groups-settings-logo {
+    width: 20px;
+    padding-top: 20px;
+    padding-bottom: 19px;
+    border-bottom: 2px solid #11515D;
 }
