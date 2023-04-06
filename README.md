@@ -6,46 +6,118 @@ Members
 - Jason.N
 - Rachel.S
 
-Link to application: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/
+Link to application: http://sfu-synapse.uc.r.appspot.com/
 <br>
 GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse*
 
 
-## Checkpoint
-### Progress
-Entry points are https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/login, https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/signup, and https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/admin/login.
+## Getting Started
+Entry point: /admin/login
 <br>
-What you can play around with at the moment:
-- **Signup page**
-    - Enter credentials (username, password, email, etc.) and click "sign up".
-    - Email verification to be implemented
-- **Login page**
-    - Enter username & password of an existing account
-    - Navigates to main page when login is successful
-- **Connections tab**
-    - Can toggle through connections, categorized into different connection statuses (Active, Pending, Inactive)
-    - User is able to switch the status of a connection from ‘Pending’ to ‘Active’
-    - Front end is still under development
-- **Groups tab**
-    - Can toggle course groups and community groups
-    - Can view Discover and Chat subtabs of a group, using the following endpoints (will be linked properly later):
-        - Discover: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/groups/discover
-        - Chat: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/groups/chat
-    - Front end is still under development
-- **Settings page**
-    - implemented: front end UI, backend logic 
-    - to be implemented: front end logic
-- **Admin login page**
-    - Use the following credentials:
+Start by logging in as an administrator user with pre-loaded credentials (username: default-admin, password: defAdmin@synapse). Then add courses (make sure to select the current semester SPRING2023 as users will only be displayed with courses offered during the current semester). This will add course groups to the system which will allow users to join their enrolled course groups.
+<br>
+<br>
+Entry point: /signup
+<br>
+Create an account with your SFU email. Email verification code will be sent to your email. Signup with the code (which expires in 10 minutes). You can select courses and set up your basic profile in the account setup page. All settings (profile photo, bio, course selection) can be edited later on, hence you can skip if you wish.
+
+## General Architecture and Features
+### Features
+- **Login**
+    - Use username and password
+- **Signup**
+    - Enter username (must be unique), first name, last name, password
+    - Email verification
+        - Checks if an SFU email is registered
+        - Sends code to entered SFU email
+        - Code expires in 10 minutes
+    - Account setup (optional upon signup)
+        - Select courses
+            - Course groups for current semester added by administrator
+        - Select photo
+        - Enter bio
+- **Admin**
+    - Log in with the following credentials:
         - username: default-admin
         - password: defAdmin@synapse
-- **Admin page**
-    - This page is fully functional, with a few bugs that we will resolve later (asynchronous processes causing buttons to not display as expected)
-    - We plan to add a view that only displays the courses in the database
-        - Modify the current term or year, click on departments or courses
-        - View course listings of each department
-
-
+    - Admin course manager
+        - Data pulled from SFU Course Outlines REST API and MySQL database
+        - Select semester (year, term)
+            - Add course groups to system
+            - Remove course groups from system
+    - Database manager
+        - All entries can be viewed (except for confidential data such as verification code, individual user’s passwords etc.)
+    - Logout
+- **Home**
+    - Profile summary
+    - List of connections categorized into active/inactive/pending
+        - Click on “View” for user details
+            - User profile
+            - Course enrollment history
+            - Communities the user is a member of
+    - List of groups (courses and communities)
+        - Click on “View” for group details
+            - Group profile
+            - List of members in the group
+            - Icon that indicates ownership (yellow crown) and community visibility (purple shield) *only for community groups
+- **Connections**
+    - List of connections categorized into active/pending/inactive
+        - Active
+            - Connections in which back-and-forth conversations are happening within a reasonable amount of time (< 4 months between message sent and message received)
+        - Pending
+            - Connection status is set to ‘pending’ if there has not been a mutual conversation yet (only one user has sent a message)
+        - Inactive
+            - Connections in which the time gap between the most recent exchange of messages (latest message sent vs. latest message received) is longer than 4 months, OR
+            - Either user has deleted their account
+    - 1-on-1 Chat
+    - Setting
+        - Displays connection status (active/pending/inactive)
+        - Disconnect
+- **Groups**
+    - Courses: groups of students enrolled in official SFU courses of the current term
+    - Communities: casual groups of students with common interests
+    - Discover
+        - Display profile cards of users in the group
+            - User can initiate connections with other users by clicking on a profile card and sending a message at the bottom of the page
+            - This creates a “pending” connection that will appear in the list of connections in the Connections page.
+    - Group chat
+        - Deleted user’s messages remain with username being <anonymous>
+    - Setting for both courses and communities
+        - Leave (available to all users except community owners)
+    - Settings limited to communities
+        - Invite (only for private communities)
+        - Change community status (private/public, available to owner)
+        - Passing community ownership to another user in the community (available to owner)
+    - Browse communities
+        - Join public communities
+            - List of all public communities a user is not a member of
+        - Create communities
+            - Enter community name, bio
+            - Select group photo
+            - Select visibility (public or private)
+            - Community creator is the owner and the first member by default
+- **Settings**
+    - Edit profile
+        - Select custom profile photo
+        - Delete photo (resets it to default user photo)
+        - Update username
+            - Checks uniqueness
+        - Update Bio
+            - Checks length limitation
+    - Change password
+        - Checks for current password for security and unintended action
+        - Checks for minimum requirement for security
+    - Edit course enrollment
+        - Allows users to browse course groups for current semester added by the administrator
+        - Join (add to selected) course groups
+        - Leave (remove from selected) course groups
+    - Delete account
+        - Checks for current password for security and unintended action
+        - Checks for community ownership (users are required to transfer all ownership before deleting an account)
+        - Account deletion behavior
+            - Removes user from any group
+            - Clears any personal information (name, email, password, etc.) while keeping messages sent in chats
+    - Logout 
 
 
 ### Technical Specification (subject to change)
@@ -56,6 +128,7 @@ Stacks: SERN - SQL + Express + React.js + Node.js
 - [Express] - fast node.js network app framework
 - [SFU Course Outline REST API] - fast node.js network app framework
 - [Bootstrap] - great UI boilerplate for modern web apps
+
 ### Installation
 **development version on GitLab*
 
@@ -83,7 +156,7 @@ npm start
 Oftentimes, SFU students have a hard time getting to know classmates and building long-lasting friendships. There is a high chance that a classmate sitting right beside you is also a big fan of your favorite game. However, you would rarely come across such information in a real classroom setting and probably won’t start a conversation, missing out on the opportunity to build a relationship. Our web application will make it easier to discover other students with common interests and help users build and maintain strong connections.
 
 
-### Features
+### Features and their Purposes
 - **SFU Email Verification** 
     -  Limits app access to SFU students by verifying their SFU email when creating an account
 - **Course groups**
