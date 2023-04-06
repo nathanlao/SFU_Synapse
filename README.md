@@ -6,7 +6,9 @@ Members
 - Jason.N
 - Rachel.S
 
-Link to application: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/
+Link to application: http://34.30.167.71/
+<br>
+Development version: https://20230322t232139-dot-sfu-synapse.uc.r.appspot.com/
 <br>
 GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synapse*
 
