@@ -13,16 +13,18 @@ GitLab url: *https://csil-git1.cs.surrey.sfu.ca/cmpt372-group-project/sfu-synaps
 
 ## Getting Started
 Entry point: /admin/login
+<br>
 Start by logging in as an administrator user with pre-loaded credentials (username: default-admin, password: defAdmin@synapse). Then add courses (make sure to select the current semester SPRING2023 as users will only be displayed with courses offered during the current semester). This will add course groups to the system which will allow users to join their enrolled course groups.
 <br>
+<br>
 Entry point: /signup
+<br>
 Create an account with your SFU email. Email verification code will be sent to your email. Signup with the code (which expires in 10 minutes). You can select courses and set up your basic profile in the account setup page. All settings (profile photo, bio, course selection) can be edited later on, hence you can skip if you wish.
 
 ## General Architecture and Features
 ### Features
 - **Login**
     - Use username and password
-
 - **Signup**
     - Enter username (must be unique), first name, last name, password
     - Email verification
@@ -34,7 +36,6 @@ Create an account with your SFU email. Email verification code will be sent to y
             - Course groups for current semester added by administrator
         - Select photo
         - Enter bio
-
 - **Admin**
     - Log in with the following credentials:
         - username: default-admin
@@ -47,7 +48,6 @@ Create an account with your SFU email. Email verification code will be sent to y
     - Database manager
         - All entries can be viewed (except for confidential data such as verification code, individual user’s passwords etc.)
     - Logout
-
 - **Home**
     - Profile summary
     - List of connections categorized into active/inactive/pending
@@ -60,7 +60,6 @@ Create an account with your SFU email. Email verification code will be sent to y
             - Group profile
             - List of members in the group
             - Icon that indicates ownership (yellow crown) and community visibility (purple shield) *only for community groups
-
 - **Connections**
     - List of connections categorized into active/pending/inactive
         - Active
@@ -74,7 +73,6 @@ Create an account with your SFU email. Email verification code will be sent to y
     - Setting
         - Displays connection status (active/pending/inactive)
         - Disconnect
-
 - **Groups**
     - Courses: groups of students enrolled in official SFU courses of the current term
     - Communities: casual groups of students with common interests
@@ -98,7 +96,6 @@ Create an account with your SFU email. Email verification code will be sent to y
             - Select group photo
             - Select visibility (public or private)
             - Community creator is the owner and the first member by default
-
 - **Settings**
     - Edit profile
         - Select custom profile photo
@@ -121,6 +118,7 @@ Create an account with your SFU email. Email verification code will be sent to y
             - Removes user from any group
             - Clears any personal information (name, email, password, etc.) while keeping messages sent in chats
     - Logout 
+
 
 ### Technical Specification (subject to change)
 Stacks: SERN - SQL + Express + React.js + Node.js
