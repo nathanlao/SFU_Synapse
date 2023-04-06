@@ -210,7 +210,7 @@ export default function GroupsSettings() {
     
     function handleDeleteCommunity() {
         const options = {
-            method: 'POST',
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ group_id: groupId })
         }
