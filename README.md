@@ -1,4 +1,4 @@
-# CMPT372 Group 19
+# SFU Synapse
 ### _Social Networking Web Application for SFU students_
 Members
 - Risa.K, 
