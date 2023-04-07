@@ -125,10 +125,10 @@ Create an account with your SFU email. Email verification code will be sent to y
 ### Technical Specification (subject to change)
 Stacks: SERN - SQL + Express + React.js + Node.js
 - [React.js] - HTML enhanced for web apps!
-- [MySQL] - awesome web-based text editor
+- [MySQL] - relational-database management
 - [node.js] - evented I/O for the backend
 - [Express] - fast node.js network app framework
-- [SFU Course Outline REST API] - fast node.js network app framework
+- [SFU Course Outline REST API] - academic course data access
 - [Bootstrap] - great UI boilerplate for modern web apps
 
 ### Installation
